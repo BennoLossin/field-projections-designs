@@ -1,4 +1,4 @@
-# Handles
+# Handles (2026-05 until now)
 
 - Discussion around field-by-field projections [started on github](https://github.com/rust-lang/rust/pull/154940#discussion_r3143910063) by Nadri through Mark's questions
 - [Continued by Nadri on Zulip](https://rust-lang.zulipchat.com/#narrow/channel/522311-t-lang.2Fcustom-refs/topic/Using.20places.20for.20intermediate.20subplaces/near/594089728)

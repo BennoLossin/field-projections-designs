@@ -1,4 +1,4 @@
-# Places
+# Places (2025-10 until 2026-05)
 
 - Idea started by [Nadri on Zulip](https://rust-lang.zulipchat.com/#narrow/channel/522311-t-lang.2Fcustom-refs/topic/Field.20projections.20and.20places/near/545831862)
 - After lot's of discussion, Nadri created a blog post distilling the idea: <https://nadrieril.github.io/blog/2025/11/11/truly-first-class-custom-smart-pointers.html>
