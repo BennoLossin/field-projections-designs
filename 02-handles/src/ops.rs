@@ -12,7 +12,7 @@ pub trait PlaceHandle: Sized {
     type Target: ?Sized;
 }
 
-pub trait HandleFromRaw: ProxyPlace {
+pub trait DerefHandle: ProxyPlace {
     const ACCESS: AccessKind;
     type Timing: Timing;
 

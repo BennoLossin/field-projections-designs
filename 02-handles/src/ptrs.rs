@@ -4,7 +4,7 @@ use crate::{
     Metadata,
     borrowck::{AccessKind, Instant},
     ops::{
-        DerefPlace, DropHusk, DropPlace, HandleFromRaw, MovePlace, PlaceHandle, ProjectPlace,
+        DerefHandle, DerefPlace, DropHusk, DropPlace, MovePlace, PlaceHandle, ProjectPlace,
         ProxyPlace, ReadMetadata, ReadPlace, WritePlace,
     },
     subplace::Subplace,
@@ -18,7 +18,7 @@ impl<T: ?Sized> PlaceHandle for *const T {
     type Target = T;
 }
 
-impl<T: ?Sized> HandleFromRaw for *const T {
+impl<T: ?Sized> DerefHandle for *const T {
     const ACCESS: AccessKind = AccessKind::Untracked;
     type Timing = Instant;
 
@@ -61,7 +61,7 @@ impl<S: Subplace> ProjectPlace<S> for *const S::Source {
 
 impl<P> DerefPlace<P::Timing, Instant> for *const P
 where
-    P: ?Sized + HandleFromRaw,
+    P: ?Sized + DerefHandle,
 {
     const POINTEE_ACCESS: AccessKind = P::ACCESS;
     const POINTER_ACCESS: AccessKind = AccessKind::Untracked;
@@ -83,7 +83,7 @@ impl<T: ?Sized> PlaceHandle for *mut T {
     type Target = T;
 }
 
-impl<T: ?Sized> HandleFromRaw for *mut T {
+impl<T: ?Sized> DerefHandle for *mut T {
     const ACCESS: AccessKind = AccessKind::Untracked;
     type Timing = Instant;
 
@@ -145,7 +145,7 @@ impl<S: Subplace> ProjectPlace<S> for *mut S::Source {
 
 impl<P> DerefPlace<P::Timing, Instant> for *mut P
 where
-    P: ?Sized + HandleFromRaw,
+    P: ?Sized + DerefHandle,
 {
     const POINTEE_ACCESS: AccessKind = P::ACCESS;
     const POINTER_ACCESS: AccessKind = AccessKind::Untracked;
@@ -167,7 +167,7 @@ impl<T: ?Sized> PlaceHandle for NonNull<T> {
     type Target = T;
 }
 
-impl<T: ?Sized> HandleFromRaw for NonNull<T> {
+impl<T: ?Sized> DerefHandle for NonNull<T> {
     const ACCESS: AccessKind = AccessKind::Untracked;
     type Timing = Instant;
 

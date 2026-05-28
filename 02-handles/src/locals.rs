@@ -1,6 +1,6 @@
 use crate::{
     borrowck::{AccessKind, Instant},
-    ops::{DerefPlace, HandleFromRaw, PlaceHandle, ProxyPlace},
+    ops::{DerefHandle, DerefPlace, PlaceHandle, ProxyPlace},
 };
 
 pub struct LocalHandle<T: ?Sized> {
@@ -23,7 +23,7 @@ impl<T: ?Sized> PlaceHandle for LocalHandle<T> {
 
 impl<P> DerefPlace<P::Timing, Instant> for LocalHandle<P>
 where
-    P: HandleFromRaw,
+    P: DerefHandle,
 {
     const POINTEE_ACCESS: AccessKind = P::ACCESS;
     const POINTER_ACCESS: AccessKind = P::ACCESS;

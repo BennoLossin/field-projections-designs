@@ -1,9 +1,8 @@
 use std::{marker::PhantomData, ptr::NonNull};
 
 use crate::{
-    borrowck::{AccessKind, Instant, Lifetime, Timing},
-    locals::LocalHandle,
-    ops::{BorrowPlace, DerefPlace, HandleFromRaw, PlaceHandle, ProjectPlace, ProxyPlace},
+    borrowck::{AccessKind, Instant, Lifetime},
+    ops::{BorrowPlace, DerefHandle, DerefPlace, PlaceHandle, ProjectPlace, ProxyPlace},
     subplace::Subplace,
 };
 
@@ -20,7 +19,7 @@ impl<'a, T: ?Sized> PlaceHandle for MutHandle<'a, T> {
     type Target = T;
 }
 
-impl<'a, T: ?Sized> HandleFromRaw for &'a mut T {
+impl<'a, T: ?Sized> DerefHandle for &'a mut T {
     const ACCESS: AccessKind = AccessKind::Exclusive;
     type Timing = Lifetime<'a>;
 
@@ -47,7 +46,7 @@ impl<'a, S: Subplace<Target: 'a>> ProjectPlace<S> for MutHandle<'a, S::Source> {
 
 impl<'a, P: ?Sized> DerefPlace<P::Timing, Instant> for MutHandle<'a, P>
 where
-    P: HandleFromRaw,
+    P: DerefHandle,
 {
     const POINTEE_ACCESS: AccessKind = P::ACCESS;
     const POINTER_ACCESS: AccessKind = AccessKind::Shared;
