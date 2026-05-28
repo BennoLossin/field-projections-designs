@@ -1,4 +1,4 @@
-use crate::{
+use crate::design::{
     borrowck::{AccessKind, Instant},
     ops::{DerefHandle, DerefPlace, PlaceHandle, ProxyPlace},
 };

@@ -1,6 +1,6 @@
 use std::{marker::PhantomData, ptr::NonNull};
 
-use crate::{
+use crate::design::{
     borrowck::{AccessKind, Instant, Lifetime},
     ops::{BorrowPlace, DerefHandle, DerefPlace, PlaceHandle, ProjectPlace, ProxyPlace},
     subplace::Subplace,

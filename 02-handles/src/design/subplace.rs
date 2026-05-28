@@ -1,6 +1,6 @@
 use std::{marker::PhantomData, ptr::Pointee};
 
-use crate::Metadata;
+use crate::design::Metadata;
 
 pub unsafe trait Subplace: Sized {
     type Source: ?Sized;

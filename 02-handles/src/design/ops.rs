@@ -1,4 +1,4 @@
-use crate::{
+use crate::design::{
     Metadata,
     borrowck::{AccessKind, Timing},
     subplace::Subplace,
