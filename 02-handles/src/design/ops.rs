@@ -1,6 +1,7 @@
 use crate::design::{
     Metadata,
     borrowck::{AccessKind, Timing},
+    enums::{HasVariant, Matchable, VariantType},
     subplace::Subplace,
 };
 
@@ -28,6 +29,23 @@ pub trait ReadPlace: PlaceHandle {
 
 pub trait ReadMetadata: PlaceHandle {
     fn metadata(self) -> Metadata<Self::Target>;
+}
+
+pub trait ReadVariant: PlaceHandle
+where
+    Self::Target: Matchable,
+{
+    unsafe fn read_variant(self) -> &'static str;
+}
+
+pub trait VariantPlace<const VARIANT: &'static str>: ReadVariant
+where
+    Self::Target: Matchable,
+    Self::Target: HasVariant<VARIANT>,
+{
+    type ToVariant: PlaceHandle<Target = VariantType<Self::Target, VARIANT>>;
+
+    unsafe fn cast(self) -> Self::ToVariant;
 }
 
 pub trait MovePlace: ReadPlace {

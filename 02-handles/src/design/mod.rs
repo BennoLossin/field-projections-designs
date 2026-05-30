@@ -1,6 +1,7 @@
 use std::ptr::Pointee;
 
 pub mod borrowck;
+pub mod enums;
 pub mod locals;
 pub mod ops;
 pub mod subplace;
