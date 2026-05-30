@@ -1,6 +1,11 @@
 use crate::design::{
     borrowck::{AccessKind, Instant},
-    ops::{DerefHandle, DerefPlace, PlaceHandle, ProxyPlace},
+    enums::{HasVariant, Matchable, VariantType},
+    ops::{
+        DerefHandle, DerefPlace, PlaceHandle, ProjectPlace, ProxyPlace, ReadPlace, ReadVariant,
+        VariantPlace,
+    },
+    subplace::Subplace,
 };
 
 pub struct LocalHandle<T: ?Sized> {
@@ -32,5 +37,46 @@ where
 
     unsafe fn deref_place(self) -> <Self::Target as ProxyPlace>::Handle {
         unsafe { P::handle_from_raw(self.as_ptr()) }
+    }
+}
+
+impl<T: ?Sized + Matchable> ReadVariant for LocalHandle<T> {
+    unsafe fn read_variant(self) -> &'static str {
+        unsafe { T::variant_at(self.ptr) }
+    }
+}
+
+impl<T, const VARIANT: &'static str> VariantPlace<VARIANT> for LocalHandle<T>
+where
+    T: ?Sized + HasVariant<VARIANT>,
+{
+    type ToVariant = LocalHandle<VariantType<T, VARIANT>>;
+
+    unsafe fn cast(self) -> Self::ToVariant {
+        LocalHandle {
+            ptr: self.ptr.cast(),
+        }
+    }
+}
+
+impl<S> ProjectPlace<S> for LocalHandle<S::Source>
+where
+    S: Subplace,
+{
+    type Projected = LocalHandle<S::Target>;
+
+    unsafe fn project_place(self, subplace: S) -> Self::Projected {
+        LocalHandle {
+            ptr: unsafe { self.ptr.project_place(subplace) },
+        }
+    }
+}
+
+impl<T> ReadPlace for LocalHandle<T> {
+    const ACCESS: AccessKind = AccessKind::Shared;
+    const SAFE: bool = true;
+
+    unsafe fn read_place(self) -> Self::Target {
+        unsafe { self.ptr.read() }
     }
 }
