@@ -79,3 +79,16 @@ pub trait BorrowPlace<Output>: PlaceHandle {
 
     unsafe fn borrow(self) -> Output;
 }
+
+pub trait PlaceWrapper {
+    type Inner: ?Sized;
+}
+
+pub unsafe trait WrapPlace<S>: PlaceWrapper
+where
+    S: Subplace<Source = Self::Inner>,
+{
+    type Wrapped: Subplace<Source = Self>;
+
+    fn wrap(subplace: S) -> Self::Wrapped;
+}
