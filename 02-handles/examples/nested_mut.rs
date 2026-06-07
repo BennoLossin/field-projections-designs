@@ -1,11 +1,13 @@
 use std::mem::offset_of;
 
 use field_projection_design::{
-    Metadata,
-    locals::LocalHandle,
-    ops::{BorrowPlace, DerefPlace, ProjectPlace},
-    refs::MutHandle,
-    subplace::Subplace,
+    application::refs::MutHandle,
+    design::{
+        Metadata,
+        locals::LocalHandle,
+        ops::{BorrowPlace, DerefPlace, ProjectPlace},
+        subplace::Subplace,
+    },
 };
 
 struct Struct {
