@@ -12,6 +12,13 @@ pub struct LocalHandle<T: ?Sized> {
     ptr: *const T,
 }
 
+impl<T: ?Sized> Clone for LocalHandle<T> {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl<T: ?Sized> Copy for LocalHandle<T> {}
+
 impl<T: ?Sized> LocalHandle<T> {
     pub unsafe fn new(ptr: *const T) -> Self {
         Self { ptr }
