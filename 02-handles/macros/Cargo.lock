@@ -3,13 +3,6 @@
 version = 4
 
 [[package]]
-name = "field-projection-design"
-version = "0.1.0"
-dependencies = [
- "macros",
-]
-
-[[package]]
 name = "macros"
 version = "0.1.0"
 dependencies = [
