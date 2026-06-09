@@ -127,6 +127,11 @@ fn generate_fields(
     field_arms: &mut Vec<TokenStream>,
     errors: &mut TokenStream,
 ) {
+    let decl_gen = {
+        let mut tmp = generics.clone();
+        tmp.where_clause = None;
+        tmp
+    };
     let (impl_gen, ty_gen, whr) = generics.split_for_impl();
     let (fragment_decl_gen, fragment_ty_gen) = generics_to_fragments(generics);
 
@@ -162,7 +167,7 @@ fn generate_fields(
         };
 
         lang_limits.push(quote! {
-            pub struct #meta_ident #ty_gen (::core::marker::PhantomData::<#phantom_ty>);
+            pub struct #meta_ident #decl_gen (::core::marker::PhantomData::<#phantom_ty>) #whr;
 
             impl #impl_gen ::core::default::Default for #meta_ident #ty_gen #whr {
                 fn default() -> Self { Self(::core::marker::PhantomData) }
