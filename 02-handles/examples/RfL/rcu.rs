@@ -60,9 +60,10 @@ impl<P: RcuPointer> Rcu<P> {
         let this = self.project();
         let ptr = this.ptr.get_mut_pinned();
         let r = unsafe { ptr.as_ref_unchecked() };
+        let old = r.load(Ordering::Relaxed);
         let new = P::into_raw(new);
-        r.swap(new, Ordering::Relaxed);
-        RcuOld(unsafe { P::from_raw(new) })
+        r.store(new, Ordering::Relaxed);
+        RcuOld(unsafe { P::from_raw(old) })
     }
 }
 
