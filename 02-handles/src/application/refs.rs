@@ -11,6 +11,15 @@ pub struct MutHandle<'a, T: ?Sized> {
     _lt: PhantomData<&'a mut T>,
 }
 
+impl<'a, T: ?Sized> MutHandle<'a, T> {
+    pub unsafe fn from_raw(ptr: *mut T) -> Self {
+        Self {
+            ptr: unsafe { NonNull::new_unchecked(ptr) },
+            _lt: PhantomData,
+        }
+    }
+}
+
 impl<'a, T: ?Sized> ProxyPlace for &'a mut T {
     type Handle = MutHandle<'a, T>;
 }
