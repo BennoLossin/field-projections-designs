@@ -28,9 +28,9 @@ impl<'a, T: ?Sized> PlaceHandle for MutHandle<'a, T> {
     type Target = T;
 }
 
-impl<'a, T: ?Sized> DerefHandle for &'a mut T {
-    const ACCESS: AccessKind = AccessKind::Exclusive;
-    type Timing = Lifetime<'a>;
+impl<T: ?Sized> DerefHandle for &mut T {
+    const ACCESS: AccessKind = AccessKind::Shared;
+    type Timing = Instant;
 
     unsafe fn handle_from_raw(this: *const Self) -> Self::Handle {
         let ptr: *const *mut T = this.cast::<*mut T>();
