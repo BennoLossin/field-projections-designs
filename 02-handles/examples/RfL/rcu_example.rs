@@ -1,14 +1,20 @@
-use std::{pin::Pin, sync::Arc};
+use std::sync::Arc;
 
 use _02_handles::{
-    application::refs::RefHandle,
-    design::ops::{BorrowPlace, DerefPlace, ProjectPlace, ReadPlace, WrapPlace},
+    application::{
+        arc::ArcHandle,
+        refs::{MutHandle, RefHandle},
+    },
+    design::{
+        locals::LocalHandle,
+        ops::{BorrowPlace, DerefHandle, DerefPlace, ProjectPlace, ReadPlace, WrapPlace},
+    },
 };
 use adt_reflect::adt_reflect;
-use pin_project::pin_project;
 
 use crate::{
     mutex::{InsideOfMutex, Mutex, MutexGuard},
+    overwrite::{Shield, ShieldHandle},
     rcu::{self, Rcu, RcuGuard, RcuOld},
 };
 
@@ -17,15 +23,11 @@ adt_reflect!(
         driver_data: Arc<Mutex<DriverData>>,
     }
 
-    #[pin_project]
     pub struct DriverData {
-        #[pin]
         shared: Shared,
     }
 
-    #[pin_project]
     pub struct Shared {
-        #[pin]
         data: Rcu<Box<Data>>,
     }
 
@@ -34,13 +36,74 @@ adt_reflect!(
     }
 );
 
+/// Workarounds for language/compiler limitations.
+///
+/// These would go away when more features are added to the compiler/language:
+/// - negative reasoning for overlap checks of impls
+mod lang_limits {
+    use _02_handles::design::ops::PlaceHandle;
+
+    use crate::overwrite::ShieldableSubplace;
+
+    use super::*;
+
+    unsafe impl ShieldableSubplace for field_of!(DriverData, shared) {
+        type StructualShielding<H: PlaceHandle<Target = Self::Target>> = ShieldHandle<H>;
+
+        unsafe fn from_shielded<H: PlaceHandle<Target = Self::Target>>(
+            handle: H,
+        ) -> Self::StructualShielding<H> {
+            unsafe { ShieldHandle::new_unchecked(handle) }
+        }
+    }
+
+    unsafe impl ShieldableSubplace for field_of!(Shared, data) {
+        type StructualShielding<H: PlaceHandle<Target = Self::Target>> = ShieldHandle<H>;
+
+        unsafe fn from_shielded<H: PlaceHandle<Target = Self::Target>>(
+            handle: H,
+        ) -> Self::StructualShielding<H> {
+            unsafe { ShieldHandle::new_unchecked(handle) }
+        }
+    }
+}
+
 impl Driver {
-    /// Writing is easy and doesn't need field projections.
+    /// Writing needs field projections to handle the `Shield` abstraction nicely:
+    /// ```
+    /// let mut guard: Shield<MutexGuard<'_, DriverData>> = self.driver_data.lock();
+    /// let data: Shield<&mut Rcu<Box<Data>>> = @guard.shared.data;
+    /// let old: RcuOld<Box<Data>> = data.write(new_data);
+    /// drop(old); // runs `synchronize_rcu` & drops the old value
+    /// ```
+    #[expect(unused_mut)]
     pub fn write_data(&self, new_data: Box<Data>) {
-        let mut guard: Pin<MutexGuard<'_, DriverData>> = self.driver_data.lock();
-        let driver_data: Pin<&mut DriverData> = guard.as_mut();
-        let data: Pin<&mut Rcu<Box<Data>>> = driver_data.project().shared.project().data;
-        let old: RcuOld<Box<Data>> = data.write(new_data);
+        let tmp: &Mutex<DriverData> = unsafe {
+            let self_hdl: RefHandle<'_, Driver> = DerefHandle::handle_from_raw(&raw const self);
+            let driver_data_subplace = <field_of!(Driver, driver_data)>::default();
+            let driver_data_hdl: RefHandle<'_, Arc<Mutex<DriverData>>> =
+                ProjectPlace::project_place(self_hdl, driver_data_subplace);
+            let mutex_hdl: ArcHandle<Mutex<DriverData>> = DerefPlace::deref_place(driver_data_hdl);
+            BorrowPlace::<&Mutex<DriverData>>::borrow(mutex_hdl)
+        };
+
+        let mut guard: Shield<MutexGuard<'_, DriverData>> = Mutex::lock(tmp);
+
+        let data: Shield<&mut Rcu<Box<Data>>> = unsafe {
+            let guard_hdl: LocalHandle<Shield<MutexGuard<'_, DriverData>>> =
+                LocalHandle::new(&raw const guard);
+            let driver_data_hdl: ShieldHandle<MutHandle<'_, DriverData>> =
+                DerefPlace::deref_place(guard_hdl);
+            let shared_subplace = <field_of!(DriverData, shared)>::default();
+            let shared_hdl: ShieldHandle<MutHandle<'_, Shared>> =
+                ProjectPlace::project_place(driver_data_hdl, shared_subplace);
+            let data_subplace = <field_of!(Shared, data)>::default();
+            let data_hdl: ShieldHandle<MutHandle<'_, Rcu<Box<Data>>>> =
+                ProjectPlace::project_place(shared_hdl, data_subplace);
+            BorrowPlace::<Shield<&mut Rcu<Box<Data>>>>::borrow(data_hdl)
+        };
+
+        let old: RcuOld<Box<Data>> = Rcu::write(data, new_data);
         drop(old); // runs `synchronize_rcu` & drops the old value
     }
 
@@ -65,42 +128,44 @@ impl Driver {
         let guard: RcuGuard = rcu::read_lock();
 
         let shared: &InsideOfMutex<Shared> = unsafe {
-            let hdl_data: RefHandle<'_, Mutex<DriverData>> =
-                DerefPlace::deref_place(&raw const data);
+            let data_hdl: LocalHandle<&Mutex<DriverData>> = LocalHandle::new(&raw const data);
+            let data_hdl: RefHandle<'_, Mutex<DriverData>> = DerefPlace::deref_place(data_hdl);
 
             let shared_subplace = <field_of!(DriverData, shared)>::default();
             let shared_subplace_wrapped = Mutex::wrap(shared_subplace);
 
-            let hdl_shared: RefHandle<'_, InsideOfMutex<Shared>> =
-                ProjectPlace::project_place(hdl_data, shared_subplace_wrapped);
+            let shared_hdl: RefHandle<'_, InsideOfMutex<Shared>> =
+                ProjectPlace::project_place(data_hdl, shared_subplace_wrapped);
 
             let shared: &InsideOfMutex<Shared> =
-                BorrowPlace::<&InsideOfMutex<Shared>>::borrow(hdl_shared);
+                BorrowPlace::<&InsideOfMutex<Shared>>::borrow(shared_hdl);
             shared
         };
 
         let data: &InsideOfMutex<Rcu<Box<Data>>> = unsafe {
-            let hdl_shared: RefHandle<'_, InsideOfMutex<Shared>> =
-                DerefPlace::deref_place(&raw const shared);
+            let shared_hdl: LocalHandle<&InsideOfMutex<Shared>> =
+                LocalHandle::new(&raw const shared);
+            let shared_hdl: RefHandle<'_, InsideOfMutex<Shared>> =
+                DerefPlace::deref_place(shared_hdl);
 
             let data_subplace = <field_of!(Shared, data)>::default();
             let data_subplace_wrapped = InsideOfMutex::wrap(data_subplace);
 
-            let hdl_data: RefHandle<'_, InsideOfMutex<Rcu<Box<Data>>>> =
-                ProjectPlace::project_place(hdl_shared, data_subplace_wrapped);
+            let data_hdl: RefHandle<'_, InsideOfMutex<Rcu<Box<Data>>>> =
+                ProjectPlace::project_place(shared_hdl, data_subplace_wrapped);
 
             let data: &InsideOfMutex<Rcu<Box<Data>>> =
-                BorrowPlace::<&InsideOfMutex<Rcu<Box<Data>>>>::borrow(hdl_data);
+                BorrowPlace::<&InsideOfMutex<Rcu<Box<Data>>>>::borrow(data_hdl);
             data
         };
 
         let data: &Data = InsideOfMutex::read(data, &guard);
 
         unsafe {
-            let hdl_data: RefHandle<'_, Data> = DerefPlace::deref_place(&raw const data);
+            let data_hdl: RefHandle<'_, Data> = DerefHandle::handle_from_raw(&raw const data);
             let num_subplace = <field_of!(Data, num)>::default();
-            let hdl_num: RefHandle<'_, u32> = ProjectPlace::project_place(hdl_data, num_subplace);
-            ReadPlace::read_place(hdl_num)
+            let num_hdl: RefHandle<'_, u32> = ProjectPlace::project_place(data_hdl, num_subplace);
+            ReadPlace::read_place(num_hdl)
         }
     }
 }

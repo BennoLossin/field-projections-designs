@@ -1,17 +1,19 @@
 use std::{
-    pin::{Pin, UnsafePinned},
+    pin::UnsafePinned,
     sync::atomic::{AtomicPtr, Ordering},
 };
 
-use pin_project::pin_project;
+use crate::{
+    bindings,
+    mutex::InsideOfMutex,
+    overwrite::{Overwrite, Shield},
+};
 
-use crate::{bindings, mutex::InsideOfMutex};
-
-#[pin_project]
 pub struct Rcu<P: RcuPointer> {
-    #[pin]
     ptr: UnsafePinned<AtomicPtr<P::Target>>,
 }
+
+impl<P: RcuPointer> !Overwrite for Rcu<P> {}
 
 pub struct RcuGuard(());
 
@@ -44,21 +46,16 @@ impl<P: RcuPointer> Rcu<P> {
         unsafe { ptr.as_ref_unchecked() }
     }
 
-    pub fn read_exclusive(self: Pin<&mut Self>, /* replaced by &mut self + !Move */) -> &P::Target {
-        let this = self.project();
-        let ptr = this.ptr.get_mut_pinned();
+    pub fn read_exclusive(self: Shield<&mut Self>) -> &P::Target {
+        let ptr = self.ptr.get();
         let ptr = unsafe { ptr.as_ref_unchecked() };
         let ptr = ptr.as_ptr();
         let ptr = unsafe { ptr.read() };
         unsafe { ptr.as_ref_unchecked() }
     }
 
-    pub fn write(
-        self: Pin<&mut Self>, /* replaced by &mut self + !Move */
-        new: P,
-    ) -> RcuOld<P> {
-        let this = self.project();
-        let ptr = this.ptr.get_mut_pinned();
+    pub fn write(self: Shield<&mut Self>, new: P) -> RcuOld<P> {
+        let ptr = self.ptr.get();
         let r = unsafe { ptr.as_ref_unchecked() };
         let old = r.load(Ordering::Relaxed);
         let new = P::into_raw(new);

@@ -1,16 +1,19 @@
 use std::{
     cell::UnsafeCell,
     ops::{Deref, DerefMut},
-    pin::Pin,
     ptr::NonNull,
 };
 
-use _02_handles::design::{
-    ops::{PlaceWrapper, WrapPlace},
-    subplace::{Subplace, TransmutedSubplace},
+use _02_handles::{
+    application::refs::MutHandle,
+    design::{
+        borrowck::{AccessKind, Instant},
+        ops::{DerefHandle, PlaceWrapper, ProxyPlace, WrapPlace},
+        subplace::{Subplace, TransmutedSubplace},
+    },
 };
 
-use crate::{bindings, opaque::Opaque};
+use crate::{bindings, opaque::Opaque, overwrite::Shield};
 
 pub struct Mutex<T> {
     value: UnsafeCell<T>,
@@ -18,10 +21,10 @@ pub struct Mutex<T> {
 }
 
 impl<T> Mutex<T> {
-    pub fn lock(&self) -> Pin<MutexGuard<'_, T>> {
+    pub fn lock(&self) -> Shield<MutexGuard<'_, T>> {
         unsafe { bindings::mutex_lock(self.mutex.get()) };
         let guard = MutexGuard(self);
-        unsafe { Pin::new_unchecked(guard) }
+        unsafe { Shield::new_unchecked(guard) }
     }
 }
 
@@ -48,6 +51,26 @@ impl<T> Deref for MutexGuard<'_, T> {
 impl<T> DerefMut for MutexGuard<'_, T> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         unsafe { &mut *self.0.value.get() }
+    }
+}
+
+// auto-derived from the deref[mut] impl
+impl<'a, T> ProxyPlace for MutexGuard<'a, T> {
+    type Handle = MutHandle<'a, T>;
+}
+
+// auto-derived from the deref[mut] impl
+impl<'a, T> DerefHandle for MutexGuard<'a, T> {
+    const ACCESS: AccessKind = AccessKind::Shared;
+    type Timing = Instant;
+
+    unsafe fn handle_from_raw(this: *const Self) -> Self::Handle {
+        let ptr: *const &Mutex<T> = unsafe { &raw const (*this).0 };
+        let ptr: *const *const Mutex<T> = ptr.cast();
+        let ptr: *const Mutex<T> = unsafe { ptr.read() };
+        let ptr: *const UnsafeCell<T> = unsafe { &raw const (*ptr).value };
+        let ptr: *mut T = UnsafeCell::raw_get(ptr);
+        unsafe { MutHandle::from_raw(ptr) }
     }
 }
 
