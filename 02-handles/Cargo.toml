@@ -9,3 +9,6 @@ macros = { path = "./macros" }
 [features]
 default = ["place-wrappers"]
 place-wrappers = []
+
+[dev-dependencies]
+pin-project = "1.1.13"
