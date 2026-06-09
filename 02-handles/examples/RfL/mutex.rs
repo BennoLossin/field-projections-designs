@@ -5,7 +5,7 @@ use std::{
     ptr::NonNull,
 };
 
-use field_projection_design::design::{
+use _02_handles::design::{
     ops::{PlaceWrapper, WrapPlace},
     subplace::{Subplace, TransmutedSubplace},
 };

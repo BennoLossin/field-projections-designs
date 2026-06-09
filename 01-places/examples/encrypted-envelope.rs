@@ -2,7 +2,7 @@
 
 use std::marker::PhantomData;
 
-use place_projections::*;
+use _01_places::*;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Key(u8);

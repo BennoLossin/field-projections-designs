@@ -1,10 +1,10 @@
 use std::{pin::Pin, sync::Arc};
 
-use field_projection_design::{
+use _02_handles::{
     application::refs::RefHandle,
     design::ops::{BorrowPlace, DerefPlace, ProjectPlace, ReadPlace, WrapPlace},
 };
-use macros::adt_reflect;
+use adt_reflect::adt_reflect;
 use pin_project::pin_project;
 
 use crate::{

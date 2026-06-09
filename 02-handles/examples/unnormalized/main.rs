@@ -3,11 +3,11 @@
 #![feature(adt_const_params)]
 #![feature(unsized_const_params)]
 
-use field_projection_design::design::{
+use _02_handles::design::{
     locals::LocalHandle,
     ops::{ProjectPlace, ReadPlace, ReadVariant, VariantPlace, WrapPlace},
 };
-use macros::adt_reflect;
+use adt_reflect::adt_reflect;
 
 use crate::unnormalized::{GenericArgs, Unnormalized, UnwrapUnnormalize};
 

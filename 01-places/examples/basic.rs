@@ -2,7 +2,7 @@
 #![feature(trace_macros)]
 #![allow(non_camel_case_types)]
 
-use place_projections::*;
+use _01_places::*;
 
 type Ptr<T> = *mut T;
 
