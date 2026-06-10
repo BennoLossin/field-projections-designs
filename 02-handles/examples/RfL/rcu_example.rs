@@ -169,3 +169,19 @@ impl Driver {
         }
     }
 }
+
+#[test]
+fn main() {
+    let driver = Driver {
+        driver_data: Arc::new(Mutex::new(DriverData {
+            shared: Shared {
+                data: Rcu::new(Box::new(Data { num: 42 })),
+            },
+        })),
+    };
+    let data = driver.read_data();
+    assert_eq!(data, 42);
+    driver.write_data(Box::new(Data { num: 70 }));
+    let data = driver.read_data();
+    assert_eq!(data, 70);
+}

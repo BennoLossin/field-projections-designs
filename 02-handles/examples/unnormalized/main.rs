@@ -108,6 +108,7 @@ fn demo(ty_kind: Unnormalized<TyKind>) {
     }
 }
 
+#[cfg_attr(test, test)]
 fn main() {
     let ty_kind = TyKind::Int { int: IntTy };
     demo(ty_kind.into());
