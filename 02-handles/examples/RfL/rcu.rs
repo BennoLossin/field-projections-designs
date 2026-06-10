@@ -1,5 +1,6 @@
 use std::{
     pin::UnsafePinned,
+    ptr,
     sync::atomic::{AtomicPtr, Ordering},
 };
 
@@ -29,7 +30,23 @@ pub trait RcuPointer: Sized {
     unsafe fn from_raw(raw: *mut Self::Target) -> Self;
 }
 
+impl<P: RcuPointer> Drop for Rcu<P> {
+    fn drop(&mut self) {
+        let ptr = self.ptr.get();
+        let ptr = unsafe { ptr.as_ref_unchecked() };
+        let old = ptr.load(Ordering::Relaxed);
+        ptr.store(ptr::null_mut(), Ordering::Relaxed);
+        drop(unsafe { P::from_raw(old) });
+    }
+}
+
 impl<P: RcuPointer> Rcu<P> {
+    pub fn new(pointer: P) -> Self {
+        Self {
+            ptr: UnsafePinned::new(AtomicPtr::new(P::into_raw(pointer))),
+        }
+    }
+
     pub unsafe fn read_raw<'a>(this: *const Self, guard: &'a RcuGuard) -> &'a P::Target {
         let _ = guard;
         let ptr = UnsafePinned::raw_get(unsafe { &raw const (*this).ptr });
@@ -67,7 +84,7 @@ impl<P: RcuPointer> Rcu<P> {
 // implemented for every lock that supports `Rcu`
 impl<P: RcuPointer> InsideOfMutex<Rcu<P>> {
     pub fn read<'a>(&'a self, guard: &'a RcuGuard) -> &'a P::Target {
-        unsafe { Rcu::read_raw(self.ptr.as_ptr(), guard) }
+        unsafe { Rcu::read_raw(self.0.get(), guard) }
     }
 }
 

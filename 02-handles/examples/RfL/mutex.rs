@@ -1,7 +1,6 @@
 use std::{
     cell::UnsafeCell,
     ops::{Deref, DerefMut},
-    ptr::NonNull,
 };
 
 use _02_handles::{
@@ -26,11 +25,18 @@ impl<T> Mutex<T> {
         let guard = MutexGuard(self);
         unsafe { Shield::new_unchecked(guard) }
     }
+
+    // inaccuracy: mutex in the kernel requires pin-init, but here we simplify
+    pub fn new(value: T) -> Self {
+        Self {
+            value: UnsafeCell::new(value),
+            mutex: Opaque::uninit(),
+        }
+    }
 }
 
-pub struct InsideOfMutex<T> {
-    pub(crate) ptr: NonNull<T>,
-}
+#[repr(transparent)]
+pub struct InsideOfMutex<T>(pub(crate) UnsafeCell<T>);
 
 pub struct MutexGuard<'a, T>(&'a Mutex<T>);
 
