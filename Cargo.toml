@@ -3,4 +3,5 @@ resolver = "3"
 members = [
   "01-places",
   "02-handles",
+  "02-handles/adt_reflect",
 ]
