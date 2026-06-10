@@ -4,7 +4,7 @@
 // Needed for enum support (`&'static str` in const generics).
 #![feature(adt_const_params)]
 #![feature(unsized_const_params)]
-#![feature(custom_inner_attributes)]
+#![cfg_attr(doc, feature(custom_inner_attributes))]
 #![feature(proc_macro_hygiene)]
 
 pub mod application;
