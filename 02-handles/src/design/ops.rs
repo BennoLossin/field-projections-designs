@@ -1,5 +1,14 @@
-#![macros::summary]
+#![cfg_attr(doc, macros::summary)]
 
+//! Place Operations.
+//!
+//! Here's the birds-eye view of all place operations:
+//!
+//! ```
+//! ====== SUMMARY ANCHOR ======
+//! ```
+
+#[macros::summary(skip)]
 use crate::design::{
     Metadata,
     borrowck::{AccessKind, Timing},
