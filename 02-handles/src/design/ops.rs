@@ -1,3 +1,5 @@
+#![macros::summary]
+
 use crate::design::{
     Metadata,
     borrowck::{AccessKind, Timing},

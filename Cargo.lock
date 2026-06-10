@@ -11,6 +11,7 @@ name = "_02-handles"
 version = "0.1.0"
 dependencies = [
  "adt_reflect",
+ "macros",
  "pin-project",
 ]
 

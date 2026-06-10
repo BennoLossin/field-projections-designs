@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 adt_reflect = { path = "adt_reflect" }
+macros.workspace = true
 
 [features]
 default = ["place-wrappers"]
