@@ -5,3 +5,10 @@ members = [
   "02-handles",
   "02-handles/adt_reflect",
 ]
+
+[workspace.dependencies]
+macros = { path = "helpers/macros" }
+
+proc-macro2 = "1.0"
+quote = "1.0"
+syn = { version = "2.0", features = ["full", "extra-traits"] }
