@@ -25,6 +25,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: nightly
+          components: rustfmt
       - run: cargo doc --no-deps --workspace --document-private-items
       - run: echo "<meta http-equiv=\"refresh\" content=\"0; url=_02_handles/index.html\">" > target/doc/index.html
       - uses: actions/configure-pages@v5
