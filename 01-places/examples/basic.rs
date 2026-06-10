@@ -1,5 +1,4 @@
 #![feature(ptr_metadata)]
-#![feature(trace_macros)]
 #![allow(non_camel_case_types)]
 
 use _01_places::*;
