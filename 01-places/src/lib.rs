@@ -1,5 +1,5 @@
 //! Crate to experiment with the API proposed in
-//! https://nadrieril.github.io/blog/2025/11/11/truly-first-class-custom-smart-pointers.html .
+//! <https://nadrieril.github.io/blog/2025/11/11/truly-first-class-custom-smart-pointers.html>.
 #![feature(ptr_metadata)]
 
 use std::ptr::NonNull;
