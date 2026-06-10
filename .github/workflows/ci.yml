@@ -44,9 +44,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: nightly
-          components:
-            - miri
-            - rustfmt
+          components: miri, rustfmt
 
       - run: cargo test --examples --all --all-features
         env:
