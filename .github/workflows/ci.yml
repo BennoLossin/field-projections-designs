@@ -30,6 +30,8 @@ jobs:
         with:
           toolchain: nightly
           components: rustfmt
+      - run: sudo apt-get update
+      - run: sudo apt-get install -y linkchecker
 
       - run: cargo doc --no-deps --workspace --all-features --document-private-items
         env:
