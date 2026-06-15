@@ -1,5 +1,5 @@
 #![expect(incomplete_features, internal_features, dead_code)]
-#![feature(auto_traits, negative_impls, negative_bounds, offset_of_enum)]
+#![feature(auto_traits, negative_impls, offset_of_enum)]
 #![feature(adt_const_params)]
 #![feature(unsized_const_params)]
 
