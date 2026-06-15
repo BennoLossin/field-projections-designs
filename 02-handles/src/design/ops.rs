@@ -4,7 +4,7 @@
 //!
 //! Here's the birds-eye view of all place operations:
 //!
-//! ```
+//! ```ignore
 //! ====== SUMMARY ANCHOR ======
 //! ```
 
