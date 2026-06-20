@@ -93,7 +93,7 @@ impl<'a, T: ?Sized> PlaceHandle for RefHandle<'a, T> {
 }
 
 impl<'a, T: ?Sized> DerefHandle for &'a T {
-    const ACCESS: AccessKind = AccessKind::Exclusive;
+    const ACCESS: AccessKind = AccessKind::Shared;
     type Timing = Lifetime<'a>;
 
     unsafe fn handle_from_raw(this: *const Self) -> Self::Handle {
