@@ -76,12 +76,14 @@ fn demo(ty_kind: Unnormalized<TyKind>) {
     match discr {
         "Int" => {
             let int_ty = unsafe {
+                // variant_of!(Enum, Variant) == pattern_type!(Enum is Variant(..))
                 let variant_hdl: LocalHandle<variant_of!(TyKind, Int)> =
                     VariantPlace::<"Int">::cast(hdl);
 
                 let int_ty_subplace = <field_of!(TyKind::Int, int)>::default();
 
-                let int_ty_hdl = ProjectPlace::project_place(variant_hdl, int_ty_subplace);
+                let int_ty_hdl: LocalHandle<IntTy> =
+                    ProjectPlace::project_place(variant_hdl, int_ty_subplace);
 
                 ReadPlace::read_place(int_ty_hdl)
             };
