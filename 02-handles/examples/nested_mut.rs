@@ -20,7 +20,7 @@ adt_reflect!(
 /// let z = &mut y;
 ///
 /// let a = &mut (**z).a;
-/// let b = &mut (**z).b;
+/// let b = &mut z.b;
 /// *a += 1;
 /// *b += 1;
 /// ```
