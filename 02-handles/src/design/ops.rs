@@ -101,6 +101,13 @@ where
     unsafe fn deref_place(self) -> <Self::Target as ProxyPlace>::Handle;
 }
 
+/// `place[idx]`
+pub trait IndexPlace<Idx>: PlaceHandle {
+    type Indexed: PlaceHandle;
+
+    fn index(self, idx: Idx) -> Self::Indexed;
+}
+
 pub trait BorrowPlace<Output>: PlaceHandle {
     const ACCESS: AccessKind;
     type Timing: Timing;
