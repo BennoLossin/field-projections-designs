@@ -10,18 +10,23 @@ pub unsafe trait Subplace: Sized {
 }
 
 #[cfg(feature = "place-wrappers")]
-pub struct TransmutedSubplace<P, S: ?Sized, T: ?Sized>(P, PhantomData<S>, PhantomData<T>);
+pub struct TransmutedSubplace<Sub, Source: ?Sized, Target: ?Sized>(
+    Sub,
+    PhantomData<Source>,
+    PhantomData<Target>,
+);
 
 #[cfg(feature = "place-wrappers")]
-unsafe impl<P, S, T> Subplace for TransmutedSubplace<P, S, T>
+unsafe impl<Sub, Source, Target> Subplace for TransmutedSubplace<Sub, Source, Target>
 where
-    P: Subplace,
-    S: ?Sized + Pointee<Metadata = Metadata<P::Source>>,
-    T: ?Sized + Pointee<Metadata = Metadata<P::Target>>,
+    Sub: Subplace,
+    Source: ?Sized + Pointee<Metadata = Metadata<Sub::Source>>,
+    Target: ?Sized + Pointee<Metadata = Metadata<Sub::Target>>,
 {
-    type Source = S;
+    type Source = Source;
 
-    type Target = T;
+    type Target = Target;
+
     fn offset(self, metadata: Metadata<Self::Source>) -> (usize, Metadata<Self::Target>) {
         self.0.offset(metadata)
     }
