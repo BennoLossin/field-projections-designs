@@ -101,11 +101,18 @@ where
     unsafe fn deref_place(self) -> <Self::Target as ProxyPlace>::Handle;
 }
 
-/// `place[idx]`
-pub trait IndexPlace<Idx>: PlaceHandle {
-    type Indexed: PlaceHandle;
+pub trait Indexable<Idx> {
+    type Element: ?Sized;
+}
 
-    fn index(self, idx: Idx) -> Self::Indexed;
+/// `place[idx]`
+pub trait IndexPlace<Idx, H>: Indexable<Idx>
+where
+    H: PlaceHandle<Target = Self>,
+{
+    type ElementHandle: PlaceHandle<Target = Self::Element>;
+
+    fn index(self, idx: Idx) -> Self::ElementHandle;
 }
 
 pub trait BorrowPlace<Output>: PlaceHandle {
