@@ -7,9 +7,5 @@ edition = "2024"
 adt_reflect = { path = "adt_reflect" }
 macros.workspace = true
 
-[features]
-default = ["place-wrappers"]
-place-wrappers = []
-
 [dev-dependencies]
 pin-project = "1.1.13"

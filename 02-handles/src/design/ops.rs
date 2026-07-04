@@ -123,12 +123,10 @@ pub trait BorrowPlace<Output>: PlaceHandle {
     unsafe fn borrow(self) -> Output;
 }
 
-#[cfg(feature = "place-wrappers")]
 pub trait PlaceWrapper {
     type Inner: ?Sized;
 }
 
-#[cfg(feature = "place-wrappers")]
 pub unsafe trait WrapPlace<S>: PlaceWrapper
 where
     S: Subplace<Source = Self::Inner>,

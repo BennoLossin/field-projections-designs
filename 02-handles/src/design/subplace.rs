@@ -9,14 +9,12 @@ pub unsafe trait Subplace: Sized {
     fn offset(self, metadata: Metadata<Self::Source>) -> (usize, Metadata<Self::Target>);
 }
 
-#[cfg(feature = "place-wrappers")]
 pub struct TransmutedSubplace<Sub, Source: ?Sized, Target: ?Sized>(
     Sub,
     PhantomData<Source>,
     PhantomData<Target>,
 );
 
-#[cfg(feature = "place-wrappers")]
 unsafe impl<Sub, Source, Target> Subplace for TransmutedSubplace<Sub, Source, Target>
 where
     Sub: Subplace,
@@ -32,7 +30,6 @@ where
     }
 }
 
-#[cfg(feature = "place-wrappers")]
 impl<P, S, T> TransmutedSubplace<P, S, T>
 where
     P: Subplace,
