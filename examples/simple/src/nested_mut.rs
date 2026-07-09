@@ -25,7 +25,7 @@ adt_reflect!(
 /// *b += 1;
 /// ```
 #[cfg_attr(test, test)]
-fn main() {
+pub fn main() {
     let mut x = Struct { a: 42, b: 24 };
     let mut y = &mut x;
     let z = &mut y;

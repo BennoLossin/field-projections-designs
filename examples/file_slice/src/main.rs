@@ -1,4 +1,4 @@
-use std::{io, marker::PhantomData, os::fd::RawFd, ptr::Pointee};
+use std::{io, marker::PhantomData, os::fd::RawFd};
 
 use design::{ops::ProjectPlace, subplace::Subplace};
 
@@ -12,10 +12,15 @@ pub struct FileSliceHandle<T> {
     value: PhantomData<T>,
 }
 
+impl<T> PlaceHandle for FileSliceHandle<T> {
+    type Target = T;
+}
+
 impl<S> ProjectPlace<S> for FileSliceHandle<S::Source>
 where
     S: Subplace,
-    S::Source: Pointee<Metadata = ()>,
+    S::Source: Sized,
+    S::Target: Sized,
 {
     type Projected = FileSliceHandle<S::Target>;
 
@@ -39,3 +44,5 @@ impl<T> FileSlice<T> {
 }
 
 pub trait FromBytes {}
+
+fn main() {}

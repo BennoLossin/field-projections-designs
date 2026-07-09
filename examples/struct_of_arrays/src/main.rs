@@ -14,3 +14,5 @@ pub struct SoAElementPoint<'a> {
     idx: usize,
     _lt: PhantomData<&'a SoAPoint<1>>,
 }
+
+fn main() {}
