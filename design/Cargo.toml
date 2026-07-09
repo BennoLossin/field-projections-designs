@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-adt_reflect = { path = "adt_reflect" }
+adt_reflect.workspace = true
 macros.workspace = true
 
 [dev-dependencies]

@@ -1,9 +1,10 @@
 [workspace]
 resolver = "3"
-members = ["02-handles", "02-handles/adt_reflect", "helpers/macros"]
+members = ["design", "helpers/adt_reflect", "helpers/macros"]
 
 [workspace.dependencies]
 macros = { path = "helpers/macros" }
+adt_reflect = { path = "helpers/adt_reflect" }
 
 proc-macro2 = "1.0"
 quote = "1.0"
