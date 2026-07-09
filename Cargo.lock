@@ -75,6 +75,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "struct_of_arrays"
+version = "0.1.0"
+dependencies = [
+ "design",
+]
+
+[[package]]
 name = "syn"
 version = "2.0.117"
 source = "registry+https://github.com/rust-lang/crates.io-index"

@@ -6,6 +6,7 @@ members = [
   "helpers/macros",
   "examples/unnormalized",
   "examples/RfL",
+  "examples/struct_of_arrays",
 ]
 
 [workspace.dependencies]
