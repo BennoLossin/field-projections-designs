@@ -1,5 +1,4 @@
-use core::io;
-use std::{marker::PhantomData, os::fd::RawFd, ptr::Pointee};
+use std::{io, marker::PhantomData, os::fd::RawFd, ptr::Pointee};
 
 use design::design::{ops::ProjectPlace, subplace::Subplace};
 
