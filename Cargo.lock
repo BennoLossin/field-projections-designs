@@ -3,7 +3,35 @@
 version = 4
 
 [[package]]
-name = "RfL"
+name = "E-RfL"
+version = "0.1.0"
+dependencies = [
+ "design",
+]
+
+[[package]]
+name = "E-file_slice"
+version = "0.1.0"
+dependencies = [
+ "design",
+]
+
+[[package]]
+name = "E-simple"
+version = "0.1.0"
+dependencies = [
+ "design",
+]
+
+[[package]]
+name = "E-struct_of_arrays"
+version = "0.1.0"
+dependencies = [
+ "design",
+]
+
+[[package]]
+name = "E-unnormalized"
 version = "0.1.0"
 dependencies = [
  "design",
@@ -25,20 +53,6 @@ dependencies = [
  "adt_reflect",
  "macros",
  "pin-project",
-]
-
-[[package]]
-name = "example-simple"
-version = "0.1.0"
-dependencies = [
- "design",
-]
-
-[[package]]
-name = "file_slice"
-version = "0.1.0"
-dependencies = [
- "design",
 ]
 
 [[package]]
@@ -89,13 +103,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "struct_of_arrays"
-version = "0.1.0"
-dependencies = [
- "design",
-]
-
-[[package]]
 name = "syn"
 version = "2.0.117"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -111,10 +118,3 @@ name = "unicode-ident"
 version = "1.0.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e6e4313cd5fcd3dad5cafa179702e2b244f760991f45397d14d4ebf38247da75"
-
-[[package]]
-name = "unnormalized"
-version = "0.1.0"
-dependencies = [
- "design",
-]
