@@ -1,18 +1,22 @@
 # Field Projection Designs
 
-[**Rendered Documentation of the Latest Approach**](https://bennolossin.github.io/field-projections-designs/)
+[**Rendered**](https://bennolossin.github.io/field-projections-designs/)
 
 ## Overview
 
 A collection of approaches to designing the field projection feature for Rust.
 This collection aims to provide quick comparisons between the approaches and
-the ability to and write desugared examples that work in Rust today.
+the ability to write desugared examples that work in Rust today.
 
 The design of these approaches is incredibly dynamic, lots of small changes
 accumulate over time, making it difficult to judge when the current approach
 has changed to a new one. For this reason, and to avoid calling every tiny
 change a "new approach", we chose to only call substantial, design philosophy
 changes a *new approach.*
+
+Links to types, files or other elements in on this website are sadly not
+intended to be permanent. Instead it's trying to be a dynamically changing
+repository showing the state of the most up-to-date idea.
 
 The approaches currently recorded in this collection are:
 - [Handles](./design) (the main approach from 2026-05 until now)
