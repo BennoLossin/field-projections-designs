@@ -15,8 +15,8 @@ change a "new approach", we chose to only call substantial, design philosophy
 changes a *new approach.*
 
 The approaches currently recorded in this collection are:
-- [Handles](./02-handles) (the main approach from 2026-05 until now)
-- [Places](./01-places) (the main approach from 2025-10 until 2026-05)
+- [Handles](./design) (the main approach from 2026-05 until now)
+- [Places](./legacy/01-places) (the main approach from 2025-10 until 2026-05)
 
 There are several more historical approaches, albeit it's difficult to truly
 categorize the number of the variations; many changes have been lost to time
