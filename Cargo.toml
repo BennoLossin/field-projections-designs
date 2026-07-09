@@ -3,6 +3,7 @@ resolver = "3"
 members = ["design", "helpers/adt_reflect", "helpers/macros"]
 
 [workspace.dependencies]
+design = { path = "design" }
 macros = { path = "helpers/macros" }
 adt_reflect = { path = "helpers/adt_reflect" }
 
