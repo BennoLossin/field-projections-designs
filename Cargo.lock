@@ -3,21 +3,21 @@
 version = 4
 
 [[package]]
-name = "_02-handles"
-version = "0.1.0"
-dependencies = [
- "adt_reflect",
- "macros",
- "pin-project",
-]
-
-[[package]]
 name = "adt_reflect"
 version = "0.1.0"
 dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "design"
+version = "0.1.0"
+dependencies = [
+ "adt_reflect",
+ "macros",
+ "pin-project",
 ]
 
 [[package]]

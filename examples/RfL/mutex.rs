@@ -3,7 +3,7 @@ use std::{
     ops::{Deref, DerefMut},
 };
 
-use _02_handles::{
+use design::{
     application::refs::MutHandle,
     design::{
         borrowck::{AccessKind, Instant},

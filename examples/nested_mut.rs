@@ -1,4 +1,4 @@
-use _02_handles::{
+use design::{
     application::refs::MutHandle,
     design::{
         locals::LocalHandle,

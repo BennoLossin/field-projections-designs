@@ -3,7 +3,7 @@
 #![feature(adt_const_params)]
 #![feature(unsized_const_params)]
 
-use _02_handles::design::{
+use design::design::{
     locals::LocalHandle,
     ops::{ProjectPlace, ReadPlace, ReadVariant, VariantPlace, WrapPlace},
 };

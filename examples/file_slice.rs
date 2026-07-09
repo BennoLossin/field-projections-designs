@@ -1,7 +1,7 @@
 use core::io;
 use std::{marker::PhantomData, os::fd::RawFd, ptr::Pointee};
 
-use _02_handles::design::{ops::ProjectPlace, subplace::Subplace};
+use design::design::{ops::ProjectPlace, subplace::Subplace};
 
 pub struct FileSlice<T> {
     fd: RawFd,

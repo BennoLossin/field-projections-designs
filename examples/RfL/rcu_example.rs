@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use _02_handles::{
+use design::{
     application::{
         arc::ArcHandle,
         refs::{MutHandle, RefHandle},
@@ -41,7 +41,7 @@ adt_reflect!(
 /// These would go away when more features are added to the compiler/language:
 /// - negative reasoning for overlap checks of impls
 mod lang_limits {
-    use _02_handles::design::ops::PlaceHandle;
+    use design::design::ops::PlaceHandle;
 
     use crate::overwrite::ShieldableSubplace;
 
