@@ -3,11 +3,13 @@
 #![feature(adt_const_params)]
 #![feature(unsized_const_params)]
 
-use design::design::{
-    locals::LocalHandle,
-    ops::{ProjectPlace, ReadPlace, ReadVariant, VariantPlace, WrapPlace},
+use design::{
+    adt_reflect,
+    design::{
+        locals::LocalHandle,
+        ops::{ProjectPlace, ReadPlace, ReadVariant, VariantPlace, WrapPlace},
+    },
 };
-use adt_reflect::adt_reflect;
 
 use crate::unnormalized::{GenericArgs, Unnormalized, UnwrapUnnormalize};
 

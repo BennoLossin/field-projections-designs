@@ -1,6 +1,11 @@
 [workspace]
 resolver = "3"
-members = ["design", "helpers/adt_reflect", "helpers/macros"]
+members = [
+  "design",
+  "helpers/adt_reflect",
+  "helpers/macros",
+  "examples/unnormalized",
+]
 
 [workspace.dependencies]
 design = { path = "design" }
