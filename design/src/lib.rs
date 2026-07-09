@@ -9,14 +9,21 @@
 
 use std::ptr::Pointee;
 
-pub mod application;
+pub mod arc;
 pub mod borrowck;
+pub mod cell;
 pub mod compat;
 pub mod enums;
 pub mod fallible;
 pub mod locals;
+pub mod mem;
 pub mod ops;
+pub mod option;
+pub mod pin;
+pub mod ptrs;
+pub mod refs;
 pub mod subplace;
+pub mod vec;
 
 pub type Metadata<T> = <T as Pointee>::Metadata;
 

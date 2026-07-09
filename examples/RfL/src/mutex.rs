@@ -4,7 +4,7 @@ use std::{
 };
 
 use design::{
-    application::refs::MutHandle,
+    refs::MutHandle,
 {
         borrowck::{AccessKind, Instant},
         ops::{DerefHandle, PlaceWrapper, ProxyPlace, WrapPlace},

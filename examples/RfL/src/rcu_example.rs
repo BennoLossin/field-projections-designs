@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use design::{
     adt_reflect,
-    application::{
+    {
         arc::ArcHandle,
         refs::{MutHandle, RefHandle},
     },

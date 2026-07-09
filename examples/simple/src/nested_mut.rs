@@ -1,5 +1,5 @@
 use design::{
-    application::refs::MutHandle,
+    refs::MutHandle,
 {
         locals::LocalHandle,
         ops::{BorrowPlace, DerefPlace, ProjectPlace},
