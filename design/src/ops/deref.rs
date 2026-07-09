@@ -5,12 +5,12 @@ use std::{
 };
 
 use crate::{
-    borrowck::Instant,
-    ops::{self, PlaceHandle, ProjectPlace, ProxyPlace, ReadMetadata, ReadPlace, WritePlace},
-    subplace::Subplace,
+    Metadata,
+    ops::place::{
+        PlaceHandle, ProjectPlace, ReadMetadata, ReadPlace, WritePlace, borrowck::AccessKind,
+        subplace::Subplace,
+    },
 };
-
-use super::borrowck::AccessKind;
 
 /*
 impl<P: Deref> ProxyPlace for P {
@@ -97,7 +97,7 @@ where
     P: Deref,
     T: ?Sized,
 {
-    fn metadata(self) -> super::Metadata<Self::Target> {
+    fn metadata(self) -> Metadata<Self::Target> {
         todo!()
     }
 }

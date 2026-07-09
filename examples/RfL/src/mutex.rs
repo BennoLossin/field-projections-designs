@@ -3,13 +3,10 @@ use std::{
     ops::{Deref, DerefMut},
 };
 
-use design::{
-    refs::MutHandle,
-{
-        borrowck::{AccessKind, Instant},
-        ops::{DerefHandle, PlaceWrapper, ProxyPlace, WrapPlace},
-        subplace::{Subplace, TransmutedSubplace},
-    },
+use design::ops::place::{
+    DerefHandle, MutHandle, PlaceWrapper, ProxyPlace, WrapPlace,
+    borrowck::{AccessKind, Instant},
+    subplace::{Subplace, TransmutedSubplace},
 };
 
 use crate::{bindings, opaque::Opaque, overwrite::Shield};

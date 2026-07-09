@@ -1,7 +1,6 @@
-use design::{
-    enums::{HasVariant, Matchable, VariantType},
-    ops::{PlaceWrapper, WrapPlace},
-    subplace::{Subplace, TransmutedSubplace},
+use design::ops::place::{
+    PlaceWrapper, WrapPlace,
+    subplace::{HasVariant, Matchable, Subplace, TransmutedSubplace, VariantType},
 };
 
 #[derive(Debug)]

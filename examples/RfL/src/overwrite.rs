@@ -2,12 +2,12 @@ use std::ops::{Deref, DerefMut};
 
 use design::{
     Metadata,
-    borrowck::{AccessKind, Timing},
-    ops::{
+    ops::place::{
         BorrowPlace, DerefHandle, DerefPlace, DropHusk, DropPlace, MovePlace, PlaceHandle,
         ProjectPlace, ProxyPlace, ReadMetadata, ReadPlace, WritePlace,
+        borrowck::{AccessKind, Timing},
+        subplace::Subplace,
     },
-    subplace::Subplace,
 };
 
 pub auto trait Overwrite {}

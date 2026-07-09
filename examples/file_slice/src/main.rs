@@ -1,6 +1,6 @@
 use std::{io, marker::PhantomData, os::fd::RawFd};
 
-use design::{ops::ProjectPlace, subplace::Subplace};
+use design::ops::place::{PlaceHandle, ProjectPlace, subplace::Subplace};
 
 pub struct FileSlice<T> {
     fd: RawFd,

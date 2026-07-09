@@ -4,11 +4,8 @@
 #![feature(unsized_const_params)]
 
 use design::{
-    adt_reflect,
-{
-        locals::LocalHandle,
-        ops::{ProjectPlace, ReadPlace, ReadVariant, VariantPlace, WrapPlace},
-    },
+    lang_limits::adt_reflect,
+    ops::place::{LocalHandle, ProjectPlace, ReadPlace, ReadVariant, VariantPlace, WrapPlace},
 };
 
 use crate::unnormalized::{GenericArgs, Unnormalized, UnwrapUnnormalize};

@@ -1,15 +1,12 @@
 use std::sync::Arc;
 
 use design::{
-    adt_reflect,
-    {
-        arc::ArcHandle,
-        refs::{MutHandle, RefHandle},
+    lang_limits::adt_reflect,
+    ops::place::{
+        BorrowPlace, DerefHandle, DerefPlace, LocalHandle, MutHandle, ProjectPlace, ReadPlace,
+        RefHandle, WrapPlace,
     },
-{
-        locals::LocalHandle,
-        ops::{BorrowPlace, DerefHandle, DerefPlace, ProjectPlace, ReadPlace, WrapPlace},
-    },
+    sync::arc::ArcHandle,
 };
 
 use crate::{
@@ -41,7 +38,7 @@ adt_reflect!(
 /// These would go away when more features are added to the compiler/language:
 /// - negative reasoning for overlap checks of impls
 mod lang_limits {
-    use design::ops::PlaceHandle;
+    use design::ops::place::PlaceHandle;
 
     use crate::overwrite::ShieldableSubplace;
 

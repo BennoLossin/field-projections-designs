@@ -1,7 +1,7 @@
 use std::mem::MaybeUninit;
 
-use crate::{
-    ops::{PlaceWrapper, WrapPlace},
+use crate::ops::place::{
+    PlaceWrapper, WrapPlace,
     subplace::{Subplace, TransmutedSubplace},
 };
 

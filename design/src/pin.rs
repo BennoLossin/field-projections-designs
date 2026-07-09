@@ -5,12 +5,12 @@ use std::{
 
 use crate::{
     Metadata,
-    borrowck::{AccessKind, Timing},
-    ops::{
+    ops::place::{
         BorrowPlace, DerefHandle, DerefPlace, DropHusk, DropPlace, MovePlace, PlaceHandle,
         ProjectPlace, ProxyPlace, ReadMetadata, ReadPlace, WritePlace,
+        borrowck::{AccessKind, Timing},
+        subplace::Subplace,
     },
-    subplace::Subplace,
 };
 
 impl<P> ProxyPlace for Pin<P>

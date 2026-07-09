@@ -1,11 +1,8 @@
-use crate::{
+use crate::ops::place::{
+    DerefHandle, DerefPlace, PlaceHandle, ProjectPlace, ProxyPlace, ReadPlace, ReadVariant,
+    VariantPlace,
     borrowck::{AccessKind, Instant},
-    enums::{HasVariant, Matchable, VariantType},
-    ops::{
-        DerefHandle, DerefPlace, PlaceHandle, ProjectPlace, ProxyPlace, ReadPlace, ReadVariant,
-        VariantPlace,
-    },
-    subplace::Subplace,
+    subplace::{HasVariant, Matchable, Subplace, VariantType},
 };
 
 pub struct LocalHandle<T: ?Sized> {

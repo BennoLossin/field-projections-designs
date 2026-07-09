@@ -1,11 +1,7 @@
 use design::{
-    refs::MutHandle,
-{
-        locals::LocalHandle,
-        ops::{BorrowPlace, DerefPlace, ProjectPlace},
-    },
+    lang_limits::adt_reflect,
+    ops::place::{BorrowPlace, DerefPlace, LocalHandle, MutHandle, ProjectPlace},
 };
-use adt_reflect::adt_reflect;
 
 adt_reflect!(
     pub struct Struct {

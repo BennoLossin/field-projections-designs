@@ -3,9 +3,9 @@ use std::{
     sync::{Arc, atomic::AtomicUsize},
 };
 
-use crate::{
+use crate::ops::place::{
+    BorrowPlace, DerefHandle, PlaceHandle, ProxyPlace,
     borrowck::{AccessKind, Instant, Lifetime},
-    ops::{BorrowPlace, DerefHandle, PlaceHandle, ProxyPlace},
 };
 
 #[repr(C, align(2))]
