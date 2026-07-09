@@ -7,6 +7,7 @@ members = [
   "examples/unnormalized",
   "examples/RfL",
   "examples/struct_of_arrays",
+  "examples/simple",
 ]
 
 [workspace.dependencies]
