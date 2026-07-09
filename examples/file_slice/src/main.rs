@@ -24,6 +24,10 @@ impl<T> PlaceHandle for FileSliceHandle<T> {
     type Target = T;
 }
 
+fn offset_fd(fd: RawFd, offset: usize) {
+    todo!("advance {fd} in the kernel by {offset} bytes")
+}
+
 impl<S> ProjectPlace<S> for FileSliceHandle<S::Source>
 where
     S: Subplace,
@@ -33,8 +37,9 @@ where
     type Projected = FileSliceHandle<S::Target>;
 
     unsafe fn project_place(self, subplace: S) -> Self::Projected {
-        let FileSliceHandle { fd, value } = self;
-        // TODO: add `offset` to pos of the fd in the kernel
+        let FileSliceHandle { fd, value: _ } = self;
+        let (offset, ()) = subplace.offset(());
+        offset_fd(fd, offset);
         FileSliceHandle { fd, value: PhantomData }
     }
 }
@@ -44,7 +49,7 @@ impl<T> FileSlice<T> {
     where
         T: FromBytes,
     {
-        todo!()
+        todo!("read from fd: {}", self.fd)
     }
 }
 

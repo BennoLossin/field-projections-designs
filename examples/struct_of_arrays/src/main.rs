@@ -1,3 +1,4 @@
+#![expect(dead_code)]
 use std::marker::PhantomData;
 
 pub struct Point {
