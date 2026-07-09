@@ -43,7 +43,7 @@ impl Parse for SummaryArgs {
 
 pub(crate) fn expand(mut module: ItemMod) -> TokenStream {
     let ItemMod {
-        ref attrs,
+        ref mut attrs,
         content: Some((_, ref items)),
         ..
     } = module
@@ -53,7 +53,7 @@ pub(crate) fn expand(mut module: ItemMod) -> TokenStream {
             "must be an inline module, use `#![summary]` inside of files",
         )
         .into_compile_error();
-        return quote!(#err #module);
+        return quote!(#module #err);
     };
     let Some(anchor) = find_summary_anchor(attrs) else {
         return module.into_token_stream();
@@ -69,14 +69,14 @@ pub(crate) fn expand(mut module: ItemMod) -> TokenStream {
         let item_summary = generate_summary(item, &mut errors);
         full_summary.extend(item_summary);
     }
-    module.attrs.splice(
+    attrs.splice(
         anchor..=anchor,
         full_summary
             .into_iter()
             .map(|content| parse_quote!(#![doc = #content])),
     );
     let errors = errors.into_iter().map(|err| err.into_compile_error());
-    quote!(#(#errors)* #module)
+    quote!(#module #(#errors)*)
 }
 
 fn find_summary_anchor<'a>(attrs: &[Attribute]) -> Option<usize> {
