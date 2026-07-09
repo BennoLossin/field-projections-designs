@@ -3,7 +3,7 @@ use std::{
     pin::Pin,
 };
 
-use crate::design::{
+use crate::{
     Metadata,
     borrowck::{AccessKind, Timing},
     ops::{

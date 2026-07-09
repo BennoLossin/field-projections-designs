@@ -1,6 +1,6 @@
 use std::ptr::{self, NonNull};
 
-use crate::design::{
+use crate::{
     Metadata,
     borrowck::{AccessKind, Instant},
     ops::{

@@ -1,4 +1,4 @@
-use design::design::{
+use design::{
     enums::{HasVariant, Matchable, VariantType},
     ops::{PlaceWrapper, WrapPlace},
     subplace::{Subplace, TransmutedSubplace},

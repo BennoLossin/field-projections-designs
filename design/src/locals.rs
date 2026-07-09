@@ -1,4 +1,4 @@
-use crate::design::{
+use crate::{
     borrowck::{AccessKind, Instant},
     enums::{HasVariant, Matchable, VariantType},
     ops::{

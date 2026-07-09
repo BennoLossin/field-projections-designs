@@ -1,6 +1,6 @@
 use std::ops::{Deref, DerefMut};
 
-use design::design::{
+use design::{
     Metadata,
     borrowck::{AccessKind, Timing},
     ops::{

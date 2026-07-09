@@ -173,7 +173,7 @@ fn generate_fields(
                 fn default() -> Self { Self(::core::marker::PhantomData) }
             }
 
-            unsafe impl #impl_gen ::design::design::subplace::Subplace
+            unsafe impl #impl_gen ::design::subplace::Subplace
                 for #meta_ident #ty_gen
             #whr
             {
@@ -224,7 +224,7 @@ fn generate_for_enum(
             #[repr(transparent)]
             pub struct #variant_meta_ident #ty_gen (#enum_ident #ty_gen);
 
-            impl #impl_gen ::design::design::enums::HasVariant<#variant_name_str>
+            impl #impl_gen ::design::enums::HasVariant<#variant_name_str>
                 for #enum_ident #ty_gen
             #whr
             {
@@ -255,7 +255,7 @@ fn generate_for_enum(
         .collect::<Vec<_>>();
 
     lang_limits.push(quote! {
-        unsafe impl #impl_gen ::design::design::enums::Matchable for #enum_ident #ty_gen #whr {
+        unsafe impl #impl_gen ::design::enums::Matchable for #enum_ident #ty_gen #whr {
             const VARIANTS: &'static [&'static str] = &[ #(#variant_names),* ];
 
             unsafe fn variant_at(ptr: *const Self) -> &'static str {

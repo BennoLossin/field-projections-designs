@@ -3,7 +3,7 @@ use std::{
     sync::{Arc, atomic::AtomicUsize},
 };
 
-use crate::design::{
+use crate::{
     borrowck::{AccessKind, Instant, Lifetime},
     ops::{BorrowPlace, DerefHandle, PlaceHandle, ProxyPlace},
 };

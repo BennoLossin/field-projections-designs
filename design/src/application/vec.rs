@@ -1,6 +1,6 @@
 use std::ptr::NonNull;
 
-use crate::design::ops::{PlaceHandle, ProxyPlace};
+use crate::ops::{PlaceHandle, ProxyPlace};
 
 impl<T> ProxyPlace for Vec<T> {
     type Handle = VecHandle<T>;

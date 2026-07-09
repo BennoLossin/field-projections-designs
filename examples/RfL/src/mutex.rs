@@ -5,7 +5,7 @@ use std::{
 
 use design::{
     application::refs::MutHandle,
-    design::{
+{
         borrowck::{AccessKind, Instant},
         ops::{DerefHandle, PlaceWrapper, ProxyPlace, WrapPlace},
         subplace::{Subplace, TransmutedSubplace},

@@ -1,6 +1,6 @@
 use design::{
     application::refs::MutHandle,
-    design::{
+{
         locals::LocalHandle,
         ops::{BorrowPlace, DerefPlace, ProjectPlace},
     },

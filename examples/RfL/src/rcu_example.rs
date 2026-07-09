@@ -6,7 +6,7 @@ use design::{
         arc::ArcHandle,
         refs::{MutHandle, RefHandle},
     },
-    design::{
+{
         locals::LocalHandle,
         ops::{BorrowPlace, DerefHandle, DerefPlace, ProjectPlace, ReadPlace, WrapPlace},
     },
@@ -41,7 +41,7 @@ adt_reflect!(
 /// These would go away when more features are added to the compiler/language:
 /// - negative reasoning for overlap checks of impls
 mod lang_limits {
-    use design::design::ops::PlaceHandle;
+    use design::ops::PlaceHandle;
 
     use crate::overwrite::ShieldableSubplace;
 

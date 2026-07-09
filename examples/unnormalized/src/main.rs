@@ -5,7 +5,7 @@
 
 use design::{
     adt_reflect,
-    design::{
+{
         locals::LocalHandle,
         ops::{ProjectPlace, ReadPlace, ReadVariant, VariantPlace, WrapPlace},
     },

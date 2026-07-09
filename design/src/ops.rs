@@ -48,7 +48,7 @@
 //!   to that subplace,
 //! - [`IndexPlace`] ...?
 //!
-//! [`LocalHandle`]: crate::design::locals::LocalHandle
+//! [`LocalHandle`]: crate::locals::LocalHandle
 //!
 //!
 //! ### Place Wrappers
@@ -97,7 +97,7 @@
 //! [`ReadPlace`], but `NonNull<T>` will set it to `false`.
 
 #[macros::summary(skip)]
-use crate::design::{
+use crate::{
     Metadata,
     borrowck::{AccessKind, Timing},
     enums::{HasVariant, Matchable, VariantType},

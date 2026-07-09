@@ -7,8 +7,18 @@
 #![cfg_attr(doc, feature(custom_inner_attributes))]
 #![feature(proc_macro_hygiene)]
 
+use std::ptr::Pointee;
+
 pub mod application;
-pub mod design;
+pub mod borrowck;
+pub mod compat;
+pub mod enums;
+pub mod fallible;
+pub mod locals;
+pub mod ops;
+pub mod subplace;
+
+pub type Metadata<T> = <T as Pointee>::Metadata;
 
 /// Generate reflection information for ADTs.
 ///
@@ -28,5 +38,5 @@ pub mod design;
 ///   this is just `pattern_type!($enum is $variant { .. })` or `pattern_type!($enum is
 ///   $variant(..))` depending on the variant having named or unnamed fields.
 ///
-/// [`Subplace`]: crate::design::subplace::Subplace
+/// [`Subplace`]: crate::subplace::Subplace
 pub use macros::adt_reflect;

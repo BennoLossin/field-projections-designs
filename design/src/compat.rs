@@ -4,7 +4,7 @@ use std::{
     ptr::NonNull,
 };
 
-use crate::design::{
+use crate::{
     borrowck::Instant,
     ops::{self, PlaceHandle, ProjectPlace, ProxyPlace, ReadMetadata, ReadPlace, WritePlace},
     subplace::Subplace,

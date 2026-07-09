@@ -1,6 +1,6 @@
 use std::mem::MaybeUninit;
 
-use crate::design::{
+use crate::{
     ops::{PlaceWrapper, WrapPlace},
     subplace::{Subplace, TransmutedSubplace},
 };
