@@ -5,6 +5,7 @@ members = [
   "helpers/adt_reflect",
   "helpers/macros",
   "examples/unnormalized",
+  "examples/RfL",
 ]
 
 [workspace.dependencies]

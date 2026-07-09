@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use design::{
+    adt_reflect,
     application::{
         arc::ArcHandle,
         refs::{MutHandle, RefHandle},
@@ -10,7 +11,6 @@ use design::{
         ops::{BorrowPlace, DerefHandle, DerefPlace, ProjectPlace, ReadPlace, WrapPlace},
     },
 };
-use adt_reflect::adt_reflect;
 
 use crate::{
     mutex::{InsideOfMutex, Mutex, MutexGuard},
