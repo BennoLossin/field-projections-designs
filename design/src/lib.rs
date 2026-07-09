@@ -10,4 +10,4 @@
 pub mod application;
 pub mod design;
 
-pub use adt_reflect::adt_reflect;
+pub use macros::adt_reflect;
