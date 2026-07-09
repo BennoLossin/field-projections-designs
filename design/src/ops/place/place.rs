@@ -3,7 +3,7 @@
 //! <details><summary>Birds-eye view of this module</summary>
 //!
 //! ```ignore
-//! ====== SUMMARY ANCHOR ======
+#![doc = macros::raw_summary!()]
 //! ```
 //!
 //! </details>
@@ -103,13 +103,19 @@ use crate::{
     },
 };
 
+#[macros::summary(skip)]
 pub mod borrowck;
+#[macros::summary(skip)]
 pub mod fallible;
+#[macros::summary(skip)]
 pub mod subplace;
 
+#[macros::summary(skip)]
 mod locals;
+#[macros::summary(skip)]
 mod reference;
 
+#[macros::summary(skip)]
 pub use self::{
     locals::LocalHandle,
     reference::{MutHandle, RefHandle},

@@ -1,13 +1,15 @@
 use std::{
+    error,
     io::{self, Write},
     process::{Command, Stdio},
 };
 
-use proc_macro2::Span;
-use proc_macro2::TokenStream;
+use proc_macro2::{Literal, Span};
+use proc_macro2::{TokenStream, TokenTree};
 use quote::{ToTokens, quote};
 use syn::{
-    AttrStyle, Attribute, Error, Expr, ExprLit, Item, ItemMod, Lit,
+    AttrStyle, Attribute, Block, Error, Expr, ExprLit, ExprRange, File, Item, ItemMod, Lit, LitStr,
+    RangeLimits, Stmt,
     parse::{End, Parse},
     parse_quote, parse2,
     punctuated::Punctuated,
@@ -66,7 +68,7 @@ pub(crate) fn expand(mut module: ItemMod) -> TokenStream {
         {
             full_summary.push(String::new());
         }
-        let item_summary = generate_summary(item, &mut errors);
+        let item_summary = generate_summary_lines(item, &mut errors);
         full_summary.extend(item_summary);
     }
     attrs.splice(
@@ -77,6 +79,28 @@ pub(crate) fn expand(mut module: ItemMod) -> TokenStream {
     );
     let errors = errors.into_iter().map(|err| err.into_compile_error());
     quote!(#module #(#errors)*)
+}
+
+pub(crate) fn expand_raw(file: File) -> TokenStream {
+    let items = &file.items;
+    let mut summary: String = String::with_capacity(items.len() * 10 * 50);
+    let mut errors = vec![];
+    for item in items {
+        if !summary.is_empty() {
+            if !summary.ends_with('\n') {
+                summary.push('\n');
+                summary.push('\n');
+            } else if !summary.ends_with("\n\n") {
+                summary.push('\n');
+            }
+        }
+        summary.push_str(&generate_summary(item, &mut errors));
+    }
+    if !errors.is_empty() {
+        let errors = errors.into_iter().map(|err| err.into_compile_error());
+        return quote!((#(#errors),*));
+    }
+    TokenTree::Literal(Literal::string(&summary)).into()
 }
 
 fn find_summary_anchor<'a>(attrs: &[Attribute]) -> Option<usize> {
@@ -100,22 +124,12 @@ fn find_summary_anchor<'a>(attrs: &[Attribute]) -> Option<usize> {
     res
 }
 
-fn generate_summary(item: &Item, errors: &mut Vec<Error>) -> Vec<String> {
+fn generate_summary(item: &Item, errors: &mut Vec<Error>) -> String {
     let mut stripped = item.clone();
-    visit_item_mut(&mut StripDistractions { skip: false }, &mut stripped);
+    StripDistractions { skip: false }.visit_item_mut(&mut stripped);
     let content = stripped.into_token_stream().to_string();
     match rustfmt(&content) {
-        Ok(Ok(formatted)) => {
-            let formatted = formatted.trim();
-            if formatted.is_empty() {
-                vec![]
-            } else {
-                formatted
-                    .split('\n')
-                    .map(|s| format!(" {}", s.trim_end()))
-                    .collect()
-            }
-        }
+        Ok(Ok(formatted)) => formatted.trim().to_string(),
         Ok(Err((code, stderr))) => {
             errors.push(Error::new(
                 def_span(item),
@@ -124,7 +138,7 @@ fn generate_summary(item: &Item, errors: &mut Vec<Error>) -> Vec<String> {
                     encountered an error: code={code:?}, stderr:\n{stderr}"
                 ),
             ));
-            vec![]
+            String::new()
         }
         Err(err) => {
             errors.push(Error::new(
@@ -134,60 +148,90 @@ fn generate_summary(item: &Item, errors: &mut Vec<Error>) -> Vec<String> {
                     encountered an error: {err}"
                 ),
             ));
-            vec![]
+            String::new()
         }
     }
+}
+
+fn generate_summary_lines(item: &Item, errors: &mut Vec<Error>) -> Vec<String> {
+    generate_summary(item, errors)
+        .split('\n')
+        .map(|s| format!(" {}", s.trim_end()))
+        .collect()
 }
 
 struct StripDistractions {
     skip: bool,
 }
 
+impl StripDistractions {
+    fn is_skip(attr: &Attribute) -> bool {
+        if let Ok(syn::MetaList {
+            path: syn::Path { segments, .. },
+            tokens,
+            ..
+        }) = attr.meta.require_list()
+            && segments.iter().all(|seg| seg.arguments.is_empty())
+            && segments
+                .iter()
+                .rev()
+                .zip(["summary", "macros"])
+                .all(|(seg, expected)| seg.ident == expected)
+            && let Ok(SummaryArgs::Skip) = parse2(tokens.clone())
+        {
+            true
+        } else {
+            false
+        }
+    }
+}
+
 impl VisitMut for StripDistractions {
     fn visit_attributes_mut(&mut self, i: &mut Vec<Attribute>) {
-        fn is_skip(attr: &Attribute) -> bool {
-            if let Ok(syn::MetaList {
-                path: syn::Path { segments, .. },
-                tokens,
-                ..
-            }) = attr.meta.require_list()
-                && segments.iter().all(|seg| seg.arguments.is_empty())
-                && segments
-                    .iter()
-                    .rev()
-                    .zip(["summary", "macros"])
-                    .all(|(seg, expected)| seg.ident == expected)
-                && let Ok(SummaryArgs::Skip) = parse2(tokens.clone())
-            {
-                true
-            } else {
-                false
-            }
-        }
-        if i.iter().any(|a| is_skip(a)) {
+        if i.iter().any(Self::is_skip) {
             self.skip = true;
         }
         i.clear();
-    }
-
-    fn visit_use_tree_mut(&mut self, i: &mut syn::UseTree) {
-        if self.skip {
-            *i = syn::UseTree::Group(syn::UseGroup {
-                brace_token: Default::default(),
-                items: Punctuated::default(),
-            });
-        } else {
-            visit_use_tree_mut(self, i);
-            self.skip = false;
-        }
     }
 
     fn visit_item_mut(&mut self, i: &mut Item) {
         if self.skip {
             *i = Item::Verbatim(quote!());
         } else {
-            visit_item_mut(self, i);
+            let attrs = match i {
+                Item::Const(item_const) => &item_const.attrs,
+                Item::Enum(item_enum) => &item_enum.attrs,
+                Item::ExternCrate(item_extern_crate) => &item_extern_crate.attrs,
+                Item::Fn(item_fn) => &item_fn.attrs,
+                Item::ForeignMod(item_foreign_mod) => &item_foreign_mod.attrs,
+                Item::Impl(item_impl) => &item_impl.attrs,
+                Item::Macro(item_macro) => &item_macro.attrs,
+                Item::Mod(item_mod) => &item_mod.attrs,
+                Item::Static(item_static) => &item_static.attrs,
+                Item::Struct(item_struct) => &item_struct.attrs,
+                Item::Trait(item_trait) => &item_trait.attrs,
+                Item::TraitAlias(item_trait_alias) => &item_trait_alias.attrs,
+                Item::Type(item_type) => &item_type.attrs,
+                Item::Union(item_union) => &item_union.attrs,
+                Item::Use(item_use) => &item_use.attrs,
+                _ => todo!("unsupported item: {i:?}"),
+            };
+            if attrs.iter().any(Self::is_skip) {
+                *i = Item::Verbatim(quote!());
+            } else {
+                visit_item_mut(self, i);
+            }
             self.skip = false;
+        }
+    }
+
+    fn visit_item_fn_mut(&mut self, i: &mut syn::ItemFn) {
+        i.block.stmts.clear();
+    }
+
+    fn visit_trait_item_fn_mut(&mut self, i: &mut syn::TraitItemFn) {
+        if let Some(block) = &mut i.default {
+            block.stmts.clear();
         }
     }
 }
