@@ -43,12 +43,9 @@
 //!   temporary is accessed,
 //! - [`DerefHandle`] allows dereferencing a handle, producing
 //!   another handle that now points at the pointee of the original place,
-//! - [`ProjectHandle`] allows to access a subplace of a place, yielding a
+//! - [`ProjectPlace`] allows to access a subplace of a place, yielding a
 //!   handle to that subplace,
 //! - [`IndexPlace`] ...?
-//!
-//! [`LocalHandle`]: crate::locals::LocalHandle
-//!
 //!
 //! ### Place Wrappers
 //!
@@ -61,7 +58,7 @@
 //! Given `&MaybeUninit<Struct>`, the `field` subplace can be borrowed using `&`
 //! and it has type `&MaybeUninit<Field>`.
 //!
-//! [`MaybeUninit<T>`]: crate::mem::MaybeUninit
+//! [`MaybeUninit<T>`]: std::mem::MaybeUninit
 //!
 //! ### Safety
 //!
