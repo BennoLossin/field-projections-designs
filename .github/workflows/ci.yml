@@ -36,6 +36,7 @@ jobs:
       - run: cargo doc --no-deps --workspace --all-features --document-private-items
         env:
           RUSTFLAGS: "-Dwarnings"
+          RUSTDOCFLAGS: "-Dwarnings"
       - run: linkchecker target/doc/*/*.html
   test:
     runs-on: ubuntu-latest
