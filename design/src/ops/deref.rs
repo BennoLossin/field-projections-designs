@@ -1,13 +1,21 @@
 use std::{
     marker::PhantomData,
-    ops::{Deref, DerefMut},
+    ops::{
+        Deref,
+        DerefMut,
+    },
     ptr::NonNull,
 };
 
 use crate::{
     Metadata,
     ops::place::{
-        PlaceHandle, ProjectPlace, ReadMetadata, ReadPlace, WritePlace, borrowck::AccessKind,
+        PlaceHandle,
+        ProjectPlace,
+        ReadMetadata,
+        ReadPlace,
+        WritePlace,
+        borrowck::AccessKind,
         subplace::Subplace,
     },
 };

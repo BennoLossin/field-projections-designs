@@ -1,6 +1,13 @@
 use design::ops::place::{
-    PlaceWrapper, WrapPlace,
-    subplace::{HasVariant, Matchable, Subplace, TransmutedSubplace, VariantType},
+    PlaceWrapper,
+    WrapPlace,
+    subplace::{
+        HasVariant,
+        Matchable,
+        Subplace,
+        TransmutedSubplace,
+        VariantType,
+    },
 };
 
 #[derive(Debug)]
@@ -52,7 +59,8 @@ impl UnwrapUnnormalize for GenericArgs {
 }
 
 /*
- * Would like to write this impl, but can't because negative reasoning doesn't exist.
+ * Would like to write this impl, but can't because negative reasoning doesn't
+ * exist.
  *
 impl<T: !HasNoGenerics> UnwrapUnnormalize for T {
     type Unwrapped = Unnormalized<T>;
@@ -73,8 +81,11 @@ where
     S::Source: UnwrapUnnormalize,
     S::Target: UnwrapUnnormalize,
 {
-    type Wrapped =
-        TransmutedSubplace<S, Unnormalized<S::Source>, <S::Target as UnwrapUnnormalize>::Unwrapped>;
+    type Wrapped = TransmutedSubplace<
+        S,
+        Unnormalized<S::Source>,
+        <S::Target as UnwrapUnnormalize>::Unwrapped,
+    >;
 
     fn wrap(subplace: S) -> Self::Wrapped {
         unsafe { TransmutedSubplace::new_unchecked(subplace) }
@@ -97,5 +108,6 @@ where
     T: HasVariant<VARIANT>,
     VariantType<T, VARIANT>: UnwrapUnnormalize,
 {
-    type VariantType = <VariantType<T, VARIANT> as UnwrapUnnormalize>::Unwrapped;
+    type VariantType =
+        <VariantType<T, VARIANT> as UnwrapUnnormalize>::Unwrapped;
 }

@@ -38,12 +38,13 @@
 //! [`PlaceHandle`]. A handle points at a place and is responsible for
 //! performing all available place operations on the represented place. Any
 //! valid place expression is converted into a handle by the compiler:
+//!
 //! - a [`LocalHandle`] is created whenever a static, local variable, or
 //!   temporary is accessed,
 //! - [`DerefHandle`] allows dereferencing a handle, producing
 //!   another handle that now points at the pointee of the original place,
-//! - [`ProjectHandle`] allows to access a subplace of a place, yielding a handle
-//!   to that subplace,
+//! - [`ProjectHandle`] allows to access a subplace of a place, yielding a
+//!   handle to that subplace,
 //! - [`IndexPlace`] ...?
 //!
 //! [`LocalHandle`]: crate::locals::LocalHandle
@@ -98,8 +99,16 @@
 use crate::{
     Metadata,
     ops::place::{
-        borrowck::{AccessKind, Timing},
-        subplace::{HasVariant, Matchable, Subplace, VariantType},
+        borrowck::{
+            AccessKind,
+            Timing,
+        },
+        subplace::{
+            HasVariant,
+            Matchable,
+            Subplace,
+            VariantType,
+        },
     },
 };
 
@@ -118,7 +127,10 @@ mod reference;
 #[macros::summary(skip)]
 pub use self::{
     locals::LocalHandle,
-    reference::{MutHandle, RefHandle},
+    reference::{
+        MutHandle,
+        RefHandle,
+    },
 };
 
 pub trait ProxyPlace {

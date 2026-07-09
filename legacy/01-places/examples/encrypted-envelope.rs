@@ -7,11 +7,12 @@ use _01_places::*;
 #[derive(Debug, Clone, Copy)]
 pub struct Key(u8);
 
-/// An encrypted `T`. This only holds the encrypted bytes; a key is required to access the `T`
-/// value.
+/// An encrypted `T`. This only holds the encrypted bytes; a key is required to
+/// access the `T` value.
 pub struct EncryptedEnvelope<T> {
     bytes: Box<[u8]>,
-    // Value used to check that the key is the right one. It is not at all the key of course haha.
+    // Value used to check that the key is the right one. It is not at all the
+    // key of course haha.
     key_check: u8,
     phantom: PhantomData<T>,
 }
@@ -25,7 +26,8 @@ impl<T> EncryptedEnvelope<T> {
     pub fn encrypt(x: T, key: Key) -> Self {
         unsafe {
             // Alloc a slice of zeros.
-            let mut b: Box<[u8]> = Box::new_zeroed_slice(size_of::<T>()).assume_init();
+            let mut b: Box<[u8]> =
+                Box::new_zeroed_slice(size_of::<T>()).assume_init();
             // Write the bytes of T.
             b.as_mut_ptr().cast::<T>().write_unaligned(x);
             // Xor all the bits with the key.
@@ -40,7 +42,8 @@ impl<T> EncryptedEnvelope<T> {
         }
     }
     pub fn decrypt(&self, key: Key) -> T {
-        // Check the key is the right one (otherwise we risk creating an invalid `T`).
+        // Check the key is the right one (otherwise we risk creating an invalid
+        // `T`).
         assert_eq!(!key.0, self.key_check);
         unsafe {
             let mut b: Box<[u8]> = self.bytes.clone();
@@ -78,7 +81,8 @@ impl<'a, Whole, Part> HasPlace for EnvelopeBorrow<'a, Whole, Part> {
     type Target = Part;
 }
 
-unsafe impl<'a, 'b: 'a, Whole, P> PlaceBorrow<'a, P, EnvelopeBorrow<'a, Whole, P::Target>>
+unsafe impl<'a, 'b: 'a, Whole, P>
+    PlaceBorrow<'a, P, EnvelopeBorrow<'a, Whole, P::Target>>
     for EnvelopeBorrow<'b, Whole, P::Source>
 where
     P: Projection + ?Sized,
@@ -87,7 +91,10 @@ where
     P::Target: Sized + 'static,
 {
     const BORROW_KIND: BorrowKind = BorrowKind::Shared;
-    unsafe fn borrow(ptr: *const Self, p: &P) -> EnvelopeBorrow<'a, Whole, P::Target> {
+    unsafe fn borrow(
+        ptr: *const Self,
+        p: &P,
+    ) -> EnvelopeBorrow<'a, Whole, P::Target> {
         let this = unsafe { &*ptr };
         EnvelopeBorrow {
             env: this.env,
@@ -109,6 +116,7 @@ fn main() {
 
     let env_borrow = env.borrow();
     // Project to a field.
-    let field_borrow: EnvelopeBorrow<'_, _, _> = unsafe { p!(@_ (*env_borrow).data) };
+    let field_borrow: EnvelopeBorrow<'_, _, _> =
+        unsafe { p!(@_ (*env_borrow).data) };
     assert_eq!(field_borrow.decrypt(key), 123456789);
 }

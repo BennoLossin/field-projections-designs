@@ -1,8 +1,12 @@
 use std::mem::MaybeUninit;
 
 use crate::ops::place::{
-    PlaceWrapper, WrapPlace,
-    subplace::{Subplace, TransmutedSubplace},
+    PlaceWrapper,
+    WrapPlace,
+    subplace::{
+        Subplace,
+        TransmutedSubplace,
+    },
 };
 
 impl<T> PlaceWrapper for MaybeUninit<T> {
@@ -15,7 +19,8 @@ where
     S::Source: Sized,
     S::Target: Sized,
 {
-    type Wrapped = TransmutedSubplace<S, MaybeUninit<S::Source>, MaybeUninit<S::Target>>;
+    type Wrapped =
+        TransmutedSubplace<S, MaybeUninit<S::Source>, MaybeUninit<S::Target>>;
 
     fn wrap(subplace: S) -> Self::Wrapped {
         unsafe { TransmutedSubplace::new_unchecked(subplace) }

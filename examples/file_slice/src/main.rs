@@ -1,6 +1,14 @@
-use std::{io, marker::PhantomData, os::fd::RawFd};
+use std::{
+    io,
+    marker::PhantomData,
+    os::fd::RawFd,
+};
 
-use design::ops::place::{PlaceHandle, ProjectPlace, subplace::Subplace};
+use design::ops::place::{
+    PlaceHandle,
+    ProjectPlace,
+    subplace::Subplace,
+};
 
 pub struct FileSlice<T> {
     fd: RawFd,
@@ -27,10 +35,7 @@ where
     unsafe fn project_place(self, subplace: S) -> Self::Projected {
         let FileSliceHandle { fd, value } = self;
         // TODO: add `offset` to pos of the fd in the kernel
-        FileSliceHandle {
-            fd,
-            value: PhantomData,
-        }
+        FileSliceHandle { fd, value: PhantomData }
     }
 }
 

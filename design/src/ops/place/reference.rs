@@ -1,4 +1,7 @@
 mod exclusive;
 mod shared;
 
-pub use self::{exclusive::MutHandle, shared::RefHandle};
+pub use self::{
+    exclusive::MutHandle,
+    shared::RefHandle,
+};

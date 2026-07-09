@@ -3,9 +3,21 @@ use std::ptr;
 use crate::{
     Metadata,
     ops::place::{
-        DerefHandle, DerefPlace, DropHusk, DropPlace, MovePlace, PlaceHandle, ProjectPlace,
-        ProxyPlace, ReadMetadata, ReadPlace, WritePlace,
-        borrowck::{AccessKind, Instant},
+        DerefHandle,
+        DerefPlace,
+        DropHusk,
+        DropPlace,
+        MovePlace,
+        PlaceHandle,
+        ProjectPlace,
+        ProxyPlace,
+        ReadMetadata,
+        ReadPlace,
+        WritePlace,
+        borrowck::{
+            AccessKind,
+            Instant,
+        },
         subplace::Subplace,
     },
 };

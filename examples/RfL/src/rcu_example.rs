@@ -3,16 +3,35 @@ use std::sync::Arc;
 use design::{
     lang_limits::adt_reflect,
     ops::place::{
-        BorrowPlace, DerefHandle, DerefPlace, LocalHandle, MutHandle, ProjectPlace, ReadPlace,
-        RefHandle, WrapPlace,
+        BorrowPlace,
+        DerefHandle,
+        DerefPlace,
+        LocalHandle,
+        MutHandle,
+        ProjectPlace,
+        ReadPlace,
+        RefHandle,
+        WrapPlace,
     },
     sync::arc::ArcHandle,
 };
 
 use crate::{
-    mutex::{InsideOfMutex, Mutex, MutexGuard},
-    overwrite::{Shield, ShieldHandle},
-    rcu::{self, Rcu, RcuGuard, RcuOld},
+    mutex::{
+        InsideOfMutex,
+        Mutex,
+        MutexGuard,
+    },
+    overwrite::{
+        Shield,
+        ShieldHandle,
+    },
+    rcu::{
+        self,
+        Rcu,
+        RcuGuard,
+        RcuOld,
+    },
 };
 
 adt_reflect!(
@@ -40,12 +59,12 @@ adt_reflect!(
 mod lang_limits {
     use design::ops::place::PlaceHandle;
 
+    use super::*;
     use crate::overwrite::ShieldableSubplace;
 
-    use super::*;
-
     unsafe impl ShieldableSubplace for field_of!(DriverData, shared) {
-        type StructualShielding<H: PlaceHandle<Target = Self::Target>> = ShieldHandle<H>;
+        type StructualShielding<H: PlaceHandle<Target = Self::Target>> =
+            ShieldHandle<H>;
 
         unsafe fn from_shielded<H: PlaceHandle<Target = Self::Target>>(
             handle: H,
@@ -55,7 +74,8 @@ mod lang_limits {
     }
 
     unsafe impl ShieldableSubplace for field_of!(Shared, data) {
-        type StructualShielding<H: PlaceHandle<Target = Self::Target>> = ShieldHandle<H>;
+        type StructualShielding<H: PlaceHandle<Target = Self::Target>> =
+            ShieldHandle<H>;
 
         unsafe fn from_shielded<H: PlaceHandle<Target = Self::Target>>(
             handle: H,
@@ -76,11 +96,14 @@ impl Driver {
     #[expect(unused_mut)]
     pub fn write_data(&self, new_data: Box<Data>) {
         let tmp: &Mutex<DriverData> = unsafe {
-            let self_hdl: RefHandle<'_, Driver> = DerefHandle::handle_from_raw(&raw const self);
-            let driver_data_subplace = <field_of!(Driver, driver_data)>::default();
+            let self_hdl: RefHandle<'_, Driver> =
+                DerefHandle::handle_from_raw(&raw const self);
+            let driver_data_subplace =
+                <field_of!(Driver, driver_data)>::default();
             let driver_data_hdl: RefHandle<'_, Arc<Mutex<DriverData>>> =
                 ProjectPlace::project_place(self_hdl, driver_data_subplace);
-            let mutex_hdl: ArcHandle<Mutex<DriverData>> = DerefPlace::deref_place(driver_data_hdl);
+            let mutex_hdl: ArcHandle<Mutex<DriverData>> =
+                DerefPlace::deref_place(driver_data_hdl);
             BorrowPlace::<&Mutex<DriverData>>::borrow(mutex_hdl)
         };
 
@@ -125,8 +148,10 @@ impl Driver {
         let guard: RcuGuard = rcu::read_lock();
 
         let shared: &InsideOfMutex<Shared> = unsafe {
-            let data_hdl: LocalHandle<&Mutex<DriverData>> = LocalHandle::new(&raw const data);
-            let data_hdl: RefHandle<'_, Mutex<DriverData>> = DerefPlace::deref_place(data_hdl);
+            let data_hdl: LocalHandle<&Mutex<DriverData>> =
+                LocalHandle::new(&raw const data);
+            let data_hdl: RefHandle<'_, Mutex<DriverData>> =
+                DerefPlace::deref_place(data_hdl);
 
             let shared_subplace = <field_of!(DriverData, shared)>::default();
             let shared_subplace_wrapped = Mutex::wrap(shared_subplace);
@@ -159,9 +184,11 @@ impl Driver {
         let data: &Data = InsideOfMutex::read(data, &guard);
 
         unsafe {
-            let data_hdl: RefHandle<'_, Data> = DerefHandle::handle_from_raw(&raw const data);
+            let data_hdl: RefHandle<'_, Data> =
+                DerefHandle::handle_from_raw(&raw const data);
             let num_subplace = <field_of!(Data, num)>::default();
-            let num_hdl: RefHandle<'_, u32> = ProjectPlace::project_place(data_hdl, num_subplace);
+            let num_hdl: RefHandle<'_, u32> =
+                ProjectPlace::project_place(data_hdl, num_subplace);
             ReadPlace::read_place(num_hdl)
         }
     }

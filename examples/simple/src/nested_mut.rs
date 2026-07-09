@@ -1,6 +1,12 @@
 use design::{
     lang_limits::adt_reflect,
-    ops::place::{BorrowPlace, DerefPlace, LocalHandle, MutHandle, ProjectPlace},
+    ops::place::{
+        BorrowPlace,
+        DerefPlace,
+        LocalHandle,
+        MutHandle,
+        ProjectPlace,
+    },
 };
 
 adt_reflect!(
@@ -31,7 +37,8 @@ pub fn main() {
         let hdl: MutHandle<'_, &mut Struct> = DerefPlace::deref_place(hdl);
         let hdl: MutHandle<'_, Struct> = DerefPlace::deref_place(hdl);
         let a_subplace = <field_of!(Struct, a)>::default();
-        let hdl: MutHandle<'_, u32> = ProjectPlace::project_place(hdl, a_subplace);
+        let hdl: MutHandle<'_, u32> =
+            ProjectPlace::project_place(hdl, a_subplace);
         BorrowPlace::<&mut u32>::borrow(hdl)
     };
     let b: &mut i32 = unsafe {
@@ -39,7 +46,8 @@ pub fn main() {
         let hdl: MutHandle<'_, &mut Struct> = DerefPlace::deref_place(hdl);
         let hdl: MutHandle<'_, Struct> = DerefPlace::deref_place(hdl);
         let b_subplace = <field_of!(Struct, b)>::default();
-        let hdl: MutHandle<'_, i32> = ProjectPlace::project_place(hdl, b_subplace);
+        let hdl: MutHandle<'_, i32> =
+            ProjectPlace::project_place(hdl, b_subplace);
         BorrowPlace::<&mut i32>::borrow(hdl)
     };
 

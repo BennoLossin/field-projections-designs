@@ -1,15 +1,32 @@
 use std::{
     cell::UnsafeCell,
-    ops::{Deref, DerefMut},
+    ops::{
+        Deref,
+        DerefMut,
+    },
 };
 
 use design::ops::place::{
-    DerefHandle, MutHandle, PlaceWrapper, ProxyPlace, WrapPlace,
-    borrowck::{AccessKind, Instant},
-    subplace::{Subplace, TransmutedSubplace},
+    DerefHandle,
+    MutHandle,
+    PlaceWrapper,
+    ProxyPlace,
+    WrapPlace,
+    borrowck::{
+        AccessKind,
+        Instant,
+    },
+    subplace::{
+        Subplace,
+        TransmutedSubplace,
+    },
 };
 
-use crate::{bindings, opaque::Opaque, overwrite::Shield};
+use crate::{
+    bindings,
+    opaque::Opaque,
+    overwrite::Shield,
+};
 
 pub struct Mutex<T> {
     value: UnsafeCell<T>,
@@ -85,7 +102,8 @@ unsafe impl<S> WrapPlace<S> for Mutex<S::Source>
 where
     S: Subplace<Source: Sized, Target: Sized>,
 {
-    type Wrapped = TransmutedSubplace<S, Mutex<S::Source>, InsideOfMutex<S::Target>>;
+    type Wrapped =
+        TransmutedSubplace<S, Mutex<S::Source>, InsideOfMutex<S::Target>>;
 
     fn wrap(subplace: S) -> Self::Wrapped {
         unsafe { TransmutedSubplace::new_unchecked(subplace) }
@@ -100,7 +118,11 @@ unsafe impl<S> WrapPlace<S> for InsideOfMutex<S::Source>
 where
     S: Subplace<Source: Sized, Target: Sized>,
 {
-    type Wrapped = TransmutedSubplace<S, InsideOfMutex<S::Source>, InsideOfMutex<S::Target>>;
+    type Wrapped = TransmutedSubplace<
+        S,
+        InsideOfMutex<S::Source>,
+        InsideOfMutex<S::Target>,
+    >;
 
     fn wrap(subplace: S) -> Self::Wrapped {
         unsafe { TransmutedSubplace::new_unchecked(subplace) }

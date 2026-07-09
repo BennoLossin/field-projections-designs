@@ -1,6 +1,10 @@
 use crate::ops::place::{
-    PlaceWrapper, WrapPlace,
-    subplace::{Subplace, TransmutedSubplace},
+    PlaceWrapper,
+    WrapPlace,
+    subplace::{
+        Subplace,
+        TransmutedSubplace,
+    },
 };
 
 impl<T> PlaceWrapper for Option<T> {

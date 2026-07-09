@@ -1,20 +1,53 @@
 use std::{
     error,
-    io::{self, Write},
-    process::{Command, Stdio},
+    io::{
+        self,
+        Write,
+    },
+    process::{
+        Command,
+        Stdio,
+    },
 };
 
-use proc_macro2::{Literal, Span};
-use proc_macro2::{TokenStream, TokenTree};
-use quote::{ToTokens, quote};
+use proc_macro2::{
+    Literal,
+    Span,
+    TokenStream,
+    TokenTree,
+};
+use quote::{
+    ToTokens,
+    quote,
+};
 use syn::{
-    AttrStyle, Attribute, Block, Error, Expr, ExprLit, ExprRange, File, Item, ItemMod, Lit, LitStr,
-    RangeLimits, Stmt,
-    parse::{End, Parse},
-    parse_quote, parse2,
+    AttrStyle,
+    Attribute,
+    Block,
+    Error,
+    Expr,
+    ExprLit,
+    ExprRange,
+    File,
+    Item,
+    ItemMod,
+    Lit,
+    LitStr,
+    RangeLimits,
+    Stmt,
+    parse::{
+        End,
+        Parse,
+    },
+    parse_quote,
+    parse2,
     punctuated::Punctuated,
     spanned::Spanned,
-    visit_mut::{VisitMut, visit_item_mut, visit_use_tree_mut},
+    visit_mut::{
+        VisitMut,
+        visit_item_mut,
+        visit_use_tree_mut,
+    },
 };
 
 #[derive(Debug)]
@@ -110,8 +143,7 @@ fn find_summary_anchor<'a>(attrs: &[Attribute]) -> Option<usize> {
             && let Ok(meta) = attr.meta.require_name_value()
             && meta.path.is_ident("doc")
             && let Expr::Lit(ExprLit {
-                lit: Lit::Str(contents),
-                ..
+                lit: Lit::Str(contents), ..
             }) = &meta.value
             && contents.value() == " ====== SUMMARY ANCHOR ======"
         {
@@ -201,7 +233,9 @@ impl VisitMut for StripDistractions {
             let attrs = match i {
                 Item::Const(item_const) => &item_const.attrs,
                 Item::Enum(item_enum) => &item_enum.attrs,
-                Item::ExternCrate(item_extern_crate) => &item_extern_crate.attrs,
+                Item::ExternCrate(item_extern_crate) => {
+                    &item_extern_crate.attrs
+                }
                 Item::Fn(item_fn) => &item_fn.attrs,
                 Item::ForeignMod(item_foreign_mod) => &item_foreign_mod.attrs,
                 Item::Impl(item_impl) => &item_impl.attrs,
@@ -251,23 +285,18 @@ fn rustfmt(txt: &str) -> io::Result<Result<String, (Option<i32>, String)>> {
         let err = String::from_utf8_lossy(&output.stderr).to_string();
         return Ok(Err((output.status.code(), err)));
     }
-    let contents = String::from_utf8(output.stdout).expect("rustfmt to have valid utf8 output");
+    let contents = String::from_utf8(output.stdout)
+        .expect("rustfmt to have valid utf8 output");
     Ok(Ok(contents))
 }
 
 fn def_span(item: &Item) -> Span {
     match item {
         Item::Const(syn::ItemConst {
-            vis,
-            const_token,
-            ident,
-            ..
+            vis, const_token, ident, ..
         }) => quote!(#vis #const_token #ident).span(),
         Item::Enum(syn::ItemEnum {
-            vis,
-            enum_token,
-            ident,
-            ..
+            vis, enum_token, ident, ..
         }) => quote!(#vis #enum_token #ident).span(),
         Item::ExternCrate(syn::ItemExternCrate {
             vis,
@@ -289,11 +318,25 @@ fn def_span(item: &Item) -> Span {
             self_ty,
             ..
         }) => match trait_ {
-            None => quote!(#defaultness #unsafety #impl_token #generics #self_ty).span(),
-            Some((not, path, for_)) => {
-                quote!(#defaultness #unsafety #impl_token #generics #not #path #for_ #self_ty)
-                    .span()
-            }
+            None => quote!(
+                #defaultness
+                #unsafety
+                #impl_token
+                #generics
+                #self_ty
+            )
+            .span(),
+            Some((not, path, for_)) => quote!(
+                #defaultness
+                #unsafety
+                #impl_token
+                #generics
+                #not
+                #path
+                #for_
+                #self_ty
+            )
+            .span(),
         },
         Item::Macro(syn::ItemMacro { ident, .. }) => quote!(#ident).span(),
         Item::Mod(syn::ItemMod {
@@ -311,10 +354,7 @@ fn def_span(item: &Item) -> Span {
             ..
         }) => quote!(#vis #static_token #mutability #ident).span(),
         Item::Struct(syn::ItemStruct {
-            vis,
-            struct_token,
-            ident,
-            ..
+            vis, struct_token, ident, ..
         }) => quote!(#vis #struct_token #ident).span(),
         Item::Trait(syn::ItemTrait {
             vis,
@@ -331,24 +371,19 @@ fn def_span(item: &Item) -> Span {
             ..
         }) => quote!(#vis #trait_token #ident).span(),
         Item::Type(syn::ItemType {
-            vis,
-            type_token,
-            ident,
-            ..
+            vis, type_token, ident, ..
         }) => quote!(#vis #type_token #ident).span(),
         Item::Union(syn::ItemUnion {
-            vis,
-            union_token,
-            ident,
-            ..
+            vis, union_token, ident, ..
         }) => quote!(#vis #union_token #ident).span(),
         Item::Use(item_use) => item_use.use_token.span,
         Item::Verbatim(ts) => ts.span(),
         _ => {
             eprintln!(
-                "WARN: novel `syn::Item` variant not handled in `{}:{} fn def_span`",
+                "WARN: novel `syn::Item` variant not handled \
+                in `{}:{} fn def_span`",
                 file!(),
-                line!()
+                line!(),
             );
             item.span()
         }

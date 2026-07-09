@@ -1,11 +1,27 @@
-use std::ops::{Deref, DerefMut};
+use std::ops::{
+    Deref,
+    DerefMut,
+};
 
 use design::{
     Metadata,
     ops::place::{
-        BorrowPlace, DerefHandle, DerefPlace, DropHusk, DropPlace, MovePlace, PlaceHandle,
-        ProjectPlace, ProxyPlace, ReadMetadata, ReadPlace, WritePlace,
-        borrowck::{AccessKind, Timing},
+        BorrowPlace,
+        DerefHandle,
+        DerefPlace,
+        DropHusk,
+        DropPlace,
+        MovePlace,
+        PlaceHandle,
+        ProjectPlace,
+        ProxyPlace,
+        ReadMetadata,
+        ReadPlace,
+        WritePlace,
+        borrowck::{
+            AccessKind,
+            Timing,
+        },
         subplace::Subplace,
     },
 };
@@ -153,8 +169,8 @@ where
     }
 }
 
-// Need this trait to avoid unsoundness when calling the inner `drop_husk` that could do some
-// non-pinned allowed things...
+// Need this trait to avoid unsoundness when calling the inner `drop_husk` that
+// could do some non-pinned allowed things...
 pub unsafe trait DropHuskShield: ProxyPlace {
     unsafe fn drop_husk_pinned(this: Self::Handle);
 }
@@ -178,8 +194,10 @@ pub unsafe trait ShieldableSubplace: Subplace {
         Target = Self::Target,
     >;
 
-    /// - If `StructualShielding<H> == H`, then this should be the identity function.
-    /// - If `StructualShielding<H> == ShieldHandle<H>`, then this should be `ShieldHandle::new_unchecked`.
+    /// - If `StructualShielding<H> == H`, then this should be the identity
+    ///   function.
+    /// - If `StructualShielding<H> == ShieldHandle<H>`, then this should be
+    ///   `ShieldHandle::new_unchecked`.
     unsafe fn from_shielded<H: PlaceHandle<Target = Self::Target>>(
         handle: H,
     ) -> Self::StructualShielding<H>;
@@ -228,7 +246,8 @@ where
     }
 }
 
-impl<H, PointeeTiming, PointerTiming> DerefPlace<PointeeTiming, PointerTiming> for ShieldHandle<H>
+impl<H, PointeeTiming, PointerTiming> DerefPlace<PointeeTiming, PointerTiming>
+    for ShieldHandle<H>
 where
     Self::Target: ProxyPlace,
     H: DerefPlace<PointeeTiming, PointerTiming>,

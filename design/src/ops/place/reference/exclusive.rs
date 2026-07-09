@@ -1,8 +1,21 @@
-use std::{marker::PhantomData, ptr::NonNull};
+use std::{
+    marker::PhantomData,
+    ptr::NonNull,
+};
 
 use crate::ops::place::{
-    BorrowPlace, DerefHandle, DerefPlace, PlaceHandle, ProjectPlace, ProxyPlace, ReadPlace,
-    borrowck::{AccessKind, Instant, Lifetime},
+    BorrowPlace,
+    DerefHandle,
+    DerefPlace,
+    PlaceHandle,
+    ProjectPlace,
+    ProxyPlace,
+    ReadPlace,
+    borrowck::{
+        AccessKind,
+        Instant,
+        Lifetime,
+    },
     subplace::Subplace,
 };
 

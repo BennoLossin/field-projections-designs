@@ -1,4 +1,7 @@
-use std::{marker::PhantomData, ptr::Pointee};
+use std::{
+    marker::PhantomData,
+    ptr::Pointee,
+};
 
 use crate::*;
 
@@ -17,7 +20,8 @@ pub trait Projection {
 /// Extension trait so that `Projection` stays dyn-compatible.
 impl<P: Projection + ?Sized> ProjectionExt for P {}
 pub trait ProjectionExt: Projection {
-    /// Convenience method that simply calls the corresponding PlaceBorrow method.
+    /// Convenience method that simply calls the corresponding PlaceBorrow
+    /// method.
     unsafe fn borrow<'a, X, Y>(&self, ptr: *const X) -> Y
     where
         X: HasPlace<Target = Self::Source>,
@@ -42,7 +46,8 @@ pub trait ProjectionExt: Projection {
     {
         unsafe { PlaceWrite::write(ptr, self, val) }
     }
-    /// Convenience method that simply calls the corresponding PlaceDeref method.
+    /// Convenience method that simply calls the corresponding PlaceDeref
+    /// method.
     unsafe fn deref<X>(&self, ptr: *mut X) -> *const Self::Target
     where
         X: HasPlace<Target = Self::Source>,
@@ -52,8 +57,9 @@ pub trait ProjectionExt: Projection {
         unsafe { PlaceDeref::double_deref(ptr, self) }
     }
 
-    /// When the target is sized, we know a projection is just an offset so we can make it sized
-    /// even if we had a `dyn Projection`.
+    /// When the target is sized, we know a projection is just an offset so we
+    /// can make it sized even if we had a `dyn Projection`.
+    ///
     /// Definitely a bit hacky.
     fn as_sized(&self) -> SizedProj<Self::Source, Self::Target>
     where

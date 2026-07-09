@@ -1,8 +1,14 @@
 use std::ptr::NonNull;
 
 use crate::ops::place::{
-    DerefHandle, PlaceHandle, ProjectPlace, ProxyPlace,
-    borrowck::{AccessKind, Instant},
+    DerefHandle,
+    PlaceHandle,
+    ProjectPlace,
+    ProxyPlace,
+    borrowck::{
+        AccessKind,
+        Instant,
+    },
     subplace::Subplace,
 };
 

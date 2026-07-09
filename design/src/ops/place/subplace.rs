@@ -1,4 +1,7 @@
-use std::{marker::PhantomData, ptr::Pointee};
+use std::{
+    marker::PhantomData,
+    ptr::Pointee,
+};
 
 use crate::Metadata;
 
@@ -6,7 +9,10 @@ pub unsafe trait Subplace: Sized {
     type Source: ?Sized;
     type Target: ?Sized;
 
-    fn offset(self, metadata: Metadata<Self::Source>) -> (usize, Metadata<Self::Target>);
+    fn offset(
+        self,
+        metadata: Metadata<Self::Source>,
+    ) -> (usize, Metadata<Self::Target>);
 }
 
 pub struct TransmutedSubplace<Sub, Source: ?Sized, Target: ?Sized>(
@@ -15,7 +21,8 @@ pub struct TransmutedSubplace<Sub, Source: ?Sized, Target: ?Sized>(
     PhantomData<Target>,
 );
 
-unsafe impl<Sub, Source, Target> Subplace for TransmutedSubplace<Sub, Source, Target>
+unsafe impl<Sub, Source, Target> Subplace
+    for TransmutedSubplace<Sub, Source, Target>
 where
     Sub: Subplace,
     Source: ?Sized + Pointee<Metadata = Metadata<Sub::Source>>,
@@ -25,7 +32,10 @@ where
 
     type Target = Target;
 
-    fn offset(self, metadata: Metadata<Self::Source>) -> (usize, Metadata<Self::Target>) {
+    fn offset(
+        self,
+        metadata: Metadata<Self::Source>,
+    ) -> (usize, Metadata<Self::Target>) {
         self.0.offset(metadata)
     }
 }
@@ -49,4 +59,5 @@ pub trait HasVariant<const VARIANT: &'static str>: Matchable {
     type VariantType;
 }
 
-pub type VariantType<E, const VARIANT: &'static str> = <E as HasVariant<VARIANT>>::VariantType;
+pub type VariantType<E, const VARIANT: &'static str> =
+    <E as HasVariant<VARIANT>>::VariantType;

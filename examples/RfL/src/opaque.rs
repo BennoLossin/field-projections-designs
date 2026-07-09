@@ -1,4 +1,7 @@
-use std::{cell::UnsafeCell, mem::MaybeUninit};
+use std::{
+    cell::UnsafeCell,
+    mem::MaybeUninit,
+};
 
 pub struct Opaque<T>(UnsafeCell<MaybeUninit<T>>);
 

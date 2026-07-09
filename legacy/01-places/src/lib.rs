@@ -10,8 +10,8 @@ pub use projection::*;
 mod place_ops;
 pub use place_ops::*;
 
-/// Make a unit struct that represents the projection to a particular struct field. Only works
-/// for sized types.
+/// Make a unit struct that represents the projection to a particular struct
+/// field. Only works for sized types.
 ///
 /// Syntax: `mk_field_proj!(struct FooAProj(Foo.a: A))`.
 #[macro_export]
@@ -22,7 +22,10 @@ macro_rules! mk_field_proj {
         impl Projection for $name {
             type Source = $src_ty;
             type Target = $tgt_ty;
-            fn offset(&self, _: <Self::Source as core::ptr::Pointee>::Metadata) -> usize {
+            fn offset(
+                &self,
+                _: <Self::Source as core::ptr::Pointee>::Metadata,
+            ) -> usize {
                 core::mem::offset_of!($src_ty, $field)
             }
             fn project_metadata(
@@ -34,9 +37,9 @@ macro_rules! mk_field_proj {
     };
 }
 
-/// Macro that simulates the proposed new syntax. Derefs must be explicit and the identifiers used
-/// for field projections must actually be values of some `Projection` type, e.g. built with
-/// `mk_field_proj`.
+/// Macro that simulates the proposed new syntax. Derefs must be explicit and
+/// the identifiers used for field projections must actually be values of some
+/// `Projection` type, e.g. built with `mk_field_proj`.
 ///
 /// Examples:
 /// ```text
@@ -232,9 +235,11 @@ macro_rules! p {
     // Helpers for the final build.
     // Compose some field projections.
     (#compose_projs()) => { $crate::NoopProj::default() };
-    (#compose_projs(.$field:ident $($rest:tt)*)) => { $field.compose(p!(#compose_projs($($rest)*))) };
-    // Build the pointer expression we start with. For non-idents, we call back to our parsing
-    // logic to deref a complex place expression.
+    (#compose_projs(.$field:ident $($rest:tt)*)) => {
+        $field.compose(p!(#compose_projs($($rest)*)))
+    };
+    // Build the pointer expression we start with. For non-idents, we call back
+    // to our parsing logic to deref a complex place expression.
     (#build_start(deref($ptr:ident))) => { &raw const $ptr };
     (#build_start(deref($($place:tt)*))) => {
         $crate::p!(#parse_base(deref(), input($($place)*)))
@@ -285,7 +290,8 @@ macro_rules! p {
         $proj.borrow::<_, $($ptr_ty)*>($ptr)
     };
 
-    // Catch internal errors instead of looping back to the catch-all case below.
+    // Catch internal errors instead of looping back to the catch-all case
+    // below.
     (#$($rest:tt)*) => {
         compile_error!("Unsupported expression")
     };

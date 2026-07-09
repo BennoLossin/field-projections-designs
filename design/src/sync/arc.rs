@@ -1,11 +1,21 @@
 use std::{
     ptr::NonNull,
-    sync::{Arc, atomic::AtomicUsize},
+    sync::{
+        Arc,
+        atomic::AtomicUsize,
+    },
 };
 
 use crate::ops::place::{
-    BorrowPlace, DerefHandle, PlaceHandle, ProxyPlace,
-    borrowck::{AccessKind, Instant, Lifetime},
+    BorrowPlace,
+    DerefHandle,
+    PlaceHandle,
+    ProxyPlace,
+    borrowck::{
+        AccessKind,
+        Instant,
+        Lifetime,
+    },
 };
 
 #[repr(C, align(2))]

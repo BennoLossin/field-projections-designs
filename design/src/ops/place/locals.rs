@@ -1,8 +1,22 @@
 use crate::ops::place::{
-    DerefHandle, DerefPlace, PlaceHandle, ProjectPlace, ProxyPlace, ReadPlace, ReadVariant,
+    DerefHandle,
+    DerefPlace,
+    PlaceHandle,
+    ProjectPlace,
+    ProxyPlace,
+    ReadPlace,
+    ReadVariant,
     VariantPlace,
-    borrowck::{AccessKind, Instant},
-    subplace::{HasVariant, Matchable, Subplace, VariantType},
+    borrowck::{
+        AccessKind,
+        Instant,
+    },
+    subplace::{
+        HasVariant,
+        Matchable,
+        Subplace,
+        VariantType,
+    },
 };
 
 pub struct LocalHandle<T: ?Sized> {
@@ -57,9 +71,7 @@ where
     type ToVariant = LocalHandle<VariantType<T, VARIANT>>;
 
     unsafe fn cast(self) -> Self::ToVariant {
-        LocalHandle {
-            ptr: self.ptr.cast(),
-        }
+        LocalHandle { ptr: self.ptr.cast() }
     }
 }
 

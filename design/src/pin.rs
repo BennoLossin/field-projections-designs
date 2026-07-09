@@ -1,14 +1,30 @@
 use std::{
-    mem::{self, ManuallyDrop},
+    mem::{
+        self,
+        ManuallyDrop,
+    },
     pin::Pin,
 };
 
 use crate::{
     Metadata,
     ops::place::{
-        BorrowPlace, DerefHandle, DerefPlace, DropHusk, DropPlace, MovePlace, PlaceHandle,
-        ProjectPlace, ProxyPlace, ReadMetadata, ReadPlace, WritePlace,
-        borrowck::{AccessKind, Timing},
+        BorrowPlace,
+        DerefHandle,
+        DerefPlace,
+        DropHusk,
+        DropPlace,
+        MovePlace,
+        PlaceHandle,
+        ProjectPlace,
+        ProxyPlace,
+        ReadMetadata,
+        ReadPlace,
+        WritePlace,
+        borrowck::{
+            AccessKind,
+            Timing,
+        },
         subplace::Subplace,
     },
 };
@@ -103,8 +119,8 @@ where
     }
 }
 
-// Need this trait to avoid unsoundness when calling the inner `drop_husk` that could do some
-// non-pinned allowed things...
+// Need this trait to avoid unsoundness when calling the inner `drop_husk` that
+// could do some non-pinned allowed things...
 pub unsafe trait DropHuskPinned: ProxyPlace {
     unsafe fn drop_husk_pinned(this: Self::Handle);
 }
@@ -124,10 +140,14 @@ pub unsafe trait PinnableSubplace: Subplace {
     /// Must be exactly one of these two GATs:
     /// - `H` (i.e. the identity GAT)
     /// - `PinnedHandle<H>`
-    type StructualPinning<H: PlaceHandle<Target = Self::Target>>: PlaceHandle<Target = Self::Target>;
+    type StructualPinning<H: PlaceHandle<Target = Self::Target>>: PlaceHandle<
+        Target = Self::Target,
+    >;
 
-    /// - If `StructualPinning<H> == H`, then this should be the identity function.
-    /// - If `StructualPinning<H> == PinnedHandle<H>`, then this should be `PinnedHandle::new_unchecked`.
+    /// - If `StructualPinning<H> == H`, then this should be the identity
+    ///   function.
+    /// - If `StructualPinning<H> == PinnedHandle<H>`, then this should be
+    ///   `PinnedHandle::new_unchecked`.
     unsafe fn from_pinned<H: PlaceHandle<Target = Self::Target>>(
         handle: H,
     ) -> Self::StructualPinning<H>;
@@ -146,8 +166,10 @@ where
     }
 }
 
-// FIXME: we probably need something specific to pin here to, but haven't given it much thought...
-impl<H, PointeeTiming, PointerTiming> DerefPlace<PointeeTiming, PointerTiming> for PinnedHandle<H>
+// FIXME: we probably need something specific to pin here to, but haven't given
+// it much thought...
+impl<H, PointeeTiming, PointerTiming> DerefPlace<PointeeTiming, PointerTiming>
+    for PinnedHandle<H>
 where
     Self::Target: ProxyPlace,
     H: DerefPlace<PointeeTiming, PointerTiming>,

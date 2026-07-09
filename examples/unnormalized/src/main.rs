@@ -5,10 +5,21 @@
 
 use design::{
     lang_limits::adt_reflect,
-    ops::place::{LocalHandle, ProjectPlace, ReadPlace, ReadVariant, VariantPlace, WrapPlace},
+    ops::place::{
+        LocalHandle,
+        ProjectPlace,
+        ReadPlace,
+        ReadVariant,
+        VariantPlace,
+        WrapPlace,
+    },
 };
 
-use crate::unnormalized::{GenericArgs, Unnormalized, UnwrapUnnormalize};
+use crate::unnormalized::{
+    GenericArgs,
+    Unnormalized,
+    UnwrapUnnormalize,
+};
 
 pub mod unnormalized;
 
@@ -70,12 +81,14 @@ mod lang_limits {
 /// }
 /// ```
 fn demo(ty_kind: Unnormalized<TyKind>) {
-    let hdl: LocalHandle<Unnormalized<TyKind>> = unsafe { LocalHandle::new(&raw const ty_kind) };
+    let hdl: LocalHandle<Unnormalized<TyKind>> =
+        unsafe { LocalHandle::new(&raw const ty_kind) };
     let discr: &'static str = unsafe { ReadVariant::read_variant(hdl) };
     match discr {
         "Int" => {
             let int_ty = unsafe {
-                // variant_of!(Enum, Variant) == pattern_type!(Enum is Variant(..))
+                //    variant_of!(Enum, Variant)
+                // == pattern_type!(Enum is Variant(..))
                 let variant_hdl: LocalHandle<variant_of!(TyKind, Int)> =
                     VariantPlace::<"Int">::cast(hdl);
 
@@ -91,14 +104,17 @@ fn demo(ty_kind: Unnormalized<TyKind>) {
         }
         "FnPtr" => {
             let sig = unsafe {
-                let variant_hdl: LocalHandle<Unnormalized<variant_of!(TyKind, FnPtr)>> =
-                    VariantPlace::<"FnPtr">::cast(hdl);
+                let variant_hdl: LocalHandle<
+                    Unnormalized<variant_of!(TyKind, FnPtr)>,
+                > = VariantPlace::<"FnPtr">::cast(hdl);
 
                 let sig_subplace = <field_of!(TyKind::FnPtr, sig)>::default();
                 let sig_subplace_wrapped = Unnormalized::wrap(sig_subplace);
 
                 let hdl: LocalHandle<Unnormalized<Sig>> =
-                    ProjectPlace::project_place(variant_hdl, sig_subplace_wrapped);
+                    ProjectPlace::project_place(
+                        variant_hdl, sig_subplace_wrapped,
+                    );
 
                 ReadPlace::read_place(hdl)
             };

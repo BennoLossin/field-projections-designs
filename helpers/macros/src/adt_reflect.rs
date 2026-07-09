@@ -1,8 +1,19 @@
 use proc_macro2::TokenStream;
-use quote::{format_ident, quote, quote_spanned};
+use quote::{
+    format_ident,
+    quote,
+    quote_spanned,
+};
 use syn::{
-    Fields, Generics, Ident, Item, ItemEnum,
-    parse::{Parse, ParseStream},
+    Fields,
+    Generics,
+    Ident,
+    Item,
+    ItemEnum,
+    parse::{
+        Parse,
+        ParseStream,
+    },
     spanned::Spanned,
 };
 
@@ -49,8 +60,9 @@ pub(crate) fn expand(Input { items }: Input) -> TokenStream {
                 );
             }
             _ => {
+                let err_msg = "unsupported item in `adt_reflect!`";
                 errors.extend(quote_spanned!(item.span()=>
-                    ::core::compile_error!("unsupported item in `adt_reflect!`");
+                    ::core::compile_error!(#err_msg);
                 ));
             }
         }
@@ -167,13 +179,18 @@ fn generate_fields(
         };
 
         lang_limits.push(quote! {
-            pub struct #meta_ident #decl_gen (::core::marker::PhantomData::<#phantom_ty>) #whr;
+            pub struct #meta_ident #decl_gen
+                (::core::marker::PhantomData::<#phantom_ty>)
+            #whr;
 
-            impl #impl_gen ::core::default::Default for #meta_ident #ty_gen #whr {
+            impl #impl_gen ::core::default::Default for #meta_ident #ty_gen
+            #whr
+            {
                 fn default() -> Self { Self(::core::marker::PhantomData) }
             }
 
-            unsafe impl #impl_gen ::design::ops::place::subplace::Subplace
+            unsafe impl #impl_gen
+                ::design::ops::place::subplace::Subplace
                 for #meta_ident #ty_gen
             #whr
             {
@@ -181,7 +198,13 @@ fn generate_fields(
                 type Target = #field_ty;
 
                 fn offset(self, (): ()) -> (::core::primitive::usize, ()) {
-                    (::core::mem::offset_of!(#adt_ident #ty_gen, #field_access), ())
+                    (
+                        ::core::mem::offset_of!(
+                            #adt_ident #ty_gen,
+                            #field_access,
+                        ),
+                        (),
+                    )
                 }
             }
         });
@@ -209,7 +232,8 @@ fn generate_for_enum(
 ) {
     let enum_ident = &enum_.ident;
     let (impl_gen, ty_gen, whr) = enum_.generics.split_for_impl();
-    let (fragment_decl_gen, fragment_ty_gen) = generics_to_fragments(&enum_.generics);
+    let (fragment_decl_gen, fragment_ty_gen) =
+        generics_to_fragments(&enum_.generics);
 
     let mut variants = Vec::new();
 
@@ -218,13 +242,15 @@ fn generate_for_enum(
         variants.push(variant_ident);
         let variant_name_str = variant_ident.to_string();
 
-        let variant_meta_ident = format_ident!("___{}__{}", enum_ident, variant_ident);
+        let variant_meta_ident =
+            format_ident!("___{}__{}", enum_ident, variant_ident);
 
         lang_limits.push(quote! {
             #[repr(transparent)]
             pub struct #variant_meta_ident #ty_gen (#enum_ident #ty_gen);
 
-            impl #impl_gen ::design::ops::place::subplace::HasVariant<#variant_name_str>
+            impl #impl_gen
+                ::design::ops::place::subplace::HasVariant<#variant_name_str>
                 for #enum_ident #ty_gen
             #whr
             {
@@ -255,11 +281,16 @@ fn generate_for_enum(
         .collect::<Vec<_>>();
 
     lang_limits.push(quote! {
-        unsafe impl #impl_gen ::design::ops::place::subplace::Matchable for #enum_ident #ty_gen #whr {
+        unsafe impl #impl_gen
+            ::design::ops::place::subplace::Matchable
+            for #enum_ident #ty_gen
+        #whr
+        {
             const VARIANTS: &'static [&'static str] = &[ #(#variant_names),* ];
 
             unsafe fn variant_at(ptr: *const Self) -> &'static str {
-                // FIXME: this is unsound, but nothing else that we could do here instead :(
+                // FIXME: this is unsound, but nothing else that we could do
+                // here instead :(
                 match unsafe { &*ptr } {
                     #(Self::#variants {..} => #variant_names,)*
                 }

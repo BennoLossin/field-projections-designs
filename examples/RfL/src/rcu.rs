@@ -1,13 +1,19 @@
 use std::{
     pin::UnsafePinned,
     ptr,
-    sync::atomic::{AtomicPtr, Ordering},
+    sync::atomic::{
+        AtomicPtr,
+        Ordering,
+    },
 };
 
 use crate::{
     bindings,
     mutex::InsideOfMutex,
-    overwrite::{Overwrite, Shield},
+    overwrite::{
+        Overwrite,
+        Shield,
+    },
 };
 
 pub struct Rcu<P: RcuPointer> {
@@ -47,7 +53,10 @@ impl<P: RcuPointer> Rcu<P> {
         }
     }
 
-    pub unsafe fn read_raw<'a>(this: *const Self, guard: &'a RcuGuard) -> &'a P::Target {
+    pub unsafe fn read_raw<'a>(
+        this: *const Self,
+        guard: &'a RcuGuard,
+    ) -> &'a P::Target {
         let _ = guard;
         let ptr = UnsafePinned::raw_get(unsafe { &raw const (*this).ptr });
         let ptr = unsafe { ptr.as_ref_unchecked() };
