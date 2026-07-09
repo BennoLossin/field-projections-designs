@@ -1,5 +1,4 @@
 use std::{
-    error,
     io::{
         self,
         Write,
@@ -23,30 +22,23 @@ use quote::{
 use syn::{
     AttrStyle,
     Attribute,
-    Block,
     Error,
     Expr,
     ExprLit,
-    ExprRange,
     File,
     Item,
     ItemMod,
     Lit,
-    LitStr,
-    RangeLimits,
-    Stmt,
     parse::{
         End,
         Parse,
     },
     parse_quote,
     parse2,
-    punctuated::Punctuated,
     spanned::Spanned,
     visit_mut::{
         VisitMut,
         visit_item_mut,
-        visit_use_tree_mut,
     },
 };
 

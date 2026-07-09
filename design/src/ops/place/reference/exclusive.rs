@@ -10,7 +10,6 @@ use crate::ops::place::{
     PlaceHandle,
     ProjectPlace,
     ProxyPlace,
-    ReadPlace,
     borrowck::{
         AccessKind,
         Instant,

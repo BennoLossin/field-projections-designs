@@ -11,7 +11,6 @@ use crate::{
         ProxyPlace,
         ReadMetadata,
         ReadPlace,
-        WritePlace,
         borrowck::{
             AccessKind,
             Instant,
