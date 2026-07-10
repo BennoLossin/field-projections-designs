@@ -1,5 +1,6 @@
 use crate::{
     ops::place::{
+        BorrowPlace,
         DerefHandle,
         DerefPlace,
         PlaceHandle,
@@ -11,6 +12,7 @@ use crate::{
         borrowck::{
             AccessKind,
             Instant,
+            Lifetime,
         },
     },
     place::subplace::{
@@ -96,5 +98,25 @@ impl<T> ReadPlace for LocalHandle<T> {
 
     unsafe fn read_place(self) -> Self::Target {
         unsafe { self.ptr.read() }
+    }
+}
+
+impl<'a, T> BorrowPlace<&'a T> for LocalHandle<T> {
+    const ACCESS: AccessKind = AccessKind::Shared;
+    type Timing = Lifetime<'a>;
+    const SAFE: bool = true;
+
+    unsafe fn borrow(self) -> &'a T {
+        unsafe { self.ptr.as_ref_unchecked() }
+    }
+}
+
+impl<'a, T> BorrowPlace<&'a mut T> for LocalHandle<T> {
+    const ACCESS: AccessKind = AccessKind::Exclusive;
+    type Timing = Lifetime<'a>;
+    const SAFE: bool = true;
+
+    unsafe fn borrow(self) -> &'a mut T {
+        unsafe { self.ptr.cast_mut().as_mut_unchecked() }
     }
 }
