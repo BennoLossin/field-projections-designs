@@ -3,7 +3,7 @@ default: test-miri
 test-miri:
     cargo run
 
-rustdoc-flags := "-Z unstable-options --generate-link-to-definition --generate-macro-expansion"
+rustdoc-flags := "\"-Z unstable-options --generate-link-to-definition --generate-macro-expansion\""
 
 doc:
     RUSTDOCFLAGS={{ rustdoc-flags }} cargo doc --workspace --all --no-deps --document-private-items
