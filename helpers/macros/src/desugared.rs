@@ -90,7 +90,9 @@ fn desugared(block: &Block, error: &mut Option<TokenStream>) -> String {
         .expect("we added this")
         .lines()
         .map(|line| {
-            line.strip_prefix("    ")
+            // removing only 3 spaces, because rustdoc expects an additional
+            // space in each line
+            line.strip_prefix("   ")
                 .expect("rustfmt should've added indentation")
         })
         .intersperse("\n")
