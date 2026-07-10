@@ -80,4 +80,5 @@ pub mod pin;
 pub mod place;
 pub mod ptr;
 pub mod sync;
+pub mod utils;
 pub mod vec;

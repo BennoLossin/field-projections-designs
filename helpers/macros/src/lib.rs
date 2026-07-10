@@ -1,3 +1,5 @@
+#![feature(iter_intersperse)]
+
 use std::fs;
 
 use proc_macro::{
@@ -9,6 +11,7 @@ use syn::parse_macro_input;
 use crate::summary::SummaryArgs;
 
 mod adt_reflect;
+mod desugared;
 mod summary;
 mod utils;
 
@@ -35,4 +38,13 @@ pub fn summary(args: TokenStream, input: TokenStream) -> TokenStream {
 #[proc_macro]
 pub fn adt_reflect(input: TokenStream) -> TokenStream {
     adt_reflect::expand(parse_macro_input!(input as _)).into()
+}
+
+#[proc_macro_attribute]
+pub fn desugared(args: TokenStream, input: TokenStream) -> TokenStream {
+    desugared::expand(
+        parse_macro_input!(args as _),
+        parse_macro_input!(input as _),
+    )
+    .into()
 }
