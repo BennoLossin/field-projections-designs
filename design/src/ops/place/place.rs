@@ -94,7 +94,6 @@
 
 #[macros::summary(skip)]
 use crate::{
-    Metadata,
     ops::place::{
         borrowck::{
             AccessKind,
@@ -107,6 +106,7 @@ use crate::{
             VariantType,
         },
     },
+    ptr::Metadata,
 };
 
 #[macros::summary(skip)]

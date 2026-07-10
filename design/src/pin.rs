@@ -7,7 +7,6 @@ use std::{
 };
 
 use crate::{
-    Metadata,
     ops::place::{
         BorrowPlace,
         DerefHandle,
@@ -27,6 +26,7 @@ use crate::{
         },
         subplace::Subplace,
     },
+    ptr::Metadata,
 };
 
 impl<P> ProxyPlace for Pin<P>

@@ -7,8 +7,6 @@
 #![feature(box_vec_non_null)]
 #![feature(proc_macro_hygiene)]
 
-use std::ptr::Pointee;
-
 pub mod cell;
 pub mod lang_limits;
 pub mod mem;
@@ -18,5 +16,3 @@ pub mod pin;
 pub mod ptr;
 pub mod sync;
 pub mod vec;
-
-pub type Metadata<T> = <T as Pointee>::Metadata;

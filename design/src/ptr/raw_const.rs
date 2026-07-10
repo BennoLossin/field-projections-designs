@@ -1,7 +1,6 @@
 use std::ptr;
 
 use crate::{
-    Metadata,
     ops::place::{
         DerefHandle,
         DerefPlace,
@@ -17,6 +16,7 @@ use crate::{
         },
         subplace::Subplace,
     },
+    ptr::Metadata,
 };
 
 impl<T: ?Sized> ProxyPlace for *const T {

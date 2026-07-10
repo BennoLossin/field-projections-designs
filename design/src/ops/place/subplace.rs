@@ -3,7 +3,7 @@ use std::{
     ptr::Pointee,
 };
 
-use crate::Metadata;
+use crate::ptr::Metadata;
 
 pub unsafe trait Subplace: Sized {
     type Source: ?Sized;

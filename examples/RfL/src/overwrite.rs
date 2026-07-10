@@ -4,7 +4,6 @@ use std::ops::{
 };
 
 use design::{
-    Metadata,
     ops::place::{
         BorrowPlace,
         DerefHandle,
@@ -24,6 +23,7 @@ use design::{
         },
         subplace::Subplace,
     },
+    ptr::Metadata,
 };
 
 pub auto trait Overwrite {}
