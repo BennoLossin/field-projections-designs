@@ -48,6 +48,18 @@
 //! 4. [`cell`], [`mem`], [`option`], [`pin`], [`ptr`], [`sync`], [`mod@vec`] --
 //!    extensions to standard library modules that integrate them into the place
 //!    operations.
+//!
+//! ## Examples
+//!
+//! One of the main reasons for this crate is to showcase how code would be
+//! desugared with the current approach. In the list of crates on the left side,
+//! you can find several examples. They show both the sugared and desugared
+//! versions of the code in the documentation and are run as tests in this
+//! repository.
+//!
+//! A good starting point is the `E_simple` crate, which gives a gentle
+//! introduction into how the existing reference types would work in a place
+//! world.
 
 #![expect(incomplete_features)]
 // Needed for proper support of `?Sized` types.
