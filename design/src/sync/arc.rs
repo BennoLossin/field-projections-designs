@@ -31,7 +31,7 @@ impl<T: ?Sized> ProxyPlace for Arc<T> {
     type Handle = ArcHandle<T>;
 }
 
-impl<T: ?Sized> DerefHandle for Arc<T> {
+unsafe impl<T: ?Sized> DerefHandle for Arc<T> {
     const ACCESS: AccessKind = AccessKind::Shared;
     type Timing = Instant;
 
@@ -46,7 +46,7 @@ impl<T: ?Sized> PlaceHandle for ArcHandle<T> {
     type Target = T;
 }
 
-impl<'a, T: ?Sized> BorrowPlace<&'a T> for ArcHandle<T> {
+unsafe impl<'a, T: ?Sized> BorrowPlace<&'a T> for ArcHandle<T> {
     const ACCESS: AccessKind = AccessKind::Shared;
     type Timing = Lifetime<'a>;
     const SAFE: bool = true;

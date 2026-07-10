@@ -51,7 +51,7 @@ where
     type Target = H::Target;
 }
 
-impl<P> DerefHandle for Pin<P>
+unsafe impl<P> DerefHandle for Pin<P>
 where
     P: DerefHandle,
 {
@@ -66,7 +66,7 @@ where
     }
 }
 
-impl<H> ReadPlace for PinnedHandle<H>
+unsafe impl<H> ReadPlace for PinnedHandle<H>
 where
     H: ReadPlace,
     H::Target: Sized + Unpin,
@@ -79,7 +79,7 @@ where
     }
 }
 
-impl<H> ReadMetadata for PinnedHandle<H>
+unsafe impl<H> ReadMetadata for PinnedHandle<H>
 where
     H: ReadMetadata,
 {
@@ -88,7 +88,7 @@ where
     }
 }
 
-impl<H> MovePlace for PinnedHandle<H>
+unsafe impl<H> MovePlace for PinnedHandle<H>
 where
     H: MovePlace,
     H::Target: Sized + Unpin,
@@ -97,7 +97,7 @@ where
     const SAFE: bool = <H as MovePlace>::SAFE;
 }
 
-impl<H> WritePlace for PinnedHandle<H>
+unsafe impl<H> WritePlace for PinnedHandle<H>
 where
     H: WritePlace,
     H::Target: Sized,
@@ -110,7 +110,7 @@ where
     }
 }
 
-impl<H> DropPlace for PinnedHandle<H>
+unsafe impl<H> DropPlace for PinnedHandle<H>
 where
     H: DropPlace,
 {
@@ -125,7 +125,7 @@ pub unsafe trait DropHuskPinned: ProxyPlace {
     unsafe fn drop_husk_pinned(this: Self::Handle);
 }
 
-impl<P> DropHusk for Pin<P>
+unsafe impl<P> DropHusk for Pin<P>
 where
     P: DropHuskPinned,
 {
@@ -153,7 +153,7 @@ pub unsafe trait PinnableSubplace: Subplace {
     ) -> Self::StructualPinning<H>;
 }
 
-impl<H, S> ProjectPlace<S> for PinnedHandle<H>
+unsafe impl<H, S> ProjectPlace<S> for PinnedHandle<H>
 where
     H: ProjectPlace<S>,
     S: PinnableSubplace<Source = H::Target>,
@@ -168,8 +168,8 @@ where
 
 // FIXME: we probably need something specific to pin here to, but haven't given
 // it much thought...
-impl<H, PointeeTiming, PointerTiming> DerefPlace<PointeeTiming, PointerTiming>
-    for PinnedHandle<H>
+unsafe impl<H, PointeeTiming, PointerTiming>
+    DerefPlace<PointeeTiming, PointerTiming> for PinnedHandle<H>
 where
     Self::Target: ProxyPlace,
     H: DerefPlace<PointeeTiming, PointerTiming>,
@@ -186,7 +186,7 @@ where
     }
 }
 
-impl<H, Output> BorrowPlace<Pin<Output>> for PinnedHandle<H>
+unsafe impl<H, Output> BorrowPlace<Pin<Output>> for PinnedHandle<H>
 where
     H: BorrowPlace<Output>,
 {

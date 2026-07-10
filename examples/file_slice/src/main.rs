@@ -30,7 +30,7 @@ fn offset_fd(fd: RawFd, offset: usize) {
     todo!("advance {fd} in the kernel by {offset} bytes")
 }
 
-impl<S> ProjectPlace<S> for FileSliceHandle<S::Source>
+unsafe impl<S> ProjectPlace<S> for FileSliceHandle<S::Source>
 where
     S: Subplace,
     S::Source: Sized,

@@ -48,7 +48,7 @@ impl<T: ?Sized> PlaceHandle for LocalHandle<T> {
     type Target = T;
 }
 
-impl<P> DerefPlace<P::Timing, Instant> for LocalHandle<P>
+unsafe impl<P> DerefPlace<P::Timing, Instant> for LocalHandle<P>
 where
     P: DerefHandle,
 {
@@ -62,13 +62,14 @@ where
     }
 }
 
-impl<T: ?Sized + Matchable> ReadVariant for LocalHandle<T> {
+unsafe impl<T: ?Sized + Matchable> ReadVariant for LocalHandle<T> {
     unsafe fn read_variant(self) -> &'static str {
         unsafe { T::variant_at(self.ptr) }
     }
 }
 
-impl<T, const VARIANT: &'static str> VariantPlace<VARIANT> for LocalHandle<T>
+unsafe impl<T, const VARIANT: &'static str> VariantPlace<VARIANT>
+    for LocalHandle<T>
 where
     T: ?Sized + HasVariant<VARIANT>,
 {
@@ -79,7 +80,7 @@ where
     }
 }
 
-impl<S> ProjectPlace<S> for LocalHandle<S::Source>
+unsafe impl<S> ProjectPlace<S> for LocalHandle<S::Source>
 where
     S: Subplace,
 {
@@ -92,7 +93,7 @@ where
     }
 }
 
-impl<T> ReadPlace for LocalHandle<T> {
+unsafe impl<T> ReadPlace for LocalHandle<T> {
     const ACCESS: AccessKind = AccessKind::Shared;
     const SAFE: bool = true;
 
@@ -101,7 +102,7 @@ impl<T> ReadPlace for LocalHandle<T> {
     }
 }
 
-impl<'a, T> BorrowPlace<&'a T> for LocalHandle<T> {
+unsafe impl<'a, T> BorrowPlace<&'a T> for LocalHandle<T> {
     const ACCESS: AccessKind = AccessKind::Shared;
     type Timing = Lifetime<'a>;
     const SAFE: bool = true;
@@ -111,7 +112,7 @@ impl<'a, T> BorrowPlace<&'a T> for LocalHandle<T> {
     }
 }
 
-impl<'a, T> BorrowPlace<&'a mut T> for LocalHandle<T> {
+unsafe impl<'a, T> BorrowPlace<&'a mut T> for LocalHandle<T> {
     const ACCESS: AccessKind = AccessKind::Exclusive;
     type Timing = Lifetime<'a>;
     const SAFE: bool = true;

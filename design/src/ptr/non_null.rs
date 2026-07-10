@@ -22,7 +22,7 @@ impl<T: ?Sized> PlaceHandle for NonNull<T> {
     type Target = T;
 }
 
-impl<T: ?Sized> DerefHandle for NonNull<T> {
+unsafe impl<T: ?Sized> DerefHandle for NonNull<T> {
     const ACCESS: AccessKind = AccessKind::Untracked;
     type Timing = Instant;
 
@@ -31,7 +31,7 @@ impl<T: ?Sized> DerefHandle for NonNull<T> {
     }
 }
 
-impl<S: Subplace> ProjectPlace<S> for NonNull<S::Source> {
+unsafe impl<S: Subplace> ProjectPlace<S> for NonNull<S::Source> {
     type Projected = NonNull<S::Target>;
 
     unsafe fn project_place(self, subplace: S) -> Self::Projected {

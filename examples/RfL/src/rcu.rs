@@ -28,7 +28,7 @@ pub fn read_lock() -> RcuGuard {
     RcuGuard(())
 }
 
-pub trait RcuPointer: Sized {
+pub unsafe trait RcuPointer: Sized {
     type Target;
 
     fn into_raw(this: Self) -> *mut Self::Target;
@@ -105,7 +105,7 @@ impl<P> Drop for RcuOld<P> {
     }
 }
 
-impl<T> RcuPointer for Box<T> {
+unsafe impl<T> RcuPointer for Box<T> {
     type Target = T;
 
     fn into_raw(this: Self) -> *mut Self::Target {

@@ -105,7 +105,8 @@ where
     }
 }
 
-impl<const VARIANT: &'static str, T> HasVariant<VARIANT> for Unnormalized<T>
+unsafe impl<const VARIANT: &'static str, T> HasVariant<VARIANT>
+    for Unnormalized<T>
 where
     T: HasVariant<VARIANT>,
     VariantType<T, VARIANT>: UnwrapUnnormalize,

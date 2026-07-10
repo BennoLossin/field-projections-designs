@@ -42,7 +42,7 @@ impl<'a, T: ?Sized> PlaceHandle for MutHandle<'a, T> {
     type Target = T;
 }
 
-impl<T: ?Sized> DerefHandle for &mut T {
+unsafe impl<T: ?Sized> DerefHandle for &mut T {
     const ACCESS: AccessKind = AccessKind::Shared;
     type Timing = Instant;
 
@@ -56,7 +56,9 @@ impl<T: ?Sized> DerefHandle for &mut T {
     }
 }
 
-impl<'a, S: Subplace<Target: 'a>> ProjectPlace<S> for MutHandle<'a, S::Source> {
+unsafe impl<'a, S: Subplace<Target: 'a>> ProjectPlace<S>
+    for MutHandle<'a, S::Source>
+{
     type Projected = MutHandle<'a, S::Target>;
 
     unsafe fn project_place(self, subplace: S) -> Self::Projected {
@@ -67,7 +69,7 @@ impl<'a, S: Subplace<Target: 'a>> ProjectPlace<S> for MutHandle<'a, S::Source> {
     }
 }
 
-impl<'a, P: ?Sized> DerefPlace<P::Timing, Instant> for MutHandle<'a, P>
+unsafe impl<'a, P: ?Sized> DerefPlace<P::Timing, Instant> for MutHandle<'a, P>
 where
     P: DerefHandle,
 {
@@ -80,7 +82,7 @@ where
     }
 }
 
-impl<'a, 'b, T> BorrowPlace<&'b mut T> for MutHandle<'a, T>
+unsafe impl<'a, 'b, T> BorrowPlace<&'b mut T> for MutHandle<'a, T>
 where
     'a: 'b,
 {

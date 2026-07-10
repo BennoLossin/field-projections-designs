@@ -82,7 +82,7 @@ impl<'a, T> ProxyPlace for MutexGuard<'a, T> {
 }
 
 // auto-derived from the deref[mut] impl
-impl<'a, T> DerefHandle for MutexGuard<'a, T> {
+unsafe impl<'a, T> DerefHandle for MutexGuard<'a, T> {
     const ACCESS: AccessKind = AccessKind::Shared;
     type Timing = Instant;
 

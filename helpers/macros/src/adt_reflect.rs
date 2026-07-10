@@ -251,7 +251,7 @@ fn generate_for_enum(
             #[repr(transparent)]
             pub struct #variant_meta_ident #ty_gen (#enum_ident #ty_gen);
 
-            impl #impl_gen
+            unsafe impl #impl_gen
                 ::design::place::HasVariant<#variant_name_str>
                 for #enum_ident #ty_gen
             #whr

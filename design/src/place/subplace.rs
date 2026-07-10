@@ -55,7 +55,9 @@ pub unsafe trait Matchable {
     unsafe fn variant_at(ptr: *const Self) -> &'static str;
 }
 
-pub trait HasVariant<const VARIANT: &'static str>: Matchable {
+pub unsafe trait HasVariant<const VARIANT: &'static str>:
+    Matchable
+{
     type VariantType;
 }
 

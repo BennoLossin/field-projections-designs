@@ -30,7 +30,7 @@ impl<T: ?Sized> PlaceHandle for *mut T {
     type Target = T;
 }
 
-impl<T: ?Sized> DerefHandle for *mut T {
+unsafe impl<T: ?Sized> DerefHandle for *mut T {
     const ACCESS: AccessKind = AccessKind::Untracked;
     type Timing = Instant;
 
@@ -39,7 +39,7 @@ impl<T: ?Sized> DerefHandle for *mut T {
     }
 }
 
-impl<T> ReadPlace for *mut T {
+unsafe impl<T> ReadPlace for *mut T {
     const ACCESS: AccessKind = AccessKind::Untracked;
     const SAFE: bool = false;
 
@@ -48,18 +48,18 @@ impl<T> ReadPlace for *mut T {
     }
 }
 
-impl<T: ?Sized> ReadMetadata for *mut T {
+unsafe impl<T: ?Sized> ReadMetadata for *mut T {
     fn metadata(self) -> Metadata<Self::Target> {
         ptr::metadata(self)
     }
 }
 
-impl<T> MovePlace for *mut T {
+unsafe impl<T> MovePlace for *mut T {
     const ACCESS: AccessKind = AccessKind::Untracked;
     const SAFE: bool = false;
 }
 
-impl<T> WritePlace for *mut T {
+unsafe impl<T> WritePlace for *mut T {
     const ACCESS: AccessKind = AccessKind::Untracked;
     const SAFE: bool = false;
 
@@ -68,17 +68,17 @@ impl<T> WritePlace for *mut T {
     }
 }
 
-impl<T> DropPlace for *mut T {
+unsafe impl<T> DropPlace for *mut T {
     unsafe fn drop_place(self) {
         unsafe { self.drop_in_place() }
     }
 }
 
-impl<T> DropHusk for *mut T {
+unsafe impl<T> DropHusk for *mut T {
     unsafe fn drop_husk(_: Self::Handle) {}
 }
 
-impl<S: Subplace> ProjectPlace<S> for *mut S::Source {
+unsafe impl<S: Subplace> ProjectPlace<S> for *mut S::Source {
     type Projected = *mut S::Target;
 
     unsafe fn project_place(self, subplace: S) -> Self::Projected {
@@ -90,7 +90,7 @@ impl<S: Subplace> ProjectPlace<S> for *mut S::Source {
     }
 }
 
-impl<P> DerefPlace<P::Timing, Instant> for *mut P
+unsafe impl<P> DerefPlace<P::Timing, Instant> for *mut P
 where
     P: ?Sized + DerefHandle,
 {

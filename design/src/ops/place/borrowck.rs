@@ -1,6 +1,6 @@
 use std::marker::PhantomData;
 
-pub trait Timing {}
+pub trait Timing: sealed::Sealed {}
 
 pub struct Instant;
 pub struct Lifetime<'a>(PhantomData<&'a ()>);
@@ -14,4 +14,11 @@ pub enum AccessKind {
     Shared,
     Exclusive,
     Untracked,
+}
+
+mod sealed {
+    pub trait Sealed {}
+    impl Sealed for super::Instant {}
+    impl Sealed for super::Lifetime<'_> {}
+    impl Sealed for super::UntilDrop {}
 }

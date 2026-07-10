@@ -121,32 +121,33 @@ pub trait PlaceHandle: Sized {
     type Target: ?Sized;
 }
 
-pub trait DerefHandle: ProxyPlace {
+pub unsafe trait DerefHandle: ProxyPlace {
     const ACCESS: AccessKind;
     type Timing: Timing;
 
     unsafe fn handle_from_raw(this: *const Self) -> Self::Handle;
 }
 
-pub trait ReadPlace: PlaceHandle {
+pub unsafe trait ReadPlace: PlaceHandle {
     const ACCESS: AccessKind;
     const SAFE: bool;
 
     unsafe fn read_place(self) -> Self::Target;
 }
 
-pub trait ReadMetadata: PlaceHandle {
+pub unsafe trait ReadMetadata: PlaceHandle {
     fn metadata(self) -> Metadata<Self::Target>;
 }
 
-pub trait ReadVariant: PlaceHandle
+pub unsafe trait ReadVariant: PlaceHandle
 where
     Self::Target: Matchable,
 {
     unsafe fn read_variant(self) -> &'static str;
 }
 
-pub trait VariantPlace<const VARIANT: &'static str>: ReadVariant
+pub unsafe trait VariantPlace<const VARIANT: &'static str>:
+    ReadVariant
 where
     Self::Target: Matchable,
     Self::Target: HasVariant<VARIANT>,
@@ -156,27 +157,27 @@ where
     unsafe fn cast(self) -> Self::ToVariant;
 }
 
-pub trait MovePlace: ReadPlace {
+pub unsafe trait MovePlace: ReadPlace {
     const ACCESS: AccessKind;
     const SAFE: bool;
 }
 
-pub trait WritePlace: PlaceHandle {
+pub unsafe trait WritePlace: PlaceHandle {
     const ACCESS: AccessKind;
     const SAFE: bool;
 
     unsafe fn write_place(self, value: Self::Target);
 }
 
-pub trait DropPlace: PlaceHandle {
+pub unsafe trait DropPlace: PlaceHandle {
     unsafe fn drop_place(self);
 }
 
-pub trait DropHusk: ProxyPlace {
+pub unsafe trait DropHusk: ProxyPlace {
     unsafe fn drop_husk(this: Self::Handle);
 }
 
-pub trait ProjectPlace<S>: PlaceHandle
+pub unsafe trait ProjectPlace<S>: PlaceHandle
 where
     S: Subplace<Source = Self::Target>,
 {
@@ -185,7 +186,8 @@ where
     unsafe fn project_place(self, subplace: S) -> Self::Projected;
 }
 
-pub trait DerefPlace<PointeeTiming, PointerTiming>: PlaceHandle
+pub unsafe trait DerefPlace<PointeeTiming, PointerTiming>:
+    PlaceHandle
 where
     Self::Target: ProxyPlace,
     PointeeTiming: Timing,
@@ -203,7 +205,7 @@ pub trait Indexable<Idx> {
 }
 
 /// `place[idx]`
-pub trait IndexPlace<Idx, H>: Indexable<Idx>
+pub unsafe trait IndexPlace<Idx, H>: Indexable<Idx>
 where
     H: PlaceHandle<Target = Self>,
 {
@@ -212,7 +214,7 @@ where
     fn index(self, idx: Idx) -> Self::ElementHandle;
 }
 
-pub trait BorrowPlace<Output>: PlaceHandle {
+pub unsafe trait BorrowPlace<Output>: PlaceHandle {
     const ACCESS: AccessKind;
     type Timing: Timing;
     const SAFE: bool;

@@ -34,7 +34,7 @@ impl<'a, T: ?Sized> PlaceHandle for RefHandle<'a, T> {
     type Target = T;
 }
 
-impl<'a, T: ?Sized> DerefHandle for &'a T {
+unsafe impl<'a, T: ?Sized> DerefHandle for &'a T {
     const ACCESS: AccessKind = AccessKind::Shared;
     type Timing = Lifetime<'a>;
 
@@ -49,7 +49,9 @@ impl<'a, T: ?Sized> DerefHandle for &'a T {
     }
 }
 
-impl<'a, S: Subplace<Target: 'a>> ProjectPlace<S> for RefHandle<'a, S::Source> {
+unsafe impl<'a, S: Subplace<Target: 'a>> ProjectPlace<S>
+    for RefHandle<'a, S::Source>
+{
     type Projected = RefHandle<'a, S::Target>;
 
     unsafe fn project_place(self, subplace: S) -> Self::Projected {
@@ -60,7 +62,7 @@ impl<'a, S: Subplace<Target: 'a>> ProjectPlace<S> for RefHandle<'a, S::Source> {
     }
 }
 
-impl<'a, P: ?Sized> DerefPlace<P::Timing, Instant> for RefHandle<'a, P>
+unsafe impl<'a, P: ?Sized> DerefPlace<P::Timing, Instant> for RefHandle<'a, P>
 where
     P: DerefHandle,
 {
@@ -73,7 +75,7 @@ where
     }
 }
 
-impl<'a, 'b, T> BorrowPlace<&'b T> for RefHandle<'a, T>
+unsafe impl<'a, 'b, T> BorrowPlace<&'b T> for RefHandle<'a, T>
 where
     'a: 'b,
 {
@@ -86,7 +88,7 @@ where
     }
 }
 
-impl<'a, T> ReadPlace for RefHandle<'a, T> {
+unsafe impl<'a, T> ReadPlace for RefHandle<'a, T> {
     const ACCESS: AccessKind = AccessKind::Shared;
     const SAFE: bool = true;
 

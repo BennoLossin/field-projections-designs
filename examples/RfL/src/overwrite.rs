@@ -101,7 +101,7 @@ where
     type Target = H::Target;
 }
 
-impl<P> DerefHandle for Shield<P>
+unsafe impl<P> DerefHandle for Shield<P>
 where
     P: DerefHandle,
 {
@@ -116,7 +116,7 @@ where
     }
 }
 
-impl<H> ReadPlace for ShieldHandle<H>
+unsafe impl<H> ReadPlace for ShieldHandle<H>
 where
     H: ReadPlace,
     H::Target: Sized + Unpin,
@@ -129,7 +129,7 @@ where
     }
 }
 
-impl<H> ReadMetadata for ShieldHandle<H>
+unsafe impl<H> ReadMetadata for ShieldHandle<H>
 where
     H: ReadMetadata,
 {
@@ -138,7 +138,7 @@ where
     }
 }
 
-impl<H> MovePlace for ShieldHandle<H>
+unsafe impl<H> MovePlace for ShieldHandle<H>
 where
     H: MovePlace,
     H::Target: Sized + Unpin,
@@ -147,7 +147,7 @@ where
     const SAFE: bool = <H as MovePlace>::SAFE;
 }
 
-impl<H> WritePlace for ShieldHandle<H>
+unsafe impl<H> WritePlace for ShieldHandle<H>
 where
     H: WritePlace,
     H::Target: Sized,
@@ -160,7 +160,7 @@ where
     }
 }
 
-impl<H> DropPlace for ShieldHandle<H>
+unsafe impl<H> DropPlace for ShieldHandle<H>
 where
     H: DropPlace,
 {
@@ -175,7 +175,7 @@ pub unsafe trait DropHuskShield: ProxyPlace {
     unsafe fn drop_husk_pinned(this: Self::Handle);
 }
 
-impl<P> DropHusk for Shield<P>
+unsafe impl<P> DropHusk for Shield<P>
 where
     P: DropHuskShield,
 {
@@ -233,7 +233,7 @@ where
 }
 */
 
-impl<H, S> ProjectPlace<S> for ShieldHandle<H>
+unsafe impl<H, S> ProjectPlace<S> for ShieldHandle<H>
 where
     H: ProjectPlace<S>,
     S: ShieldableSubplace<Source = H::Target>,
@@ -246,8 +246,8 @@ where
     }
 }
 
-impl<H, PointeeTiming, PointerTiming> DerefPlace<PointeeTiming, PointerTiming>
-    for ShieldHandle<H>
+unsafe impl<H, PointeeTiming, PointerTiming>
+    DerefPlace<PointeeTiming, PointerTiming> for ShieldHandle<H>
 where
     Self::Target: ProxyPlace,
     H: DerefPlace<PointeeTiming, PointerTiming>,
@@ -264,7 +264,7 @@ where
     }
 }
 
-impl<H, Output> BorrowPlace<Shield<Output>> for ShieldHandle<H>
+unsafe impl<H, Output> BorrowPlace<Shield<Output>> for ShieldHandle<H>
 where
     H: BorrowPlace<Output>,
 {

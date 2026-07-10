@@ -24,7 +24,7 @@ impl<T> PlaceHandle for VecHandle<T> {
     type Target = [T];
 }
 
-impl<'a, T> BorrowPlace<&'a [T]> for VecHandle<T> {
+unsafe impl<'a, T> BorrowPlace<&'a [T]> for VecHandle<T> {
     const ACCESS: AccessKind = AccessKind::Shared;
     type Timing = Lifetime<'a>;
     const SAFE: bool = true;
@@ -34,7 +34,7 @@ impl<'a, T> BorrowPlace<&'a [T]> for VecHandle<T> {
     }
 }
 
-impl<T> DerefHandle for Vec<T> {
+unsafe impl<T> DerefHandle for Vec<T> {
     const ACCESS: AccessKind = AccessKind::Shared;
 
     type Timing = Instant;

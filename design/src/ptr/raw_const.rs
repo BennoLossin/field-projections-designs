@@ -27,7 +27,7 @@ impl<T: ?Sized> PlaceHandle for *const T {
     type Target = T;
 }
 
-impl<T: ?Sized> DerefHandle for *const T {
+unsafe impl<T: ?Sized> DerefHandle for *const T {
     const ACCESS: AccessKind = AccessKind::Untracked;
     type Timing = Instant;
 
@@ -36,7 +36,7 @@ impl<T: ?Sized> DerefHandle for *const T {
     }
 }
 
-impl<T> ReadPlace for *const T {
+unsafe impl<T> ReadPlace for *const T {
     const ACCESS: AccessKind = AccessKind::Untracked;
     const SAFE: bool = false;
 
@@ -45,18 +45,18 @@ impl<T> ReadPlace for *const T {
     }
 }
 
-impl<T: ?Sized> ReadMetadata for *const T {
+unsafe impl<T: ?Sized> ReadMetadata for *const T {
     fn metadata(self) -> Metadata<Self::Target> {
         ptr::metadata(self)
     }
 }
 
-impl<T> MovePlace for *const T {
+unsafe impl<T> MovePlace for *const T {
     const ACCESS: AccessKind = AccessKind::Untracked;
     const SAFE: bool = false;
 }
 
-impl<S: Subplace> ProjectPlace<S> for *const S::Source {
+unsafe impl<S: Subplace> ProjectPlace<S> for *const S::Source {
     type Projected = *const S::Target;
 
     unsafe fn project_place(self, subplace: S) -> Self::Projected {
@@ -68,7 +68,7 @@ impl<S: Subplace> ProjectPlace<S> for *const S::Source {
     }
 }
 
-impl<P> DerefPlace<P::Timing, Instant> for *const P
+unsafe impl<P> DerefPlace<P::Timing, Instant> for *const P
 where
     P: ?Sized + DerefHandle,
 {
