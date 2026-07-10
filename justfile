@@ -3,14 +3,16 @@ default: test-miri
 test-miri:
     cargo run
 
+rustdoc-flags := "-Z unstable-options --generate-link-to-definition --generate-macro-expansion"
+
 doc:
-    RUSTDOCFLAGS="-Z unstable-options --generate-link-to-definition" cargo doc --workspace --all --no-deps --document-private-items
+    RUSTDOCFLAGS={{ rustdoc-flags }} cargo doc --workspace --all --no-deps --document-private-items
 
 legacy-doc:
     #!/usr/bin/env bash
     set -euxo pipefail
 
-    export RUSTDOCFLAGS="-Z unstable-options --generate-link-to-definition"
+    export RUSTDOCFLAGS={{ rustdoc-flags }}
 
     pushd legacy
     for design in *; do
