@@ -23,5 +23,5 @@
 ///   $variant { .. })` or `pattern_type!($enum is $variant(..))` depending on
 ///   the variant having named or unnamed fields.
 ///
-/// [`Subplace`]: crate::subplace::Subplace
+/// [`Subplace`]: crate::place::Subplace
 pub use macros::adt_reflect;
