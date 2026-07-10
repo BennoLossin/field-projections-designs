@@ -10,6 +10,7 @@ use crate::summary::SummaryArgs;
 
 mod adt_reflect;
 mod summary;
+mod utils;
 
 #[proc_macro]
 pub fn raw_summary(input: TokenStream) -> TokenStream {

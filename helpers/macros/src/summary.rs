@@ -1,14 +1,3 @@
-use std::{
-    io::{
-        self,
-        Write,
-    },
-    process::{
-        Command,
-        Stdio,
-    },
-};
-
 use proc_macro2::{
     Literal,
     Span,
@@ -41,6 +30,8 @@ use syn::{
         visit_item_mut,
     },
 };
+
+use crate::utils::rustfmt;
 
 #[derive(Debug)]
 pub(crate) enum SummaryArgs {
@@ -153,12 +144,12 @@ fn generate_summary(item: &Item, errors: &mut Vec<Error>) -> String {
     StripDistractions { skip: false }.visit_item_mut(&mut stripped);
     let content = stripped.into_token_stream().to_string();
     match rustfmt(&content) {
-        Ok(Ok(formatted)) => formatted.trim().to_string(),
+        Ok(Ok(formatted)) => formatted,
         Ok(Err((code, stderr))) => {
             errors.push(Error::new(
                 def_span(item),
                 format!(
-                    "While fromatting the summary for this item, \
+                    "While formatting the summary for this item, \
                     encountered an error: code={code:?}, stderr:\n{stderr}"
                 ),
             ));
@@ -260,26 +251,6 @@ impl VisitMut for StripDistractions {
             block.stmts.clear();
         }
     }
-}
-
-fn rustfmt(txt: &str) -> io::Result<Result<String, (Option<i32>, String)>> {
-    let mut cmd = Command::new("rustfmt");
-    cmd.stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped());
-    let mut fmt = cmd.spawn()?;
-    fmt.stdin
-        .as_mut()
-        .expect("command to have stdin")
-        .write_all(txt.as_bytes())?;
-    let output = fmt.wait_with_output()?;
-    if !output.status.success() {
-        let err = String::from_utf8_lossy(&output.stderr).to_string();
-        return Ok(Err((output.status.code(), err)));
-    }
-    let contents = String::from_utf8(output.stdout)
-        .expect("rustfmt to have valid utf8 output");
-    Ok(Ok(contents))
 }
 
 fn def_span(item: &Item) -> Span {
