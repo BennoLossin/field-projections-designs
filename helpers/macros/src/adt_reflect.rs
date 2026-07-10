@@ -78,6 +78,7 @@ pub(crate) fn expand(Input { items }: Input) -> TokenStream {
             #(#lang_limits_items)*
         }
 
+        #[doc(hidden)]
         macro_rules! variant_of {
             #(#variant_macro_arms)*
             ($($fallback:tt)*) => {
@@ -85,6 +86,7 @@ pub(crate) fn expand(Input { items }: Input) -> TokenStream {
             };
         }
 
+        #[doc(hidden)]
         macro_rules! field_of {
             #(#field_macro_arms)*
             ($($fallback:tt)*) => {
