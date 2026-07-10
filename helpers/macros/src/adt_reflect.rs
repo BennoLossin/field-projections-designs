@@ -190,7 +190,7 @@ fn generate_fields(
             }
 
             unsafe impl #impl_gen
-                ::design::ops::place::subplace::Subplace
+                ::design::place::Subplace
                 for #meta_ident #ty_gen
             #whr
             {
@@ -250,7 +250,7 @@ fn generate_for_enum(
             pub struct #variant_meta_ident #ty_gen (#enum_ident #ty_gen);
 
             impl #impl_gen
-                ::design::ops::place::subplace::HasVariant<#variant_name_str>
+                ::design::place::HasVariant<#variant_name_str>
                 for #enum_ident #ty_gen
             #whr
             {
@@ -282,7 +282,7 @@ fn generate_for_enum(
 
     lang_limits.push(quote! {
         unsafe impl #impl_gen
-            ::design::ops::place::subplace::Matchable
+            ::design::place::Matchable
             for #enum_ident #ty_gen
         #whr
         {

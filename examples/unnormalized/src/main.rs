@@ -6,13 +6,13 @@
 use design::{
     lang_limits::adt_reflect,
     ops::place::{
-        LocalHandle,
         ProjectPlace,
         ReadPlace,
         ReadVariant,
         VariantPlace,
         WrapPlace,
     },
+    place::LocalHandle,
 };
 
 use crate::unnormalized::{

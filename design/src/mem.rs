@@ -1,9 +1,11 @@
 use std::mem::MaybeUninit;
 
-use crate::ops::place::{
-    PlaceWrapper,
-    WrapPlace,
-    subplace::{
+use crate::{
+    ops::place::{
+        PlaceWrapper,
+        WrapPlace,
+    },
+    place::{
         Subplace,
         TransmutedSubplace,
     },

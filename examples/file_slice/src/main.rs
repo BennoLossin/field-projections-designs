@@ -4,10 +4,12 @@ use std::{
     os::fd::RawFd,
 };
 
-use design::ops::place::{
-    PlaceHandle,
-    ProjectPlace,
-    subplace::Subplace,
+use design::{
+    ops::place::{
+        PlaceHandle,
+        ProjectPlace,
+    },
+    place::Subplace,
 };
 
 pub struct FileSlice<T> {

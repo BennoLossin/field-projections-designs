@@ -1,17 +1,19 @@
-use crate::ops::place::{
-    DerefHandle,
-    DerefPlace,
-    PlaceHandle,
-    ProjectPlace,
-    ProxyPlace,
-    ReadPlace,
-    ReadVariant,
-    VariantPlace,
-    borrowck::{
-        AccessKind,
-        Instant,
+use crate::{
+    ops::place::{
+        DerefHandle,
+        DerefPlace,
+        PlaceHandle,
+        ProjectPlace,
+        ProxyPlace,
+        ReadPlace,
+        ReadVariant,
+        VariantPlace,
+        borrowck::{
+            AccessKind,
+            Instant,
+        },
     },
-    subplace::{
+    place::subplace::{
         HasVariant,
         Matchable,
         Subplace,

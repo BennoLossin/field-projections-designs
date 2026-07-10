@@ -6,17 +6,19 @@ use std::{
     },
 };
 
-use design::ops::place::{
-    DerefHandle,
-    MutHandle,
-    PlaceWrapper,
-    ProxyPlace,
-    WrapPlace,
-    borrowck::{
-        AccessKind,
-        Instant,
+use design::{
+    ops::place::{
+        DerefHandle,
+        PlaceWrapper,
+        ProxyPlace,
+        WrapPlace,
+        borrowck::{
+            AccessKind,
+            Instant,
+        },
     },
-    subplace::{
+    place::{
+        MutHandle,
         Subplace,
         TransmutedSubplace,
     },

@@ -24,8 +24,8 @@ use crate::{
             AccessKind,
             Timing,
         },
-        subplace::Subplace,
     },
+    place::Subplace,
     ptr::Metadata,
 };
 

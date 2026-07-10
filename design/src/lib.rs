@@ -13,6 +13,7 @@ pub mod mem;
 pub mod ops;
 pub mod option;
 pub mod pin;
+pub mod place;
 pub mod ptr;
 pub mod sync;
 pub mod vec;

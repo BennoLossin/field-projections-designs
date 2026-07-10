@@ -21,8 +21,8 @@ use design::{
             AccessKind,
             Timing,
         },
-        subplace::Subplace,
     },
+    place::Subplace,
     ptr::Metadata,
 };
 

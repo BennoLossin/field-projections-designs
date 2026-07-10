@@ -6,12 +6,14 @@ use design::{
         BorrowPlace,
         DerefHandle,
         DerefPlace,
-        LocalHandle,
-        MutHandle,
         ProjectPlace,
         ReadPlace,
-        RefHandle,
         WrapPlace,
+    },
+    place::{
+        LocalHandle,
+        MutHandle,
+        RefHandle,
     },
     sync::arc::ArcHandle,
 };

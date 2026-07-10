@@ -3,9 +3,11 @@ use design::{
     ops::place::{
         BorrowPlace,
         DerefPlace,
+        ProjectPlace,
+    },
+    place::{
         LocalHandle,
         MutHandle,
-        ProjectPlace,
     },
 };
 

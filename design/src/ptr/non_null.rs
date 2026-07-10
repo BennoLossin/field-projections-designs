@@ -1,15 +1,17 @@
 use std::ptr::NonNull;
 
-use crate::ops::place::{
-    DerefHandle,
-    PlaceHandle,
-    ProjectPlace,
-    ProxyPlace,
-    borrowck::{
-        AccessKind,
-        Instant,
+use crate::{
+    ops::place::{
+        DerefHandle,
+        PlaceHandle,
+        ProjectPlace,
+        ProxyPlace,
+        borrowck::{
+            AccessKind,
+            Instant,
+        },
     },
-    subplace::Subplace,
+    place::Subplace,
 };
 
 impl<T: ?Sized> ProxyPlace for NonNull<T> {

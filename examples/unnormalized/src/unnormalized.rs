@@ -1,7 +1,9 @@
-use design::ops::place::{
-    PlaceWrapper,
-    WrapPlace,
-    subplace::{
+use design::{
+    ops::place::{
+        PlaceWrapper,
+        WrapPlace,
+    },
+    place::{
         HasVariant,
         Matchable,
         Subplace,

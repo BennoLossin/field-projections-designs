@@ -3,19 +3,21 @@ use std::{
     ptr::NonNull,
 };
 
-use crate::ops::place::{
-    BorrowPlace,
-    DerefHandle,
-    DerefPlace,
-    PlaceHandle,
-    ProjectPlace,
-    ProxyPlace,
-    borrowck::{
-        AccessKind,
-        Instant,
-        Lifetime,
+use crate::{
+    ops::place::{
+        BorrowPlace,
+        DerefHandle,
+        DerefPlace,
+        PlaceHandle,
+        ProjectPlace,
+        ProxyPlace,
+        borrowck::{
+            AccessKind,
+            Instant,
+            Lifetime,
+        },
     },
-    subplace::Subplace,
+    place::subplace::Subplace,
 };
 
 pub struct MutHandle<'a, T: ?Sized> {

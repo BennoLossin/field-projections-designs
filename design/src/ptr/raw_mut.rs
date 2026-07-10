@@ -17,8 +17,8 @@ use crate::{
             AccessKind,
             Instant,
         },
-        subplace::Subplace,
     },
+    place::Subplace,
     ptr::Metadata,
 };
 

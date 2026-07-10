@@ -47,6 +47,8 @@
 //!   handle to that subplace,
 //! - [`IndexPlace`] ...?
 //!
+//! [`LocalHandle`]: crate::place::LocalHandle
+//!
 //! ### Place Wrappers
 //!
 //! Place wrappers are a special kind of place proxy. They "physically contain"
@@ -94,41 +96,21 @@
 
 #[macros::summary(skip)]
 use crate::{
-    ops::place::{
-        borrowck::{
-            AccessKind,
-            Timing,
-        },
-        subplace::{
-            HasVariant,
-            Matchable,
-            Subplace,
-            VariantType,
-        },
+    ops::place::borrowck::{
+        AccessKind,
+        Timing,
+    },
+    place::{
+        HasVariant,
+        Matchable,
+        Subplace,
+        VariantType,
     },
     ptr::Metadata,
 };
 
 #[macros::summary(skip)]
 pub mod borrowck;
-#[macros::summary(skip)]
-pub mod fallible;
-#[macros::summary(skip)]
-pub mod subplace;
-
-#[macros::summary(skip)]
-mod locals;
-#[macros::summary(skip)]
-mod reference;
-
-#[macros::summary(skip)]
-pub use self::{
-    locals::LocalHandle,
-    reference::{
-        MutHandle,
-        RefHandle,
-    },
-};
 
 pub trait ProxyPlace {
     type Handle: PlaceHandle;
