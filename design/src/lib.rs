@@ -56,7 +56,8 @@
 #![feature(adt_const_params)]
 #![feature(unsized_const_params)]
 #![feature(box_vec_non_null)]
-#![feature(proc_macro_hygiene)]
+#![feature(cfg_version)]
+#![cfg_attr(not(version("1.99")), feature(proc_macro_hygiene))]
 
 pub mod cell;
 pub mod lang_limits;
