@@ -119,18 +119,13 @@ where
     }
 }
 
-// Need this trait to avoid unsoundness when calling the inner `drop_husk` that
-// could do some non-pinned allowed things...
-pub unsafe trait DropHuskPinned: ProxyPlace {
-    unsafe fn drop_husk_pinned(this: Self::Handle);
-}
-
 unsafe impl<P> DropHusk for Pin<P>
 where
-    P: DropHuskPinned,
+    P: DropHusk,
 {
     unsafe fn drop_husk(this: Self::Handle) {
-        unsafe { P::drop_husk_pinned(this.0) };
+        // The entire pointee is dropped, so no pin guarantee is left.
+        unsafe { P::drop_husk(this.0) };
     }
 }
 
