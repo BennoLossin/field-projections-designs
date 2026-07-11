@@ -15,7 +15,7 @@ use design::{
         MutHandle,
         RefHandle,
     },
-    sync::arc::ArcHandle,
+    sync::ArcHandle,
 };
 
 use crate::{

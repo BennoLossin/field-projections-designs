@@ -1,1 +1,2 @@
-pub mod arc;
+mod arc;
+pub use self::arc::ArcHandle;
