@@ -73,7 +73,8 @@ unsafe impl PinnableSubplace for field_of!(Struct, b) {
     }
 }
 
-fn print<T: Display>(value: T) {
+/// Prints a value.
+fn print(value: impl Display) {
     println!("{value}");
 }
 
@@ -81,7 +82,8 @@ include!("basic.rs");
 include!("nested_mut.rs");
 include!("pin.rs");
 
-pub fn main() {
+#[doc(hidden)]
+fn main() {
     basic();
     nested_mut();
     #[cfg(not(feature = "move_trait"))]
