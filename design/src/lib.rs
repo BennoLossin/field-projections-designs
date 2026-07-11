@@ -72,9 +72,11 @@
 #![feature(sync_unsafe_cell)]
 #![feature(layout_for_ptr)]
 #![feature(proc_macro_hygiene)]
+#![feature(auto_traits)]
 
 pub mod cell;
 pub mod lang_limits;
+pub mod marker;
 pub mod mem;
 pub mod ops;
 pub mod pin;
