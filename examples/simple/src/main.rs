@@ -18,6 +18,10 @@
 use std::{
     fmt::Display,
     ops::AddAssign,
+    pin::{
+        Pin,
+        pin,
+    },
 };
 
 use design::{
@@ -26,9 +30,14 @@ use design::{
         BorrowPlace,
         DerefPlace,
         DropPlace,
+        PlaceHandle,
         ProjectPlace,
         ReadPlace,
         WritePlace,
+    },
+    pin::{
+        PinnableSubplace,
+        PinnedHandle,
     },
     place::{
         LocalHandle,
@@ -43,14 +52,40 @@ adt_reflect!(
     }
 );
 
+unsafe impl PinnableSubplace for field_of!(Struct, a) {
+    type StructualPinning<H: PlaceHandle<Target = Self::Target>> = H;
+
+    unsafe fn from_pinned<H: PlaceHandle<Target = Self::Target>>(
+        handle: H,
+    ) -> Self::StructualPinning<H> {
+        handle
+    }
+}
+
+unsafe impl PinnableSubplace for field_of!(Struct, b) {
+    type StructualPinning<H: PlaceHandle<Target = Self::Target>> =
+        PinnedHandle<H>;
+
+    unsafe fn from_pinned<H: PlaceHandle<Target = Self::Target>>(
+        handle: H,
+    ) -> Self::StructualPinning<H> {
+        unsafe { PinnedHandle::new_unchecked(handle) }
+    }
+}
+
 fn print<T: Display>(value: T) {
     println!("{value}");
 }
 
 include!("basic.rs");
 include!("nested_mut.rs");
+include!("pin.rs");
 
 pub fn main() {
     basic();
     nested_mut();
+    #[cfg(not(feature = "move_trait"))]
+    pin_field_tracked();
+    #[cfg(feature = "move_trait")]
+    pin_move();
 }
