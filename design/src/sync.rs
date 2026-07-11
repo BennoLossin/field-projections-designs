@@ -1,2 +1,10 @@
 mod arc;
-pub use self::arc::ArcHandle;
+mod arc_ref;
+
+pub use self::{
+    arc::ArcHandle,
+    arc_ref::{
+        ArcRef,
+        ArcRefHandle,
+    },
+};

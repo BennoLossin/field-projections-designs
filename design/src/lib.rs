@@ -70,6 +70,7 @@
 #![feature(unsized_const_params)]
 #![feature(box_vec_non_null)]
 #![feature(sync_unsafe_cell)]
+#![feature(layout_for_ptr)]
 #![feature(proc_macro_hygiene)]
 
 pub mod cell;
