@@ -62,15 +62,15 @@
 //! world.
 
 #![expect(incomplete_features)]
+#![allow(unused_features)]
 // Needed for proper support of `?Sized` types.
 #![feature(ptr_metadata)]
 // Needed for enum support (`&'static str` in const generics).
 #![feature(adt_const_params)]
 #![feature(unsized_const_params)]
 #![feature(box_vec_non_null)]
-#![feature(cfg_version)]
 #![feature(sync_unsafe_cell)]
-#![cfg_attr(not(version("1.99")), feature(proc_macro_hygiene))]
+#![feature(proc_macro_hygiene)]
 
 pub mod cell;
 pub mod lang_limits;
