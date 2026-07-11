@@ -45,7 +45,7 @@
 //!    handles for builtin types and local variables.
 //! 3. [`lang_limits`] -- APIs that work around compiler & language limitations,
 //!    required to write examples.
-//! 4. [`cell`], [`mem`], [`option`], [`pin`], [`ptr`], [`sync`], [`mod@vec`] --
+//! 4. [`cell`], [`mem`], [`pin`], [`ptr`], [`sync`], [`mod@vec`] --
 //!    extensions to standard library modules that integrate them into the place
 //!    operations.
 //!
@@ -69,13 +69,13 @@
 #![feature(unsized_const_params)]
 #![feature(box_vec_non_null)]
 #![feature(cfg_version)]
+#![feature(sync_unsafe_cell)]
 #![cfg_attr(not(version("1.99")), feature(proc_macro_hygiene))]
 
 pub mod cell;
 pub mod lang_limits;
 pub mod mem;
 pub mod ops;
-pub mod option;
 pub mod pin;
 pub mod place;
 pub mod ptr;
