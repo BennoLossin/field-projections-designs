@@ -40,11 +40,13 @@ where
     }
 }
 
-impl<P, S, T> TransmutedSubplace<P, S, T>
+impl<Sub, Source, Target> TransmutedSubplace<Sub, Source, Target>
 where
-    P: Subplace,
+    Sub: Subplace,
+    Source: ?Sized,
+    Target: ?Sized,
 {
-    pub unsafe fn new_unchecked(p: P) -> Self {
+    pub unsafe fn new_unchecked(p: Sub) -> Self {
         Self(p, PhantomData, PhantomData)
     }
 }
