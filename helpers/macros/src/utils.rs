@@ -1,4 +1,5 @@
 use std::{
+    fmt,
     io::{
         self,
         Write,
@@ -31,4 +32,31 @@ pub(crate) fn rustfmt(
         .trim()
         .to_string();
     Ok(Ok(contents))
+}
+
+pub(crate) struct HumanList<I>(pub I);
+
+impl<I> fmt::Display for HumanList<I>
+where
+    for<'a> &'a I: IntoIterator,
+    for<'a> <&'a I as IntoIterator>::Item: fmt::Display,
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut iter = IntoIterator::into_iter(&self.0);
+        let Some(first) = iter.next() else {
+            return write!(f, "<nothing>");
+        };
+        let Some(second) = iter.next() else {
+            return write!(f, "{first}");
+        };
+        let Some(mut next) = iter.next() else {
+            return write!(f, "{first} or {second}");
+        };
+        write!(f, "{first}, {second}, ")?;
+        for other in iter {
+            write!(f, "{next}, ")?;
+            next = other;
+        }
+        write!(f, "or {next}")
+    }
 }
