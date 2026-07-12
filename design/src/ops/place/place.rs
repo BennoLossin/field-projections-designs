@@ -371,10 +371,18 @@ pub trait Indexable<Idx> {
 
 /// `place[idx]` -- Index into `Self` via the handle `H`.
 ///
-///
-///
 /// The same way that [`Indexable`] is the generic version of [`PlaceProxy`],
 /// this trait is the generic version of [`DerefPlace`].
+///
+/// Indexing -- like dereferencing -- also performs two accesses from the
+/// borrow-checker's perspective:
+///
+/// - the place that comes out of the index operation (`place[idx]`), and
+/// - the place that is being indexed into (`place`).
+///
+/// For this reason, there are two [`AccessKind`] constants and two [`Timing`]
+/// generics, see the documentation of [`DerefPlace`] for more information about
+/// them.
 pub unsafe trait IndexPlace<Idx, H, PointeeTiming, PointerTiming>:
     Indexable<Idx>
 where
@@ -385,7 +393,11 @@ where
     /// The type of handles to indexed elements.
     type ElementHandle: PlaceHandle<Target = Self::Element>;
 
+    /// The access permissions to the contents of the place handled by `Self`
+    /// required by [`Self::index`].
     const POINTEE_ACCESS: AccessKind;
+    /// The access permissions to the place handled by `Self` required by
+    /// [`Self::index`].
     const POINTER_ACCESS: AccessKind;
     /// Whether [`Self::index`] is safe when [`Self::POINTEE_ACCESS`] and
     /// [`Self::POINTER_ACCESS`] are honored for `PointeeTiming` and
@@ -404,18 +416,23 @@ where
 /// Dereferencing from a borrow-checker perspective requires access to two
 /// places:
 ///
-/// - the place that's being dereferenced (i.e. the one that's represented by
-///   the value that's dereferenced), and
-/// - the place that contains that place (i.e. the value whose type implements
-///   [`PlaceProxy`]).
+/// - the place that comes out of the dereference operation (`*place`), and
+/// - the place that's being dereferenced (`place`).
 ///
-/// This results in this operation having two associated constants of type
-/// [`AccessKind`] that specify the access permissions required for the two
-/// accesses. And also having two [`Timing`] generics[^1].
+/// For this reason, the dereference operation has two associated constants of
+/// type [`AccessKind`] that specify the access permissions required for the two
+/// accesses and two [`Timing`] generics[^1] called `PointeeTiming` and
+/// `PointerTiming`.
 ///
-/// This means that one can encode that a pointer can be invalidated without
-/// invalidating pointers that were derived from dereferenced pointers. In
-/// variables:
+/// Given a pointer `ptr`, the place that comes out of the dereference is `*ptr`
+/// and the place that is being dereferenced is `ptr`. The `PointerTiming`
+/// generic and [`Self::POINTER_ACCESS`] constant control how the borrow checker
+/// treats the access to `ptr`, while `PointeeTiming` and
+/// [`Self::POINTEE_ACCESS`] specify the kind of access to `*ptr`.
+///
+/// Utilizing this fact, one can encode that a pointer can be invalidated
+/// without invalidating pointers that were derived from dereferenced pointers.
+/// This is the case for mutable references:
 ///
 /// ```ignore
 /// fn overwrite_nested<'a>(ptr: &mut &'a mut Struct, make: impl FnOnce() -> &'a mut Struct) {
@@ -448,7 +465,8 @@ where
     /// The access permissions to the contents of the place handled by `Self`
     /// required by [`Self::deref_place`].
     const POINTEE_ACCESS: AccessKind;
-    /// The access permissions required by `Self` in [`Self::deref_place`].
+    /// The access permissions to the place handled by `Self` required by
+    /// [`Self::deref_place`].
     const POINTER_ACCESS: AccessKind;
     /// Whether [`Self::deref_place`] is safe when [`Self::POINTEE_ACCESS`] and
     /// [`Self::POINTER_ACCESS`] are honored for `PointeeTiming` and
