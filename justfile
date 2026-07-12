@@ -1,4 +1,7 @@
-default: test-miri
+default: watch-doc
+
+watch-doc:
+    fd -e rs -e toml -e patch | entr -c just doc
 
 test-miri:
     cargo run
