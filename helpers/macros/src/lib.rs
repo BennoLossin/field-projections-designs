@@ -29,7 +29,7 @@ pub fn summary(args: TokenStream, input: TokenStream) -> TokenStream {
     let args = parse_macro_input!(args as SummaryArgs);
     match args {
         SummaryArgs::Toplevel => {
-            summary::expand(parse_macro_input!(input as _)).into()
+            summary::expand(parse_macro_input!(input)).into()
         }
         SummaryArgs::Skip => input,
     }
@@ -37,15 +37,12 @@ pub fn summary(args: TokenStream, input: TokenStream) -> TokenStream {
 
 #[proc_macro]
 pub fn adt_reflect(input: TokenStream) -> TokenStream {
-    adt_reflect::expand(parse_macro_input!(input as _)).into()
+    adt_reflect::expand(parse_macro_input!(input)).into()
 }
 
 /// Adds the body of a function to its documentation.
 #[proc_macro_attribute]
 pub fn desugared(args: TokenStream, input: TokenStream) -> TokenStream {
-    desugared::expand(
-        parse_macro_input!(args as _),
-        parse_macro_input!(input as _),
-    )
-    .into()
+    desugared::expand(parse_macro_input!(args), parse_macro_input!(input))
+        .into()
 }
