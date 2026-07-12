@@ -211,7 +211,7 @@ where
 {
     type ElementHandle: PlaceHandle<Target = Self::Element>;
 
-    fn index(self, idx: Idx) -> Self::ElementHandle;
+    fn index(handle: H, idx: Idx) -> Self::ElementHandle;
 }
 
 pub unsafe trait BorrowPlace<Output>: PlaceHandle {
