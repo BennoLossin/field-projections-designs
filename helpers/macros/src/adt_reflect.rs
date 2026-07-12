@@ -79,18 +79,28 @@ pub(crate) fn expand(Input { items }: Input) -> TokenStream {
         }
 
         #[doc(hidden)]
+        #[macro_export]
         macro_rules! variant_of {
             #(#variant_macro_arms)*
             ($($fallback:tt)*) => {
-                ::core::compile_error!("unknown type or variant")
+                ::core::compile_error!(::core::concat!(
+                    "unknown type or variant: `",
+                    ::core::stringify!($($fallback)*),
+                    "`",
+                ))
             };
         }
 
         #[doc(hidden)]
+        #[macro_export]
         macro_rules! field_of {
             #(#field_macro_arms)*
             ($($fallback:tt)*) => {
-                ::core::compile_error!("unknown type, variant, or field")
+                ::core::compile_error!(::core::concat!(
+                    "unknown type, variant, or field: `",
+                    ::core::stringify!($($fallback)*),
+                    "`",
+                ))
             };
         }
 
