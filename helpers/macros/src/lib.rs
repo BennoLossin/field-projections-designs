@@ -40,6 +40,7 @@ pub fn adt_reflect(input: TokenStream) -> TokenStream {
     adt_reflect::expand(parse_macro_input!(input as _)).into()
 }
 
+/// Adds the body of a function to its documentation.
 #[proc_macro_attribute]
 pub fn desugared(args: TokenStream, input: TokenStream) -> TokenStream {
     desugared::expand(
