@@ -34,7 +34,6 @@ pub(crate) fn rustfmt(
     Ok(Ok(contents))
 }
 
-#[expect(dead_code)]
 pub(crate) struct HumanList<I>(pub I);
 
 impl<I> fmt::Display for HumanList<I>
