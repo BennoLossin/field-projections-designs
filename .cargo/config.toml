@@ -5,4 +5,5 @@ rustdocflags = [
 
   "--generate-link-to-definition",
   "--generate-macro-expansion",
+  "--sort-modules-by-appearance",
 ]
