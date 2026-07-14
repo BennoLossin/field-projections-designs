@@ -13,6 +13,7 @@ use crate::summary::SummaryArgs;
 mod adt_reflect;
 mod desugared;
 mod ensure_full_reexport;
+mod sealed;
 mod summary;
 mod utils;
 
@@ -51,4 +52,10 @@ pub fn desugared(args: TokenStream, input: TokenStream) -> TokenStream {
 #[proc_macro]
 pub fn ensure_full_reexport(input: TokenStream) -> TokenStream {
     ensure_full_reexport::expand(parse_macro_input!(input)).into()
+}
+
+/// Make a trait or impl sealed.
+#[proc_macro_attribute]
+pub fn sealed(args: TokenStream, input: TokenStream) -> TokenStream {
+    sealed::expand(parse_macro_input!(args), parse_macro_input!(input)).into()
 }

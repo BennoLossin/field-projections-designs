@@ -1,1 +1,4 @@
-pub use macros::desugared;
+pub use macros::{
+    desugared,
+    sealed,
+};
