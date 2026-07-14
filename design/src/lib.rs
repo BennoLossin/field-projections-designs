@@ -77,6 +77,7 @@
 
 pub mod boxed;
 pub mod cell;
+pub mod collections;
 pub mod lang_limits;
 pub mod mem;
 pub mod ops;
