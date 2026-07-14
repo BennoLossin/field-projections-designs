@@ -27,7 +27,9 @@ use syn::{
     spanned::Spanned,
     visit_mut::{
         VisitMut,
+        visit_item_fn_mut,
         visit_item_mut,
+        visit_trait_item_fn_mut,
     },
 };
 
@@ -243,10 +245,12 @@ impl VisitMut for StripDistractions {
     }
 
     fn visit_item_fn_mut(&mut self, i: &mut syn::ItemFn) {
+        visit_item_fn_mut(self, i);
         i.block.stmts.clear();
     }
 
     fn visit_trait_item_fn_mut(&mut self, i: &mut syn::TraitItemFn) {
+        visit_trait_item_fn_mut(self, i);
         if let Some(block) = &mut i.default {
             block.stmts.clear();
         }
