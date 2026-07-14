@@ -6,16 +6,12 @@ watch-doc:
 test-miri:
     cargo run
 
-rustdoc-flags := "\"-Z unstable-options --generate-link-to-definition --generate-macro-expansion\""
-
 doc:
-    RUSTDOCFLAGS={{ rustdoc-flags }} cargo doc --workspace --all --no-deps --document-private-items
+    cargo doc --workspace --all --no-deps --document-private-items
 
 legacy-doc:
     #!/usr/bin/env bash
     set -euxo pipefail
-
-    export RUSTDOCFLAGS={{ rustdoc-flags }}
 
     pushd legacy
     for design in *; do
