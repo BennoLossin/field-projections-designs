@@ -48,10 +48,7 @@ unsafe impl<T: ?Sized> ReadMetadata for *const T {
     }
 }
 
-unsafe impl<T> MovePlace for *const T {
-    const ACCESS: AccessKind = AccessKind::Untracked;
-    const SAFE: bool = false;
-}
+unsafe impl<T> MovePlace for *const T {}
 
 unsafe impl<S: Subplace> ProjectPlace<S> for *const S::Source {
     type Projected = *const S::Target;

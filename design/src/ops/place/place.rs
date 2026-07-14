@@ -131,10 +131,7 @@ pub unsafe trait ReadPlace: PlaceHandle {
     unsafe fn read_place(self) -> Self::Target;
 }
 
-pub unsafe trait MovePlace: ReadPlace {
-    const ACCESS: AccessKind;
-    const SAFE: bool;
-}
+pub unsafe trait MovePlace: ReadPlace {}
 
 pub unsafe trait WritePlace: PlaceHandle {
     const ACCESS: AccessKind;

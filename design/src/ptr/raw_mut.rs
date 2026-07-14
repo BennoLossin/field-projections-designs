@@ -51,10 +51,7 @@ unsafe impl<T: ?Sized> ReadMetadata for *mut T {
     }
 }
 
-unsafe impl<T> MovePlace for *mut T {
-    const ACCESS: AccessKind = AccessKind::Untracked;
-    const SAFE: bool = false;
-}
+unsafe impl<T> MovePlace for *mut T {}
 
 unsafe impl<T> WritePlace for *mut T {
     const ACCESS: AccessKind = AccessKind::Untracked;

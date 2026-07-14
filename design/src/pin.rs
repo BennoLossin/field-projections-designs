@@ -87,8 +87,6 @@ where
     H: MovePlace,
     H::Target: Sized + Unpin,
 {
-    const ACCESS: AccessKind = <H as MovePlace>::ACCESS;
-    const SAFE: bool = <H as MovePlace>::SAFE;
 }
 
 unsafe impl<H> WritePlace for PinnedHandle<H>
