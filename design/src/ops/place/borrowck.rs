@@ -1,24 +1,23 @@
 use std::marker::PhantomData;
 
-pub trait Timing: sealed::Sealed {}
+use macros::sealed;
+
+#[sealed]
+pub trait Timing {}
 
 pub struct Instant;
 pub struct Lifetime<'a>(PhantomData<&'a ()>);
 pub struct UntilDrop;
 
+#[sealed]
 impl Timing for Instant {}
+#[sealed]
 impl Timing for Lifetime<'_> {}
+#[sealed]
 impl Timing for UntilDrop {}
 
 pub enum AccessKind {
     Shared,
     Exclusive,
     Untracked,
-}
-
-mod sealed {
-    pub trait Sealed {}
-    impl Sealed for super::Instant {}
-    impl Sealed for super::Lifetime<'_> {}
-    impl Sealed for super::UntilDrop {}
 }
