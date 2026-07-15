@@ -13,7 +13,6 @@ use std::{
 use crate::{
     ops::place::{
         BorrowPlace,
-        DerefHandle,
         PlaceHandle,
         ProxyPlace,
         borrowck::{
@@ -42,9 +41,7 @@ pub struct ArcHandle<T: ?Sized>(NonNull<ArcInner<T>>);
 
 impl<T: ?Sized> ProxyPlace for Arc<T> {
     type Handle = ArcHandle<T>;
-}
 
-unsafe impl<T: ?Sized> DerefHandle for Arc<T> {
     const ACCESS: AccessKind = AccessKind::Shared;
     type Timing = Instant;
 

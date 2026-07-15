@@ -6,7 +6,6 @@ use std::{
 use crate::{
     ops::place::{
         BorrowPlace,
-        DerefHandle,
         DerefPlace,
         DropPlace,
         PlaceHandle,
@@ -46,13 +45,7 @@ impl<'a, T: ?Sized> MutHandle<'a, T> {
 
 impl<'a, T: ?Sized> ProxyPlace for &'a mut T {
     type Handle = MutHandle<'a, T>;
-}
 
-impl<'a, T: ?Sized> PlaceHandle for MutHandle<'a, T> {
-    type Target = T;
-}
-
-unsafe impl<T: ?Sized> DerefHandle for &mut T {
     const ACCESS: AccessKind = AccessKind::Shared;
     type Timing = Instant;
 
@@ -64,6 +57,10 @@ unsafe impl<T: ?Sized> DerefHandle for &mut T {
             _lt: PhantomData,
         }
     }
+}
+
+impl<'a, T: ?Sized> PlaceHandle for MutHandle<'a, T> {
+    type Target = T;
 }
 
 unsafe impl<T> WritePlace for MutHandle<'_, T> {
@@ -105,7 +102,7 @@ unsafe impl<'a, S: Subplace<Target: 'a>> ProjectPlace<S>
 
 unsafe impl<'a, P: ?Sized> DerefPlace<P::Timing, Instant> for MutHandle<'a, P>
 where
-    P: DerefHandle,
+    P: ProxyPlace,
 {
     const POINTEE_ACCESS: AccessKind = P::ACCESS;
     const POINTER_ACCESS: AccessKind = AccessKind::Shared;

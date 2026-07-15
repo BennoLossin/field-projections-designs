@@ -17,6 +17,7 @@ use crate::{
         WrapPlace,
         borrowck::{
             AccessKind,
+            Instant,
             Lifetime,
         },
     },
@@ -82,6 +83,13 @@ pub struct CellMutHandle<'b, T> {
 
 impl<'b, T> ProxyPlace for RefMut<'b, T> {
     type Handle = CellMutHandle<'b, T>;
+
+    const ACCESS: AccessKind = AccessKind::Shared;
+    type Timing = Instant;
+
+    unsafe fn handle_from_raw(_this: *const Self) -> Self::Handle {
+        CellMutHandle { phantom: PhantomData }
+    }
 }
 
 impl<T> PlaceHandle for CellMutHandle<'_, T> {

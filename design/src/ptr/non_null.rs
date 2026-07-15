@@ -2,7 +2,6 @@ use std::ptr::NonNull;
 
 use crate::{
     ops::place::{
-        DerefHandle,
         PlaceHandle,
         ProjectPlace,
         ProxyPlace,
@@ -16,19 +15,17 @@ use crate::{
 
 impl<T: ?Sized> ProxyPlace for NonNull<T> {
     type Handle = Self;
-}
 
-impl<T: ?Sized> PlaceHandle for NonNull<T> {
-    type Target = T;
-}
-
-unsafe impl<T: ?Sized> DerefHandle for NonNull<T> {
     const ACCESS: AccessKind = AccessKind::Untracked;
     type Timing = Instant;
 
     unsafe fn handle_from_raw(this: *const Self) -> Self::Handle {
         unsafe { *this }
     }
+}
+
+impl<T: ?Sized> PlaceHandle for NonNull<T> {
+    type Target = T;
 }
 
 unsafe impl<S: Subplace> ProjectPlace<S> for NonNull<S::Source> {

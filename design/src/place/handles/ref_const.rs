@@ -6,7 +6,6 @@ use std::{
 use crate::{
     ops::place::{
         BorrowPlace,
-        DerefHandle,
         DerefPlace,
         PlaceHandle,
         ProjectPlace,
@@ -28,13 +27,7 @@ pub struct RefHandle<'a, T: ?Sized> {
 
 impl<'a, T: ?Sized> ProxyPlace for &'a T {
     type Handle = RefHandle<'a, T>;
-}
 
-impl<'a, T: ?Sized> PlaceHandle for RefHandle<'a, T> {
-    type Target = T;
-}
-
-unsafe impl<'a, T: ?Sized> DerefHandle for &'a T {
     const ACCESS: AccessKind = AccessKind::Shared;
     type Timing = Lifetime<'a>;
 
@@ -47,6 +40,10 @@ unsafe impl<'a, T: ?Sized> DerefHandle for &'a T {
             _lt: PhantomData,
         }
     }
+}
+
+impl<'a, T: ?Sized> PlaceHandle for RefHandle<'a, T> {
+    type Target = T;
 }
 
 unsafe impl<'a, S: Subplace<Target: 'a>> ProjectPlace<S>
@@ -64,7 +61,7 @@ unsafe impl<'a, S: Subplace<Target: 'a>> ProjectPlace<S>
 
 unsafe impl<'a, P: ?Sized> DerefPlace<P::Timing, Instant> for RefHandle<'a, P>
 where
-    P: DerefHandle,
+    P: ProxyPlace,
 {
     const POINTEE_ACCESS: AccessKind = P::ACCESS;
     const POINTER_ACCESS: AccessKind = AccessKind::Shared;

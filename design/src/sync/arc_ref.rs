@@ -10,7 +10,6 @@ use std::{
 use crate::{
     ops::place::{
         BorrowPlace,
-        DerefHandle,
         DerefPlace,
         PlaceHandle,
         ProjectPlace,
@@ -50,6 +49,16 @@ impl<T: ?Sized> Drop for ArcRef<T> {
 
 impl<T: ?Sized> ProxyPlace for ArcRef<T> {
     type Handle = ArcRefHandle<T>;
+
+    const ACCESS: AccessKind = AccessKind::Shared;
+    type Timing = Instant;
+
+    unsafe fn handle_from_raw(this: *const Self) -> Self::Handle {
+        let head = unsafe { (*this).head };
+        let layout = unsafe { (*this).layout };
+        let data = unsafe { (*this).data };
+        ArcRefHandle { head, layout, data }
+    }
 }
 
 pub struct ArcRefHandle<T: ?Sized> {
@@ -132,7 +141,7 @@ unsafe impl<'a, T: ?Sized> BorrowPlace<&'a T> for ArcRefHandle<T> {
 
 unsafe impl<T> DerefPlace<T::Timing, UntilDrop> for ArcRefHandle<T>
 where
-    T: ?Sized + DerefHandle,
+    T: ?Sized + ProxyPlace,
 {
     const POINTEE_ACCESS: AccessKind = T::ACCESS;
     const POINTER_ACCESS: AccessKind = AccessKind::Shared;

@@ -8,7 +8,6 @@ use std::{
 
 use design::{
     ops::place::{
-        DerefHandle,
         PlaceWrapper,
         ProxyPlace,
         WrapPlace,
@@ -79,10 +78,7 @@ impl<T> DerefMut for MutexGuard<'_, T> {
 // auto-derived from the deref[mut] impl
 impl<'a, T> ProxyPlace for MutexGuard<'a, T> {
     type Handle = MutHandle<'a, T>;
-}
 
-// auto-derived from the deref[mut] impl
-unsafe impl<'a, T> DerefHandle for MutexGuard<'a, T> {
     const ACCESS: AccessKind = AccessKind::Shared;
     type Timing = Instant;
 

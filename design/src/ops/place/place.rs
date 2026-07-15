@@ -41,8 +41,6 @@
 //!
 //! - a [`LocalHandle`] is created whenever a static, local variable, or
 //!   temporary is accessed,
-//! - [`DerefHandle`] allows dereferencing a handle, producing
-//!   another handle that now points at the pointee of the original place,
 //! - [`ProjectPlace`] allows to access a subplace of a place, yielding a
 //!   handle to that subplace,
 //! - [`IndexPlace`] ...?
@@ -114,18 +112,16 @@ pub mod borrowck;
 
 pub trait ProxyPlace {
     type Handle: PlaceHandle;
+
+    const ACCESS: AccessKind;
+    type Timing: Timing;
+
+    unsafe fn handle_from_raw(this: *const Self) -> Self::Handle;
 }
 
 /// A *handle* to a place.
 pub trait PlaceHandle: Sized {
     type Target: ?Sized;
-}
-
-pub unsafe trait DerefHandle: ProxyPlace {
-    const ACCESS: AccessKind;
-    type Timing: Timing;
-
-    unsafe fn handle_from_raw(this: *const Self) -> Self::Handle;
 }
 
 pub unsafe trait ReadPlace: PlaceHandle {

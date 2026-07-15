@@ -2,7 +2,6 @@ use std::ptr::NonNull;
 
 use crate::ops::place::{
     BorrowPlace,
-    DerefHandle,
     PlaceHandle,
     ProxyPlace,
     borrowck::{
@@ -14,6 +13,19 @@ use crate::ops::place::{
 
 impl<T> ProxyPlace for Vec<T> {
     type Handle = VecHandle<T>;
+
+    const ACCESS: AccessKind = AccessKind::Shared;
+    type Timing = Instant;
+
+    unsafe fn handle_from_raw(this: *const Self) -> Self::Handle {
+        let this = this.cast_mut();
+        // FIXME(unsound)
+        let vec = unsafe { &mut *this };
+        let len = vec.len();
+        let ptr = Vec::as_non_null(vec);
+        let ptr = NonNull::slice_from_raw_parts(ptr, len);
+        VecHandle { ptr }
+    }
 }
 
 pub struct VecHandle<T> {
@@ -31,21 +43,5 @@ unsafe impl<'a, T> BorrowPlace<&'a [T]> for VecHandle<T> {
 
     unsafe fn borrow(self) -> &'a [T] {
         unsafe { self.ptr.as_ref() }
-    }
-}
-
-unsafe impl<T> DerefHandle for Vec<T> {
-    const ACCESS: AccessKind = AccessKind::Shared;
-
-    type Timing = Instant;
-
-    unsafe fn handle_from_raw(this: *const Self) -> Self::Handle {
-        let this = this.cast_mut();
-        // FIXME(unsound)
-        let vec = unsafe { &mut *this };
-        let len = vec.len();
-        let ptr = Vec::as_non_null(vec);
-        let ptr = NonNull::slice_from_raw_parts(ptr, len);
-        VecHandle { ptr }
     }
 }

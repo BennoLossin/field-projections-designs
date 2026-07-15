@@ -6,7 +6,6 @@ use std::ops::{
 use design::{
     ops::place::{
         BorrowPlace,
-        DerefHandle,
         DerefPlace,
         DropHusk,
         DropPlace,
@@ -84,6 +83,16 @@ where
     P: ProxyPlace,
 {
     type Handle = ShieldHandle<P::Handle>;
+
+    const ACCESS: AccessKind = P::ACCESS;
+    type Timing = P::Timing;
+
+    unsafe fn handle_from_raw(this: *const Self) -> Self::Handle {
+        let ptr: *const Shield<P> = this;
+        let ptr: *const P = ptr.cast();
+        let handle = unsafe { P::handle_from_raw(ptr) };
+        ShieldHandle(handle)
+    }
 }
 
 pub struct PinnedHandle<H>(H);
@@ -99,21 +108,6 @@ where
     H: PlaceHandle,
 {
     type Target = H::Target;
-}
-
-unsafe impl<P> DerefHandle for Shield<P>
-where
-    P: DerefHandle,
-{
-    const ACCESS: AccessKind = P::ACCESS;
-    type Timing = P::Timing;
-
-    unsafe fn handle_from_raw(this: *const Self) -> Self::Handle {
-        let ptr: *const Shield<P> = this;
-        let ptr: *const P = ptr.cast();
-        let handle = unsafe { P::handle_from_raw(ptr) };
-        ShieldHandle(handle)
-    }
 }
 
 unsafe impl<H> ReadPlace for ShieldHandle<H>

@@ -2,7 +2,6 @@ use std::ptr;
 
 use crate::{
     ops::place::{
-        DerefHandle,
         DerefPlace,
         MovePlace,
         PlaceHandle,
@@ -21,19 +20,17 @@ use crate::{
 
 impl<T: ?Sized> ProxyPlace for *const T {
     type Handle = Self;
-}
 
-impl<T: ?Sized> PlaceHandle for *const T {
-    type Target = T;
-}
-
-unsafe impl<T: ?Sized> DerefHandle for *const T {
     const ACCESS: AccessKind = AccessKind::Untracked;
     type Timing = Instant;
 
     unsafe fn handle_from_raw(this: *const Self) -> Self::Handle {
         unsafe { *this }
     }
+}
+
+impl<T: ?Sized> PlaceHandle for *const T {
+    type Target = T;
 }
 
 unsafe impl<T> ReadPlace for *const T {
@@ -70,7 +67,7 @@ unsafe impl<S: Subplace> ProjectPlace<S> for *const S::Source {
 
 unsafe impl<P> DerefPlace<P::Timing, Instant> for *const P
 where
-    P: ?Sized + DerefHandle,
+    P: ?Sized + ProxyPlace,
 {
     const POINTEE_ACCESS: AccessKind = P::ACCESS;
     const POINTER_ACCESS: AccessKind = AccessKind::Untracked;

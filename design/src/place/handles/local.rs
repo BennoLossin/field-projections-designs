@@ -1,7 +1,6 @@
 use crate::{
     ops::place::{
         BorrowPlace,
-        DerefHandle,
         DerefPlace,
         PlaceHandle,
         ProjectPlace,
@@ -50,7 +49,7 @@ impl<T: ?Sized> PlaceHandle for LocalHandle<T> {
 
 unsafe impl<P> DerefPlace<P::Timing, Instant> for LocalHandle<P>
 where
-    P: DerefHandle,
+    P: ProxyPlace,
 {
     const POINTEE_ACCESS: AccessKind = P::ACCESS;
     const POINTER_ACCESS: AccessKind = P::ACCESS;
