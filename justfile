@@ -1,7 +1,7 @@
 default: watch-doc
 
 watch-doc:
-    fd -e rs -e toml -e patch | entr -c just doc
+    fd -e rs -e toml -e patch | entr -c -c just doc
 
 test-miri:
     cargo run
