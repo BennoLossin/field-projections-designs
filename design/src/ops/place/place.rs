@@ -131,6 +131,84 @@ pub unsafe trait ReadPlace: PlaceHandle {
     unsafe fn read_place(self) -> Self::Target;
 }
 
+pub unsafe trait MovePlace: ReadPlace {
+    const ACCESS: AccessKind;
+    const SAFE: bool;
+}
+
+pub unsafe trait WritePlace: PlaceHandle {
+    const ACCESS: AccessKind;
+    const SAFE: bool;
+
+    unsafe fn write_place(self, value: Self::Target);
+}
+
+pub unsafe trait BorrowPlace<Output>: PlaceHandle {
+    const ACCESS: AccessKind;
+    type Timing: Timing;
+    const SAFE: bool;
+
+    unsafe fn borrow(self) -> Output;
+}
+
+pub trait Indexable<Idx> {
+    type Element: ?Sized;
+}
+
+/// `place[idx]`
+pub unsafe trait IndexPlace<Idx, H>: Indexable<Idx>
+where
+    H: PlaceHandle<Target = Self>,
+{
+    type ElementHandle: PlaceHandle<Target = Self::Element>;
+
+    fn index(handle: H, idx: Idx) -> Self::ElementHandle;
+}
+
+pub unsafe trait DerefPlace<PointeeTiming, PointerTiming>:
+    PlaceHandle
+where
+    Self::Target: ProxyPlace,
+    PointeeTiming: Timing,
+    PointerTiming: Timing,
+{
+    const POINTEE_ACCESS: AccessKind;
+    const POINTER_ACCESS: AccessKind;
+    const SAFE: bool;
+
+    unsafe fn deref_place(self) -> <Self::Target as ProxyPlace>::Handle;
+}
+
+pub unsafe trait ProjectPlace<S>: PlaceHandle
+where
+    S: Subplace<Source = Self::Target>,
+{
+    type Projected: PlaceHandle<Target = S::Target>;
+
+    unsafe fn project_place(self, subplace: S) -> Self::Projected;
+}
+
+pub trait PlaceWrapper {
+    type Inner: ?Sized;
+}
+
+pub unsafe trait WrapPlace<S>: PlaceWrapper
+where
+    S: Subplace<Source = Self::Inner>,
+{
+    type Wrapped: Subplace<Source = Self>;
+
+    fn wrap(subplace: S) -> Self::Wrapped;
+}
+
+pub unsafe trait DropPlace: PlaceHandle {
+    unsafe fn drop_place(self);
+}
+
+pub unsafe trait DropHusk: ProxyPlace {
+    unsafe fn drop_husk(this: Self::Handle);
+}
+
 pub unsafe trait ReadMetadata: PlaceHandle {
     fn metadata(self) -> Metadata<Self::Target>;
 }
@@ -151,82 +229,4 @@ where
     type ToVariant: PlaceHandle<Target = VariantType<Self::Target, VARIANT>>;
 
     unsafe fn cast(self) -> Self::ToVariant;
-}
-
-pub unsafe trait MovePlace: ReadPlace {
-    const ACCESS: AccessKind;
-    const SAFE: bool;
-}
-
-pub unsafe trait WritePlace: PlaceHandle {
-    const ACCESS: AccessKind;
-    const SAFE: bool;
-
-    unsafe fn write_place(self, value: Self::Target);
-}
-
-pub unsafe trait DropPlace: PlaceHandle {
-    unsafe fn drop_place(self);
-}
-
-pub unsafe trait DropHusk: ProxyPlace {
-    unsafe fn drop_husk(this: Self::Handle);
-}
-
-pub unsafe trait ProjectPlace<S>: PlaceHandle
-where
-    S: Subplace<Source = Self::Target>,
-{
-    type Projected: PlaceHandle<Target = S::Target>;
-
-    unsafe fn project_place(self, subplace: S) -> Self::Projected;
-}
-
-pub unsafe trait DerefPlace<PointeeTiming, PointerTiming>:
-    PlaceHandle
-where
-    Self::Target: ProxyPlace,
-    PointeeTiming: Timing,
-    PointerTiming: Timing,
-{
-    const POINTEE_ACCESS: AccessKind;
-    const POINTER_ACCESS: AccessKind;
-    const SAFE: bool;
-
-    unsafe fn deref_place(self) -> <Self::Target as ProxyPlace>::Handle;
-}
-
-pub trait Indexable<Idx> {
-    type Element: ?Sized;
-}
-
-/// `place[idx]`
-pub unsafe trait IndexPlace<Idx, H>: Indexable<Idx>
-where
-    H: PlaceHandle<Target = Self>,
-{
-    type ElementHandle: PlaceHandle<Target = Self::Element>;
-
-    fn index(handle: H, idx: Idx) -> Self::ElementHandle;
-}
-
-pub unsafe trait BorrowPlace<Output>: PlaceHandle {
-    const ACCESS: AccessKind;
-    type Timing: Timing;
-    const SAFE: bool;
-
-    unsafe fn borrow(self) -> Output;
-}
-
-pub trait PlaceWrapper {
-    type Inner: ?Sized;
-}
-
-pub unsafe trait WrapPlace<S>: PlaceWrapper
-where
-    S: Subplace<Source = Self::Inner>,
-{
-    type Wrapped: Subplace<Source = Self>;
-
-    fn wrap(subplace: S) -> Self::Wrapped;
 }
