@@ -3,11 +3,12 @@
 #![feature(negative_impls)]
 #![feature(arbitrary_self_types)]
 
+pub mod examples;
 pub mod mutex;
 pub mod opaque;
 pub mod overwrite;
 pub mod rcu;
-pub mod rcu_example;
+pub mod untrusted;
 
 mod bindings;
 
