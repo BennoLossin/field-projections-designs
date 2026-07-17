@@ -5,8 +5,8 @@ use crate::{
         DerefPlace,
         MovePlace,
         PlaceHandle,
+        PlaceProxy,
         ProjectPlace,
-        ProxyPlace,
         ReadMetadata,
         ReadPlace,
         borrowck::{
@@ -18,7 +18,7 @@ use crate::{
     ptr::Metadata,
 };
 
-impl<T: ?Sized> ProxyPlace for *const T {
+impl<T: ?Sized> PlaceProxy for *const T {
     type Handle = Self;
 
     const ACCESS: AccessKind = AccessKind::Untracked;
@@ -64,14 +64,14 @@ unsafe impl<S: Subplace> ProjectPlace<S> for *const S::Source {
 
 unsafe impl<P> DerefPlace<P::Timing, Instant> for *const P
 where
-    P: ?Sized + ProxyPlace,
+    P: ?Sized + PlaceProxy,
 {
     const POINTEE_ACCESS: AccessKind = P::ACCESS;
     const POINTER_ACCESS: AccessKind = AccessKind::Untracked;
 
     const SAFE: bool = false;
 
-    unsafe fn deref_place(self) -> <Self::Target as ProxyPlace>::Handle {
+    unsafe fn deref_place(self) -> <Self::Target as PlaceProxy>::Handle {
         unsafe { P::handle_from_raw(self) }
     }
 }

@@ -12,8 +12,8 @@ use crate::{
         BorrowPlace,
         DerefPlace,
         PlaceHandle,
+        PlaceProxy,
         ProjectPlace,
-        ProxyPlace,
         ReadPlace,
         borrowck::{
             AccessKind,
@@ -47,7 +47,7 @@ impl<T: ?Sized> Drop for ArcRef<T> {
     }
 }
 
-impl<T: ?Sized> ProxyPlace for ArcRef<T> {
+impl<T: ?Sized> PlaceProxy for ArcRef<T> {
     type Handle = ArcRefHandle<T>;
 
     const ACCESS: AccessKind = AccessKind::Shared;
@@ -141,13 +141,13 @@ unsafe impl<'a, T: ?Sized> BorrowPlace<&'a T> for ArcRefHandle<T> {
 
 unsafe impl<T> DerefPlace<T::Timing, UntilDrop> for ArcRefHandle<T>
 where
-    T: ?Sized + ProxyPlace,
+    T: ?Sized + PlaceProxy,
 {
     const POINTEE_ACCESS: AccessKind = T::ACCESS;
     const POINTER_ACCESS: AccessKind = AccessKind::Shared;
     const SAFE: bool = true;
 
-    unsafe fn deref_place(self) -> <Self::Target as ProxyPlace>::Handle {
+    unsafe fn deref_place(self) -> <Self::Target as PlaceProxy>::Handle {
         let ptr = self.data.as_ptr();
         unsafe { T::handle_from_raw(ptr) }
     }

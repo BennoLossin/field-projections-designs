@@ -5,8 +5,8 @@ use design::{
     ops::place::{
         BorrowPlace,
         DerefPlace,
+        PlaceProxy,
         ProjectPlace,
-        ProxyPlace,
         ReadPlace,
         WrapPlace,
     },
@@ -99,7 +99,7 @@ impl Driver {
     pub fn write_data(&self, new_data: Box<Data>) {
         let tmp: &Mutex<DriverData> = unsafe {
             let self_hdl: RefHandle<'_, Driver> =
-                ProxyPlace::handle_from_raw(&raw const self);
+                PlaceProxy::handle_from_raw(&raw const self);
             let driver_data_subplace =
                 <field_of!(Driver, driver_data)>::default();
             let driver_data_hdl: RefHandle<'_, Arc<Mutex<DriverData>>> =
@@ -187,7 +187,7 @@ impl Driver {
 
         unsafe {
             let data_hdl: RefHandle<'_, Data> =
-                ProxyPlace::handle_from_raw(&raw const data);
+                PlaceProxy::handle_from_raw(&raw const data);
             let num_subplace = <field_of!(Data, num)>::default();
             let num_hdl: RefHandle<'_, u32> =
                 ProjectPlace::project_place(data_hdl, num_subplace);

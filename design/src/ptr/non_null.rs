@@ -3,8 +3,8 @@ use std::ptr::NonNull;
 use crate::{
     ops::place::{
         PlaceHandle,
+        PlaceProxy,
         ProjectPlace,
-        ProxyPlace,
         borrowck::{
             AccessKind,
             Instant,
@@ -13,7 +13,7 @@ use crate::{
     place::Subplace,
 };
 
-impl<T: ?Sized> ProxyPlace for NonNull<T> {
+impl<T: ?Sized> PlaceProxy for NonNull<T> {
     type Handle = Self;
 
     const ACCESS: AccessKind = AccessKind::Untracked;

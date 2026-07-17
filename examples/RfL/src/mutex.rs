@@ -8,8 +8,8 @@ use std::{
 
 use design::{
     ops::place::{
+        PlaceProxy,
         PlaceWrapper,
-        ProxyPlace,
         WrapPlace,
         borrowck::{
             AccessKind,
@@ -76,7 +76,7 @@ impl<T> DerefMut for MutexGuard<'_, T> {
 }
 
 // auto-derived from the deref[mut] impl
-impl<'a, T> ProxyPlace for MutexGuard<'a, T> {
+impl<'a, T> PlaceProxy for MutexGuard<'a, T> {
     type Handle = MutHandle<'a, T>;
 
     const ACCESS: AccessKind = AccessKind::Shared;

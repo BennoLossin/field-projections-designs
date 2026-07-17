@@ -3,7 +3,7 @@ use std::ptr::NonNull;
 use crate::ops::place::{
     BorrowPlace,
     PlaceHandle,
-    ProxyPlace,
+    PlaceProxy,
     borrowck::{
         AccessKind,
         Instant,
@@ -11,7 +11,7 @@ use crate::ops::place::{
     },
 };
 
-impl<T> ProxyPlace for Vec<T> {
+impl<T> PlaceProxy for Vec<T> {
     type Handle = VecHandle<T>;
 
     const ACCESS: AccessKind = AccessKind::Shared;

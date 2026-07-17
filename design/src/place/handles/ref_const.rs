@@ -8,8 +8,8 @@ use crate::{
         BorrowPlace,
         DerefPlace,
         PlaceHandle,
+        PlaceProxy,
         ProjectPlace,
-        ProxyPlace,
         ReadPlace,
         borrowck::{
             AccessKind,
@@ -25,7 +25,7 @@ pub struct RefHandle<'a, T: ?Sized> {
     _lt: PhantomData<&'a mut T>,
 }
 
-impl<'a, T: ?Sized> ProxyPlace for &'a T {
+impl<'a, T: ?Sized> PlaceProxy for &'a T {
     type Handle = RefHandle<'a, T>;
 
     const ACCESS: AccessKind = AccessKind::Shared;
@@ -61,13 +61,13 @@ unsafe impl<'a, S: Subplace<Target: 'a>> ProjectPlace<S>
 
 unsafe impl<'a, P: ?Sized> DerefPlace<P::Timing, Instant> for RefHandle<'a, P>
 where
-    P: ProxyPlace,
+    P: PlaceProxy,
 {
     const POINTEE_ACCESS: AccessKind = P::ACCESS;
     const POINTER_ACCESS: AccessKind = AccessKind::Shared;
     const SAFE: bool = true;
 
-    unsafe fn deref_place(self) -> <Self::Target as ProxyPlace>::Handle {
+    unsafe fn deref_place(self) -> <Self::Target as PlaceProxy>::Handle {
         unsafe { P::handle_from_raw(self.ptr.as_ptr()) }
     }
 }

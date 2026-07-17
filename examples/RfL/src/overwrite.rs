@@ -11,8 +11,8 @@ use design::{
         DropPlace,
         MovePlace,
         PlaceHandle,
+        PlaceProxy,
         ProjectPlace,
-        ProxyPlace,
         ReadMetadata,
         ReadPlace,
         WritePlace,
@@ -78,9 +78,9 @@ impl<H: PlaceHandle> PlaceHandle for ShieldHandle<H> {
     type Target = H::Target;
 }
 
-impl<P> ProxyPlace for Shield<P>
+impl<P> PlaceProxy for Shield<P>
 where
-    P: ProxyPlace,
+    P: PlaceProxy,
 {
     type Handle = ShieldHandle<P::Handle>;
 
@@ -163,7 +163,7 @@ where
 
 // Need this trait to avoid unsoundness when calling the inner `drop_husk` that
 // could do some non-pinned allowed things...
-pub unsafe trait DropHuskShield: ProxyPlace {
+pub unsafe trait DropHuskShield: PlaceProxy {
     unsafe fn drop_husk_pinned(this: Self::Handle);
 }
 
@@ -241,7 +241,7 @@ where
 unsafe impl<H, PointeeTiming, PointerTiming>
     DerefPlace<PointeeTiming, PointerTiming> for ShieldHandle<H>
 where
-    Self::Target: ProxyPlace,
+    Self::Target: PlaceProxy,
     H: DerefPlace<PointeeTiming, PointerTiming>,
     PointeeTiming: Timing,
     PointerTiming: Timing,
@@ -250,7 +250,7 @@ where
     const POINTER_ACCESS: AccessKind = H::POINTER_ACCESS;
     const SAFE: bool = H::SAFE;
 
-    unsafe fn deref_place(self) -> <Self::Target as ProxyPlace>::Handle {
+    unsafe fn deref_place(self) -> <Self::Target as PlaceProxy>::Handle {
         let handle = unsafe { self.0.deref_place() };
         handle
     }

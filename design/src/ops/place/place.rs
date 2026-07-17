@@ -194,7 +194,7 @@ pub mod borrowck;
 /// [ACCESS]: Self::ACCESS
 /// [Timing]: Self::Timing
 /// [handle_from_raw]: Self::handle_from_raw
-pub trait ProxyPlace {
+pub trait PlaceProxy {
     /// The *handle* that's used for operating on the represented place.
     ///
     /// This type controls which place operations are available on the
@@ -358,7 +358,7 @@ pub unsafe trait BorrowPlace<Output>: PlaceHandle {
 /// Indexing is only supported for certain places: namely those handles `H`,
 /// for which `Self` implements [`IndexPlace<Idx, H, _, _>`].
 ///
-/// In a way, this trait is a generic version of [`ProxyPlace`], since indexing
+/// In a way, this trait is a generic version of [`PlaceProxy`], since indexing
 /// allows changing the type based on the type of the index.
 pub trait Indexable<Idx> {
     /// The type of the place expression `self[idx]`.
@@ -369,7 +369,7 @@ pub trait Indexable<Idx> {
 ///
 ///
 ///
-/// The same way that [`Indexable`] is the generic version of [`ProxyPlace`],
+/// The same way that [`Indexable`] is the generic version of [`PlaceProxy`],
 /// this trait is the generic version of [`DerefPlace`].
 pub unsafe trait IndexPlace<Idx, H, PointeeTiming, PointerTiming>:
     Indexable<Idx>
@@ -403,7 +403,7 @@ where
 /// - the place that's being dereferenced (i.e. the one that's represented by
 ///   the value that's dereferenced), and
 /// - the place that contains that place (i.e. the value whose type implements
-///   [`ProxyPlace`]).
+///   [`PlaceProxy`]).
 ///
 /// This results in this operation having two associated constants of type
 /// [`AccessKind`] that specify the access permissions required for the two
@@ -437,7 +437,7 @@ where
 pub unsafe trait DerefPlace<PointeeTiming, PointerTiming>:
     PlaceHandle
 where
-    Self::Target: ProxyPlace,
+    Self::Target: PlaceProxy,
     PointeeTiming: Timing,
     PointerTiming: Timing,
 {
@@ -454,7 +454,7 @@ where
     /// `unsafe` block around dereferencing a place that uses the this handle.
     const SAFE: bool;
 
-    unsafe fn deref_place(self) -> <Self::Target as ProxyPlace>::Handle;
+    unsafe fn deref_place(self) -> <Self::Target as PlaceProxy>::Handle;
 }
 
 /// `place.field` -- Project a handle to a subplace.
@@ -489,19 +489,19 @@ where
 /// [`WritePlace`].
 ///
 /// Calls to [`Self::drop_place`] are emitted by the compiler as part of
-/// dropping a [`ProxyPlace`] that's partially moved out.
+/// dropping a [`PlaceProxy`] that's partially moved out.
 pub unsafe trait DropPlace: PlaceHandle {
     unsafe fn drop_place(self);
 }
 
-/// Destroy a [`ProxyPlace`] where its contents have been moved out/dropped.
+/// Destroy a [`PlaceProxy`] where its contents have been moved out/dropped.
 ///
 /// This is essentially like [`Drop`], but supports the situation where the
 /// value stored in the place represented by `Self` have been moved out,
 /// dropped, or never initialized to begin with.
 ///
 /// The borrow checker tracks the initialization state of each (sub)place. When
-/// a [`ProxyPlace`] supports moving values out (i.e. when its handle implements
+/// a [`PlaceProxy`] supports moving values out (i.e. when its handle implements
 /// [`MovePlace`]), then after moving out the entire value, the allocation might
 /// still be live. Since the value is no longer populated, calling
 /// [`Drop::drop`] as normal would result in using a moved-out value, which can
@@ -510,7 +510,7 @@ pub unsafe trait DropPlace: PlaceHandle {
 /// Instead, this trait is combined with [`DropPlace`], which the compiler uses
 /// to drop any not-moved-out subplaces and then drops the allocation (or any
 /// other data that the proxy had) through this trait.
-pub unsafe trait DropHusk: ProxyPlace {
+pub unsafe trait DropHusk: PlaceProxy {
     /// Destroy the proxy associated with the place of `this`.
     unsafe fn drop_husk(this: Self::Handle);
 }

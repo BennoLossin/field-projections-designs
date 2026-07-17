@@ -14,7 +14,7 @@ use crate::{
     ops::place::{
         BorrowPlace,
         PlaceHandle,
-        ProxyPlace,
+        PlaceProxy,
         borrowck::{
             AccessKind,
             Instant,
@@ -39,7 +39,7 @@ pub(super) struct ArcHead {
 
 pub struct ArcHandle<T: ?Sized>(NonNull<ArcInner<T>>);
 
-impl<T: ?Sized> ProxyPlace for Arc<T> {
+impl<T: ?Sized> PlaceProxy for Arc<T> {
     type Handle = ArcHandle<T>;
 
     const ACCESS: AccessKind = AccessKind::Shared;

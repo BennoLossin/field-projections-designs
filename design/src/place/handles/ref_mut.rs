@@ -9,8 +9,8 @@ use crate::{
         DerefPlace,
         DropPlace,
         PlaceHandle,
+        PlaceProxy,
         ProjectPlace,
-        ProxyPlace,
         ReadPlace,
         WritePlace,
         borrowck::{
@@ -43,7 +43,7 @@ impl<'a, T: ?Sized> MutHandle<'a, T> {
     }
 }
 
-impl<'a, T: ?Sized> ProxyPlace for &'a mut T {
+impl<'a, T: ?Sized> PlaceProxy for &'a mut T {
     type Handle = MutHandle<'a, T>;
 
     const ACCESS: AccessKind = AccessKind::Shared;
@@ -102,13 +102,13 @@ unsafe impl<'a, S: Subplace<Target: 'a>> ProjectPlace<S>
 
 unsafe impl<'a, P: ?Sized> DerefPlace<P::Timing, Instant> for MutHandle<'a, P>
 where
-    P: ProxyPlace,
+    P: PlaceProxy,
 {
     const POINTEE_ACCESS: AccessKind = P::ACCESS;
     const POINTER_ACCESS: AccessKind = AccessKind::Shared;
     const SAFE: bool = true;
 
-    unsafe fn deref_place(self) -> <Self::Target as ProxyPlace>::Handle {
+    unsafe fn deref_place(self) -> <Self::Target as PlaceProxy>::Handle {
         unsafe { P::handle_from_raw(self.ptr.as_ptr()) }
     }
 }

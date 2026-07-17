@@ -12,8 +12,8 @@ use crate::{
     ops::place::{
         BorrowPlace,
         PlaceHandle,
+        PlaceProxy,
         PlaceWrapper,
-        ProxyPlace,
         WrapPlace,
         borrowck::{
             AccessKind,
@@ -81,7 +81,7 @@ pub struct CellMutHandle<'b, T> {
     phantom: PhantomData<&'b mut T>,
 }
 
-impl<'b, T> ProxyPlace for RefMut<'b, T> {
+impl<'b, T> PlaceProxy for RefMut<'b, T> {
     type Handle = CellMutHandle<'b, T>;
 
     const ACCESS: AccessKind = AccessKind::Shared;
