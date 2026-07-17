@@ -69,7 +69,7 @@ unsafe impl<T> DropPlace for *mut T {
 }
 
 unsafe impl<T> DropHusk for *mut T {
-    unsafe fn drop_husk(_: Self::Handle) {}
+    unsafe fn drop_husk(_: *mut Self) {}
 }
 
 unsafe impl<S: Subplace> ProjectPlace<S> for *mut S::Source {

@@ -512,7 +512,7 @@ pub unsafe trait DropPlace: PlaceHandle {
 /// other data that the proxy had) through this trait.
 pub unsafe trait DropHusk: PlaceProxy {
     /// Destroy the proxy associated with the place of `this`.
-    unsafe fn drop_husk(this: Self::Handle);
+    unsafe fn drop_husk(this: *mut Self);
 }
 
 /// Obtain the metadata of the contents of a place.

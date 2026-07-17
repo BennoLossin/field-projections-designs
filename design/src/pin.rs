@@ -115,9 +115,9 @@ unsafe impl<P> DropHusk for Pin<P>
 where
     P: DropHusk,
 {
-    unsafe fn drop_husk(this: Self::Handle) {
+    unsafe fn drop_husk(this: *mut Self) {
         // The entire pointee is dropped, so no pin guarantee is left.
-        unsafe { P::drop_husk(this.0) };
+        unsafe { P::drop_husk(this.cast()) }
     }
 }
 
