@@ -161,18 +161,12 @@ where
     }
 }
 
-// Need this trait to avoid unsoundness when calling the inner `drop_husk` that
-// could do some non-pinned allowed things...
-pub unsafe trait DropHuskShield: PlaceProxy {
-    unsafe fn drop_husk_pinned(this: *mut Self);
-}
-
 unsafe impl<P> DropHusk for Shield<P>
 where
-    P: DropHuskShield,
+    P: DropHusk,
 {
     unsafe fn drop_husk(this: *mut Self) {
-        unsafe { P::drop_husk_pinned(&raw mut (*this).0) };
+        unsafe { P::drop_husk(&raw mut (*this).0) }
     }
 }
 
