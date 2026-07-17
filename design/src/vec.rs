@@ -2,6 +2,7 @@ use std::ptr::NonNull;
 
 use crate::ops::place::{
     BorrowPlace,
+    CreateHandle,
     PlaceHandle,
     PlaceProxy,
     borrowck::{
@@ -12,10 +13,13 @@ use crate::ops::place::{
 };
 
 impl<T> PlaceProxy for Vec<T> {
+    type Target = [T];
+}
+
+unsafe impl<T> CreateHandle<Instant> for Vec<T> {
     type Handle = VecHandle<T>;
 
     const ACCESS: AccessKind = AccessKind::Shared;
-    type Timing = Instant;
 
     unsafe fn handle_from_raw(this: *const Self) -> Self::Handle {
         let this = this.cast_mut();

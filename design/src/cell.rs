@@ -11,6 +11,7 @@ use std::{
 use crate::{
     ops::place::{
         BorrowPlace,
+        CreateHandle,
         PlaceHandle,
         PlaceProxy,
         PlaceWrapper,
@@ -82,10 +83,13 @@ pub struct CellMutHandle<'b, T> {
 }
 
 impl<'b, T> PlaceProxy for RefMut<'b, T> {
+    type Target = T;
+}
+
+unsafe impl<'b, T> CreateHandle<Instant> for RefMut<'b, T> {
     type Handle = CellMutHandle<'b, T>;
 
     const ACCESS: AccessKind = AccessKind::Shared;
-    type Timing = Instant;
 
     unsafe fn handle_from_raw(_this: *const Self) -> Self::Handle {
         CellMutHandle { phantom: PhantomData }

@@ -13,6 +13,7 @@ use std::{
 use crate::{
     ops::place::{
         BorrowPlace,
+        CreateHandle,
         PlaceHandle,
         PlaceProxy,
         borrowck::{
@@ -40,10 +41,13 @@ pub(super) struct ArcHead {
 pub struct ArcHandle<T: ?Sized>(NonNull<ArcInner<T>>);
 
 impl<T: ?Sized> PlaceProxy for Arc<T> {
+    type Target = T;
+}
+
+unsafe impl<T: ?Sized> CreateHandle<Instant> for Arc<T> {
     type Handle = ArcHandle<T>;
 
     const ACCESS: AccessKind = AccessKind::Shared;
-    type Timing = Instant;
 
     unsafe fn handle_from_raw(this: *const Self) -> Self::Handle {
         let ptr: *const NonNull<ArcInner<T>> = this.cast();

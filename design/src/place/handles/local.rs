@@ -1,9 +1,9 @@
 use crate::{
     ops::place::{
         BorrowPlace,
+        CreateHandle,
         DerefPlace,
         PlaceHandle,
-        PlaceProxy,
         ProjectPlace,
         ReadPlace,
         ReadVariant,
@@ -12,6 +12,7 @@ use crate::{
             AccessKind,
             Instant,
             Lifetime,
+            Timing,
         },
     },
     place::subplace::{
@@ -47,16 +48,19 @@ impl<T: ?Sized> PlaceHandle for LocalHandle<T> {
     type Target = T;
 }
 
-unsafe impl<P> DerefPlace<P::Timing, Instant> for LocalHandle<P>
+unsafe impl<P, ProxyTiming> DerefPlace<ProxyTiming, Instant> for LocalHandle<P>
 where
-    P: PlaceProxy,
+    P: CreateHandle<ProxyTiming>,
+    ProxyTiming: Timing,
 {
     const POINTEE_ACCESS: AccessKind = P::ACCESS;
     const POINTER_ACCESS: AccessKind = P::ACCESS;
 
     const SAFE: bool = true;
 
-    unsafe fn deref_place(self) -> <Self::Target as PlaceProxy>::Handle {
+    unsafe fn deref_place(
+        self,
+    ) -> <Self::Target as CreateHandle<ProxyTiming>>::Handle {
         unsafe { P::handle_from_raw(self.as_ptr()) }
     }
 }

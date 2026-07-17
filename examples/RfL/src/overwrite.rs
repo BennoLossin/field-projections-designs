@@ -6,6 +6,7 @@ use std::ops::{
 use design::{
     ops::place::{
         BorrowPlace,
+        CreateHandle,
         DerefPlace,
         DropHusk,
         DropPlace,
@@ -77,15 +78,21 @@ impl<H> ShieldHandle<H> {
 impl<H: PlaceHandle> PlaceHandle for ShieldHandle<H> {
     type Target = H::Target;
 }
-
 impl<P> PlaceProxy for Shield<P>
 where
     P: PlaceProxy,
 {
+    type Target = P::Target;
+}
+
+unsafe impl<P, ProxyTiming> CreateHandle<ProxyTiming> for Shield<P>
+where
+    P: CreateHandle<ProxyTiming>,
+    ProxyTiming: Timing,
+{
     type Handle = ShieldHandle<P::Handle>;
 
     const ACCESS: AccessKind = P::ACCESS;
-    type Timing = P::Timing;
 
     unsafe fn handle_from_raw(this: *const Self) -> Self::Handle {
         let ptr: *const Shield<P> = this;
@@ -235,7 +242,7 @@ where
 unsafe impl<H, PointeeTiming, PointerTiming>
     DerefPlace<PointeeTiming, PointerTiming> for ShieldHandle<H>
 where
-    Self::Target: PlaceProxy,
+    Self::Target: CreateHandle<PointeeTiming>,
     H: DerefPlace<PointeeTiming, PointerTiming>,
     PointeeTiming: Timing,
     PointerTiming: Timing,
@@ -244,7 +251,9 @@ where
     const POINTER_ACCESS: AccessKind = H::POINTER_ACCESS;
     const SAFE: bool = H::SAFE;
 
-    unsafe fn deref_place(self) -> <Self::Target as PlaceProxy>::Handle {
+    unsafe fn deref_place(
+        self,
+    ) -> <Self::Target as CreateHandle<PointeeTiming>>::Handle {
         let handle = unsafe { self.0.deref_place() };
         handle
     }

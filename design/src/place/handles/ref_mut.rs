@@ -6,6 +6,7 @@ use std::{
 use crate::{
     ops::place::{
         BorrowPlace,
+        CreateHandle,
         DerefPlace,
         DropPlace,
         PlaceHandle,
@@ -17,6 +18,7 @@ use crate::{
             AccessKind,
             Instant,
             Lifetime,
+            Timing,
         },
     },
     place::subplace::Subplace,
@@ -44,10 +46,13 @@ impl<'a, T: ?Sized> MutHandle<'a, T> {
 }
 
 impl<'a, T: ?Sized> PlaceProxy for &'a mut T {
+    type Target = T;
+}
+
+unsafe impl<'a, T: ?Sized> CreateHandle<Instant> for &'a mut T {
     type Handle = MutHandle<'a, T>;
 
     const ACCESS: AccessKind = AccessKind::Shared;
-    type Timing = Instant;
 
     unsafe fn handle_from_raw(this: *const Self) -> Self::Handle {
         let ptr: *const *mut T = this.cast::<*mut T>();
@@ -100,15 +105,20 @@ unsafe impl<'a, S: Subplace<Target: 'a>> ProjectPlace<S>
     }
 }
 
-unsafe impl<'a, P: ?Sized> DerefPlace<P::Timing, Instant> for MutHandle<'a, P>
+unsafe impl<'a, ProxyTiming, P> DerefPlace<ProxyTiming, Instant>
+    for MutHandle<'a, P>
 where
-    P: PlaceProxy,
+    P: CreateHandle<ProxyTiming>,
+    ProxyTiming: Timing,
+    P: ?Sized,
 {
     const POINTEE_ACCESS: AccessKind = P::ACCESS;
     const POINTER_ACCESS: AccessKind = AccessKind::Shared;
     const SAFE: bool = true;
 
-    unsafe fn deref_place(self) -> <Self::Target as PlaceProxy>::Handle {
+    unsafe fn deref_place(
+        self,
+    ) -> <Self::Target as CreateHandle<ProxyTiming>>::Handle {
         unsafe { P::handle_from_raw(self.ptr.as_ptr()) }
     }
 }

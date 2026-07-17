@@ -9,6 +9,7 @@ use std::{
 use crate::{
     ops::place::{
         BorrowPlace,
+        CreateHandle,
         DerefPlace,
         DropHusk,
         DropPlace,
@@ -32,10 +33,17 @@ impl<P> PlaceProxy for Pin<P>
 where
     P: PlaceProxy,
 {
+    type Target = P::Target;
+}
+
+unsafe impl<ProxyTiming, P> CreateHandle<ProxyTiming> for Pin<P>
+where
+    ProxyTiming: Timing,
+    P: CreateHandle<ProxyTiming>,
+{
     type Handle = PinnedHandle<P::Handle>;
 
     const ACCESS: AccessKind = P::ACCESS;
-    type Timing = P::Timing;
 
     unsafe fn handle_from_raw(this: *const Self) -> Self::Handle {
         let ptr: *const Pin<P> = this;
@@ -173,7 +181,7 @@ where
 unsafe impl<H, PointeeTiming, PointerTiming>
     DerefPlace<PointeeTiming, PointerTiming> for PinnedHandle<H>
 where
-    Self::Target: PlaceProxy,
+    Self::Target: CreateHandle<PointeeTiming>,
     H: DerefPlace<PointeeTiming, PointerTiming>,
     PointeeTiming: Timing,
     PointerTiming: Timing,
@@ -182,7 +190,9 @@ where
     const POINTER_ACCESS: AccessKind = H::POINTER_ACCESS;
     const SAFE: bool = H::SAFE;
 
-    unsafe fn deref_place(self) -> <Self::Target as PlaceProxy>::Handle {
+    unsafe fn deref_place(
+        self,
+    ) -> <Self::Target as CreateHandle<PointeeTiming>>::Handle {
         let handle = unsafe { self.0.deref_place() };
         handle
     }

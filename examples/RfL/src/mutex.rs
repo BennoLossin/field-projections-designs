@@ -8,6 +8,7 @@ use std::{
 
 use design::{
     ops::place::{
+        CreateHandle,
         PlaceProxy,
         PlaceWrapper,
         WrapPlace,
@@ -77,10 +78,13 @@ impl<T> DerefMut for MutexGuard<'_, T> {
 
 // auto-derived from the deref[mut] impl
 impl<'a, T> PlaceProxy for MutexGuard<'a, T> {
+    type Target = T;
+}
+
+unsafe impl<'a, T> CreateHandle<Instant> for MutexGuard<'a, T> {
     type Handle = MutHandle<'a, T>;
 
     const ACCESS: AccessKind = AccessKind::Shared;
-    type Timing = Instant;
 
     unsafe fn handle_from_raw(this: *const Self) -> Self::Handle {
         let ptr: *const &Mutex<T> = unsafe { &raw const (*this).0 };

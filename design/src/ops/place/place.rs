@@ -190,11 +190,18 @@ pub mod borrowck;
 /// compiler-generated handle creations automatically honor these requirements
 /// via the borrow checker.
 ///
+/// The timing of the access permissions of [`Self::handle_from_raw`] are
+/// `ProxyTiming`.
+///
 /// [Handle]: Self::Handle
 /// [ACCESS]: Self::ACCESS
 /// [Timing]: Self::Timing
 /// [handle_from_raw]: Self::handle_from_raw
 pub trait PlaceProxy {
+    type Target: ?Sized;
+}
+
+pub unsafe trait CreateHandle<ProxyTiming: Timing>: PlaceProxy {
     /// The *handle* that's used for operating on the represented place.
     ///
     /// This type controls which place operations are available on the
@@ -208,12 +215,10 @@ pub trait PlaceProxy {
     /// [ACCESS]: Self::ACCESS
     /// [Timing]: Self::Timing
     /// [handle_from_raw]: Self::handle_from_raw
-    type Handle: PlaceHandle;
+    type Handle: PlaceHandle<Target = Self::Target>;
 
     /// The access permissions required by [`Self::handle_from_raw`].
     const ACCESS: AccessKind;
-    /// The timing of the access permissions of [`Self::handle_from_raw`].
-    type Timing: Timing;
 
     /// Create a handle to the pointee of the raw pointer.
     ///
@@ -437,7 +442,7 @@ where
 pub unsafe trait DerefPlace<PointeeTiming, PointerTiming>:
     PlaceHandle
 where
-    Self::Target: PlaceProxy,
+    Self::Target: CreateHandle<PointeeTiming>,
     PointeeTiming: Timing,
     PointerTiming: Timing,
 {
@@ -454,7 +459,9 @@ where
     /// `unsafe` block around dereferencing a place that uses the this handle.
     const SAFE: bool;
 
-    unsafe fn deref_place(self) -> <Self::Target as PlaceProxy>::Handle;
+    unsafe fn deref_place(
+        self,
+    ) -> <Self::Target as CreateHandle<PointeeTiming>>::Handle;
 }
 
 /// `place.field` -- Project a handle to a subplace.
