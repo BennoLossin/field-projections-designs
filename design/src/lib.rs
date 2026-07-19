@@ -76,7 +76,6 @@
 
 pub mod cell;
 pub mod lang_limits;
-pub mod marker;
 pub mod mem;
 pub mod ops;
 pub mod pin;

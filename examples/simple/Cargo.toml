@@ -3,8 +3,5 @@ name = "E-simple"
 version = "0.1.0"
 edition = "2024"
 
-[features]
-move_trait = ["design/move_trait"]
-
 [dependencies]
 design.workspace = true

@@ -3,9 +3,6 @@ name = "design"
 version = "0.1.0"
 edition = "2024"
 
-[features]
-move_trait = []
-
 [dependencies]
 macros.workspace = true
 

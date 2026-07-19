@@ -129,7 +129,6 @@ where
     }
 }
 
-#[cfg(not(feature = "move_trait"))]
 pub unsafe trait PinnableSubplace: Subplace {
     /// The structural pinnedness of this subplace.
     ///
@@ -149,7 +148,6 @@ pub unsafe trait PinnableSubplace: Subplace {
     ) -> Self::StructualPinning<H>;
 }
 
-#[cfg(not(feature = "move_trait"))]
 unsafe impl<H, S> ProjectPlace<S> for PinnedHandle<H>
 where
     H: ProjectPlace<S>,
@@ -160,19 +158,6 @@ where
     unsafe fn project_place(self, subplace: S) -> Self::Projected {
         let handle = unsafe { self.0.project_place(subplace) };
         unsafe { S::from_pinned(handle) }
-    }
-}
-
-#[cfg(feature = "move_trait")]
-unsafe impl<H, S> ProjectPlace<S> for PinnedHandle<H>
-where
-    H: ProjectPlace<S>,
-    S: Subplace<Source = H::Target>,
-{
-    type Projected = H::Projected;
-
-    unsafe fn project_place(self, subplace: S) -> Self::Projected {
-        unsafe { self.0.project_place(subplace) }
     }
 }
 

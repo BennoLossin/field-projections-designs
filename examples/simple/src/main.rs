@@ -86,8 +86,5 @@ include!("pin.rs");
 fn main() {
     basic();
     nested_mut();
-    #[cfg(not(feature = "move_trait"))]
     pin_field_tracked();
-    #[cfg(feature = "move_trait")]
-    pin_move();
 }
