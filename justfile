@@ -20,13 +20,11 @@ legacy-doc:
 
 test:
     cargo test --workspace --all-targets
-    # BROKEN:
-    # cargo test --workspace --doc
+    cargo test --workspace --doc
 
 miri:
     cargo miri test --workspace --all-targets
-    # BROKEN:
-    # cargo test --workspace --doc
+    cargo miri test --workspace --doc
 
 pages: doc legacy-doc
     #!/usr/bin/env bash

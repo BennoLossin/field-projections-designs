@@ -44,7 +44,7 @@
 //!       Additionally, we require eager expansion of macros, as we use the
 //!       output of the `handle!` macro in the input of the `subplace!` macro.
 //!
-//! ```rust
+//! ```ignore
 //! macro_rules! handle {
 //!     ($path:path) => { LocalHandle::new(&raw {const,mut} $path) };
 //!
@@ -416,7 +416,7 @@ where
 /// invalidating pointers that were derived from dereferenced pointers. In
 /// variables:
 ///
-/// ```
+/// ```ignore
 /// fn overwrite_nested<'a>(ptr: &mut &'a mut Struct, make: impl FnOnce() -> &'a mut Struct) {
 ///     let a: &'a mut Field = &mut (**ptr).field;
 ///     *ptr = make();
