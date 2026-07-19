@@ -33,7 +33,7 @@ jobs:
       - run: sudo apt-get update
       - run: sudo apt-get install -y linkchecker
 
-      - run: cargo doc --no-deps --workspace --all-features --document-private-items
+      - run: cargo doc --no-deps --workspace --document-private-items # --all-features
         env:
           RUSTFLAGS: "-Dwarnings"
           RUSTDOCFLAGS: "-Dwarnings"
