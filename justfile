@@ -20,17 +20,17 @@ legacy-doc:
 
 test:
     cargo test --workspace --all-targets
+    cargo test --workspace --doc
+    cargo test --workspace --doc --all-features
     # BROKEN:
     # cargo test --workspace --all-targets --all-features
-    # cargo test --workspace --doc
-    # cargo test --workspace --doc --all-features
 
 miri:
     cargo miri test --workspace --all-targets
+    cargo miri test --workspace --doc
+    cargo miri test --workspace --doc --all-features
     # BROKEN:
-    # cargo test --workspace --all-targets --all-features
-    # cargo test --workspace --doc
-    # cargo test --workspace --doc --all-features
+    # cargo miri test --workspace --all-targets --all-features
 
 pages: doc legacy-doc
     #!/usr/bin/env bash
