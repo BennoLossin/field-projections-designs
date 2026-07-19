@@ -179,28 +179,27 @@ pub mod borrowck;
 ///
 /// A value of this type represents a specific place. The operations that are
 /// available on that place are controlled by which *place operation traits* are
-/// implemented on the handle of that place, which is
-/// <code>Self::[Handle]</code>.
-///
-/// A handle to the represented place can be obtained from a value of this type
-/// by calling <code>Self::[handle_from_raw]</code>. The
-/// <code>Self::[ACCESS]</code> constant specifies what type of permission is
-/// required for creating a handle this way and the <code>Self::[Timing]</code>
-/// type specifies for how long that permission must be granted. Any
-/// compiler-generated handle creations automatically honor these requirements
-/// via the borrow checker.
-///
-/// The timing of the access permissions of [`Self::handle_from_raw`] are
-/// `ProxyTiming`.
-///
-/// [Handle]: Self::Handle
-/// [ACCESS]: Self::ACCESS
-/// [Timing]: Self::Timing
-/// [handle_from_raw]: Self::handle_from_raw
+/// implemented on the handle of that place, which is [`CreateHandle::Handle`].
 pub trait PlaceProxy {
     type Target: ?Sized;
 }
 
+/// TODO
+///
+/// A handle to the represented place can be obtained from a value of this type
+/// by calling <code>Self::[handle_from_raw]</code>. The
+/// <code>Self::[ACCESS]</code> constant specifies what type of permission is
+/// required for creating a handle this way and the `ProxyTiming`
+/// type specifies for how long that permission must be granted. Any
+/// compiler-generated handle creations automatically honor these requirements
+/// via the borrow checker.
+///
+/// The timing of the access permissions of [`Self::handle_from_raw`] is
+/// `ProxyTiming`.
+///
+/// [Handle]: Self::Handle
+/// [ACCESS]: Self::ACCESS
+/// [handle_from_raw]: Self::handle_from_raw
 pub unsafe trait CreateHandle<ProxyTiming: Timing>: PlaceProxy {
     /// The *handle* that's used for operating on the represented place.
     ///
@@ -213,7 +212,6 @@ pub unsafe trait CreateHandle<ProxyTiming: Timing>: PlaceProxy {
     ///
     /// [Handle]: Self::Handle
     /// [ACCESS]: Self::ACCESS
-    /// [Timing]: Self::Timing
     /// [handle_from_raw]: Self::handle_from_raw
     type Handle: PlaceHandle<Target = Self::Target>;
 
@@ -226,7 +224,7 @@ pub unsafe trait CreateHandle<ProxyTiming: Timing>: PlaceProxy {
     ///
     /// - `this` must be a valid pointer for as long as the return value lives,
     /// - `*this` must be [handle-valid] with permissions [`Self::ACCESS`] for
-    ///   [`Self::Timing`].
+    ///   `ProxyTiming`.
     ///
     /// [handle-valid]: self#handle-validity
     unsafe fn handle_from_raw(this: *const Self) -> Self::Handle;
