@@ -6,8 +6,8 @@ watch-doc:
 test-miri:
     cargo run
 
-doc:
-    cargo doc --workspace --all --no-deps --document-private-items
+doc *FLAGS:
+    cargo doc --workspace --all --no-deps --document-private-items {{FLAGS}}
 
 legacy-doc:
     #!/usr/bin/env bash
