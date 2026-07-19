@@ -3,9 +3,6 @@ default: watch-doc
 watch-doc:
     fd -e rs -e toml -e patch | entr -c -c just doc
 
-test-miri:
-    cargo run
-
 doc *FLAGS:
     cargo doc --workspace --all --no-deps --document-private-items {{FLAGS}}
 
@@ -20,6 +17,20 @@ legacy-doc:
         popd
     done
     popd
+
+test:
+    cargo test --workspace --all-targets
+    # BROKEN:
+    # cargo test --workspace --all-targets --all-features
+    # cargo test --workspace --doc
+    # cargo test --workspace --doc --all-features
+
+miri:
+    cargo miri test --workspace --all-targets
+    # BROKEN:
+    # cargo test --workspace --all-targets --all-features
+    # cargo test --workspace --doc
+    # cargo test --workspace --doc --all-features
 
 pages: doc legacy-doc
     #!/usr/bin/env bash
