@@ -12,6 +12,7 @@ use crate::summary::SummaryArgs;
 
 mod adt_reflect;
 mod desugared;
+mod ensure_full_reexport;
 mod summary;
 mod utils;
 
@@ -45,4 +46,9 @@ pub fn adt_reflect(input: TokenStream) -> TokenStream {
 pub fn desugared(args: TokenStream, input: TokenStream) -> TokenStream {
     desugared::expand(parse_macro_input!(args), parse_macro_input!(input))
         .into()
+}
+
+#[proc_macro]
+pub fn ensure_full_reexport(input: TokenStream) -> TokenStream {
+    ensure_full_reexport::expand(parse_macro_input!(input)).into()
 }
