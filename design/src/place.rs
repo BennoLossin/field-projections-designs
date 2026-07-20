@@ -20,10 +20,12 @@ pub use self::{
     },
     subplace::{
         ArrayIndex,
+        Field,
         HasVariant,
         Matchable,
         SliceIndex,
         Subplace,
+        TransmutedField,
         TransmutedSubplace,
         VariantType,
     },

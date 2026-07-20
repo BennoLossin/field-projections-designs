@@ -14,6 +14,16 @@ pub unsafe trait Subplace: Sized {
     ) -> (usize, Metadata<Self::Target>);
 }
 
+/// Represents a field of a struct or a tuple of
+/// <code>Self::[Source](Subplace::Source)</code>.
+pub unsafe trait Field: Subplace + Default {
+    /// The name of the field.
+    ///
+    /// If this represents a field of a tuple or a tuple struct, then this will
+    /// be the stringified index.
+    const NAME: &'static str;
+}
+
 /// A type whose values can be `match`ed.
 ///
 /// For every value `VARIANT` in `Self::VARIANTS`, `Self` implements

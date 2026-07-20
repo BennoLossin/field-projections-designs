@@ -18,10 +18,14 @@ pub use self::{
         SliceIndex,
     },
     traits::{
+        Field,
         HasVariant,
         Matchable,
         Subplace,
         VariantType,
     },
-    transmuted::TransmutedSubplace,
+    transmuted::{
+        TransmutedField,
+        TransmutedSubplace,
+    },
 };

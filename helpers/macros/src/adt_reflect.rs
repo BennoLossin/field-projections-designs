@@ -172,6 +172,7 @@ fn generate_fields(
 
     for field in &fields_named.named {
         let field_ident = field.ident.as_ref().unwrap();
+        let field_name = field_ident.to_string();
         let field_ty = &field.ty;
         let meta_ident = format_ident!("{}__{}", variant_ty, field_ident);
 
@@ -208,6 +209,14 @@ fn generate_fields(
                         (),
                     )
                 }
+            }
+
+            unsafe impl #impl_gen
+                ::design::place::Field
+                for #meta_ident #ty_gen
+            #whr
+            {
+                const NAME: &'static ::core::primitive::str = #field_name;
             }
         });
 

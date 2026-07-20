@@ -4,7 +4,10 @@ use std::{
 };
 
 use crate::{
-    place::Subplace,
+    place::{
+        Field,
+        Subplace,
+    },
     ptr::Metadata,
 };
 
@@ -58,4 +61,42 @@ where
             _target: PhantomInvariant::new(),
         }
     }
+}
+
+pub struct TransmutedField<F, Source: ?Sized, Target: ?Sized>(
+    TransmutedSubplace<F, Source, Target>,
+);
+
+impl<F: Default, Source: ?Sized, Target: ?Sized> Default
+    for TransmutedField<F, Source, Target>
+{
+    fn default() -> Self {
+        Self(Default::default())
+    }
+}
+
+unsafe impl<F, Source, Target> Subplace for TransmutedField<F, Source, Target>
+where
+    F: Field,
+    Source: ?Sized + Pointee<Metadata = Metadata<F::Source>>,
+    Target: ?Sized + Pointee<Metadata = Metadata<F::Target>>,
+{
+    type Source = Source;
+    type Target = Target;
+
+    fn offset(
+        self,
+        metadata: Metadata<Self::Source>,
+    ) -> (usize, Metadata<Self::Target>) {
+        self.0.subplace.offset(metadata)
+    }
+}
+
+unsafe impl<F, Source, Target> Field for TransmutedField<F, Source, Target>
+where
+    F: Field,
+    Source: ?Sized + Pointee<Metadata = Metadata<F::Source>>,
+    Target: ?Sized + Pointee<Metadata = Metadata<F::Target>>,
+{
+    const NAME: &'static str = F::NAME;
 }
