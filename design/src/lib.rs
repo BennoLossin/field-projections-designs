@@ -73,6 +73,7 @@
 #![feature(layout_for_ptr)]
 #![feature(proc_macro_hygiene)]
 #![feature(auto_traits)]
+#![feature(phantom_variance_markers)]
 
 pub mod cell;
 pub mod lang_limits;
