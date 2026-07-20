@@ -7,11 +7,16 @@
 use macros::ensure_full_reexport;
 
 ensure_full_reexport!(
+    mod indexes;
     mod traits;
     mod transmuted;
 );
 
 pub use self::{
+    indexes::{
+        ArrayIndex,
+        SliceIndex,
+    },
     traits::{
         HasVariant,
         Matchable,

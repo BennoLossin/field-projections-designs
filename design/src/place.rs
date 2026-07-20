@@ -19,8 +19,10 @@ pub use self::{
         RefHandle,
     },
     subplace::{
+        ArrayIndex,
         HasVariant,
         Matchable,
+        SliceIndex,
         Subplace,
         TransmutedSubplace,
         VariantType,
