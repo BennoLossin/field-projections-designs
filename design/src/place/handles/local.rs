@@ -1,3 +1,5 @@
+use std::ptr::NonNull;
+
 use crate::{
     ops::place::{
         BorrowPlace,
@@ -8,6 +10,7 @@ use crate::{
         ReadPlace,
         ReadVariant,
         VariantPlace,
+        WritePlace,
         borrowck::{
             AccessKind,
             Instant,
@@ -105,6 +108,15 @@ unsafe impl<T> ReadPlace for LocalHandle<T> {
     }
 }
 
+unsafe impl<T> WritePlace for LocalHandle<T> {
+    const ACCESS: AccessKind = AccessKind::Exclusive;
+    const SAFE: bool = true;
+
+    unsafe fn write_place(self, value: Self::Target) {
+        unsafe { self.ptr.cast_mut().write(value) }
+    }
+}
+
 unsafe impl<'a, T> BorrowPlace<&'a T> for LocalHandle<T> {
     const ACCESS: AccessKind = AccessKind::Shared;
     type Timing = Lifetime<'a>;
@@ -122,5 +134,35 @@ unsafe impl<'a, T> BorrowPlace<&'a mut T> for LocalHandle<T> {
 
     unsafe fn borrow(self) -> &'a mut T {
         unsafe { self.ptr.cast_mut().as_mut_unchecked() }
+    }
+}
+
+unsafe impl<T> BorrowPlace<NonNull<T>> for LocalHandle<T> {
+    const ACCESS: AccessKind = AccessKind::Untracked;
+    type Timing = Instant;
+    const SAFE: bool = true;
+
+    unsafe fn borrow(self) -> NonNull<T> {
+        unsafe { NonNull::new_unchecked(self.ptr.cast_mut()) }
+    }
+}
+
+unsafe impl<T> BorrowPlace<*const T> for LocalHandle<T> {
+    const ACCESS: AccessKind = AccessKind::Untracked;
+    type Timing = Instant;
+    const SAFE: bool = true;
+
+    unsafe fn borrow(self) -> *const T {
+        self.ptr
+    }
+}
+
+unsafe impl<T> BorrowPlace<*mut T> for LocalHandle<T> {
+    const ACCESS: AccessKind = AccessKind::Untracked;
+    type Timing = Instant;
+    const SAFE: bool = true;
+
+    unsafe fn borrow(self) -> *mut T {
+        self.ptr.cast_mut()
     }
 }
