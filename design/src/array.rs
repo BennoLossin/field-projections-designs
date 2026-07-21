@@ -21,6 +21,20 @@ impl<T, const N: usize> Indexable<usize> for [T; N] {
 }
 
 // TODO: Make this generic over the handle type
+//
+// The problem is that we have no generic way to say "create an equivalent
+// handle of another type after doing pointer arithmetic". Our options are
+//
+// 1. Wrap the handle with our own type and do impls of all the place ops
+//    conditional on the wrapped handle type
+//      * This is clunky and annoying, but seems possible. Supertrait auto impl
+//        might make it more pleasant with a `HandleProxy` convenience trait.
+// 2. Do impls for `H: BorrowPlace<&T>` and `H: BorrowPlace<&mut T>`, which is
+//    the moral equivalent of today's Index/IndexMut impls.
+//      * This bakes in the reference kind. *Maybe* this is correct, because
+//        we can't say what indexing other kinds of references should allow,
+//        but then it should be a trait on the reference type so you can impl
+//        it for your own.
 unsafe impl<'a, T, const N: usize>
     IndexPlace<usize, LocalHandle<Self>, Lifetime<'a>, Instant> for [T; N]
 {
