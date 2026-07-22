@@ -44,7 +44,7 @@
 //!       Additionally, we require eager expansion of macros, as we use the
 //!       output of the `handle!` macro in the input of the `subplace!` macro.
 //!
-//! ```rust
+//! ```ignore
 //! macro_rules! handle {
 //!     ($path:path) => { LocalHandle::new(&raw {const,mut} $path) };
 //!
@@ -184,20 +184,21 @@ pub trait PlaceProxy {
     type Target: ?Sized;
 }
 
-/// TODO
+/// TODO: Defines creation of handles.
 ///
 /// A handle to the represented place can be obtained from a value of this type
-/// by calling <code>Self::[handle_from_raw]</code>. The
-/// <code>Self::[ACCESS]</code> constant specifies what type of permission is
-/// required for creating a handle this way and the `ProxyTiming`
-/// type specifies for how long that permission must be granted. Any
-/// compiler-generated handle creations automatically honor these requirements
-/// via the borrow checker.
+/// by calling <code>Self::[handle_from_raw]</code>.
 ///
 /// The timing of the access permissions of [`Self::handle_from_raw`] is
 /// `ProxyTiming`.
 ///
-/// [Handle]: Self::Handle
+/// The <code>Self::[ACCESS]</code> constant specifies what type of permission
+/// is required for creating a handle this way. The `ProxyTiming` argument
+/// specifies for how long that permission must be granted; it must be one of
+/// the types in the [`borrowck`] module. Any compiler-generated handle
+/// creations automatically honor these requirements via the borrow checker.
+///
+/// [`borrowck`]: crate::ops::place::borrowck
 /// [ACCESS]: Self::ACCESS
 /// [handle_from_raw]: Self::handle_from_raw
 pub unsafe trait CreateHandle<ProxyTiming: Timing>: PlaceProxy {
@@ -416,7 +417,7 @@ where
 /// invalidating pointers that were derived from dereferenced pointers. In
 /// variables:
 ///
-/// ```
+/// ```ignore
 /// fn overwrite_nested<'a>(ptr: &mut &'a mut Struct, make: impl FnOnce() -> &'a mut Struct) {
 ///     let a: &'a mut Field = &mut (**ptr).field;
 ///     *ptr = make();

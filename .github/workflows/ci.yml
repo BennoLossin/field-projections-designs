@@ -33,7 +33,7 @@ jobs:
       - run: sudo apt-get update
       - run: sudo apt-get install -y linkchecker
 
-      - run: cargo doc --no-deps --workspace --all-features --document-private-items
+      - run: cargo doc --no-deps --workspace --document-private-items
         env:
           RUSTFLAGS: "-Dwarnings"
           RUSTDOCFLAGS: "-Dwarnings"
@@ -41,15 +41,16 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      - uses: extractions/setup-just@v4
       - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: nightly
           components: miri, rustfmt
 
-      - run: cargo test --examples --all --all-features
+      - run: just test
         env:
           RUSTFLAGS: "-Dwarnings"
-      - run: cargo miri test --examples --all --all-features
+      - run: just miri
         env:
           RUSTFLAGS: "-Dwarnings"
