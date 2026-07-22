@@ -17,6 +17,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "E-own"
+version = "0.1.0"
+dependencies = [
+ "design",
+]
+
+[[package]]
 name = "E-simple"
 version = "0.1.0"
 dependencies = [
