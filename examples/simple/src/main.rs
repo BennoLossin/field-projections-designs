@@ -17,6 +17,7 @@
 
 use std::{
     fmt::Display,
+    mem::forget,
     ops::AddAssign,
     pin::{
         Pin,
@@ -29,6 +30,7 @@ use design::{
     ops::place::{
         BorrowPlace,
         DerefPlace,
+        DropHusk,
         DropPlace,
         PlaceHandle,
         ProjectPlace,
@@ -49,6 +51,11 @@ adt_reflect!(
     pub struct Struct {
         a: u32,
         b: i32,
+    }
+
+    pub struct BranchConfig {
+        main: String,
+        dev: String,
     }
 );
 
@@ -81,6 +88,7 @@ fn print(value: impl Display) {
 include!("basic.rs");
 include!("nested_mut.rs");
 include!("pin.rs");
+include!("move_out.rs");
 
 #[doc(hidden)]
 fn main() {
