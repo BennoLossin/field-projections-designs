@@ -16,23 +16,42 @@ use design::{
     utils::example_helpers::struct_of_arrays::SoA,
 };
 
-use crate::soa::{
+mod soa;
+
+use self::soa::{
     SoA,
     SoAHandle,
     SoAMut,
     SoARef,
 };
 
-pub mod soa;
-
 adt_reflect!(
     /// 2d integer point.
+    ///
+    /// This type derives the `SoA` trait, which results in the following code
+    /// being generated (some paths to types have been shortened for
+    /// readability):
+    ///
+    /// ```
+    #[doc = include_str!("derive_expansion.rs")]
+    /// ```
     #[derive(SoA)]
     pub struct Point {
         x: i32,
         y: i32,
     }
 );
+
+#[expect(dead_code)]
+#[doc(hidden)]
+mod expansion {
+    use super::*;
+    #[derive(SoA)]
+    struct Point {
+        x: i32,
+        y: i32,
+    }
+}
 
 impl Display for Point {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
