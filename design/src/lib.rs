@@ -75,6 +75,7 @@
 #![feature(auto_traits)]
 #![feature(phantom_variance_markers)]
 
+pub mod boxed;
 pub mod cell;
 pub mod lang_limits;
 pub mod mem;
