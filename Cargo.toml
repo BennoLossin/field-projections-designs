@@ -9,6 +9,7 @@ members = [
   "examples/simple",
   "examples/file_slice",
   "examples/own",
+  "examples/short_string",
 ]
 
 [workspace.dependencies]
