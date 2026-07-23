@@ -12,6 +12,7 @@ use crate::{
         CreateHandle,
         DropHusk,
         DropPlace,
+        MovePlace,
         PlaceHandle,
         PlaceProxy,
         ProjectPlace,
@@ -79,6 +80,8 @@ unsafe impl<T> ReadPlace for BoxHandle<T> {
         unsafe { self.ptr.read() }
     }
 }
+
+unsafe impl<T> MovePlace for BoxHandle<T> {}
 
 unsafe impl<T> DropPlace for BoxHandle<T> {
     unsafe fn drop_place(self) {
