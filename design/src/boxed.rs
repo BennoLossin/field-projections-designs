@@ -9,6 +9,7 @@ use std::{
 
 use crate::{
     ops::place::{
+        BorrowPlace,
         CreateHandle,
         DropHusk,
         DropPlace,
@@ -21,6 +22,7 @@ use crate::{
         borrowck::{
             AccessKind,
             Instant,
+            Lifetime,
         },
     },
     place::Subplace,
@@ -95,5 +97,15 @@ unsafe impl<T: ?Sized> DropHusk for Box<T> {
         let ptr = unsafe { *ptr };
         let layout = unsafe { Layout::for_value_raw(ptr.as_ptr()) };
         unsafe { dealloc(ptr.as_ptr().cast(), layout) };
+    }
+}
+
+unsafe impl<'a, T: ?Sized> BorrowPlace<&'a mut T> for BoxHandle<T> {
+    const ACCESS: AccessKind = AccessKind::Exclusive;
+    type Timing = Lifetime<'a>;
+    const SAFE: bool = true;
+
+    unsafe fn borrow(mut self) -> &'a mut T {
+        unsafe { self.ptr.as_mut() }
     }
 }

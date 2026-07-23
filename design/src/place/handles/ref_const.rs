@@ -31,7 +31,7 @@ impl<'a, T: ?Sized> PlaceProxy for &'a T {
     type Target = T;
 }
 
-unsafe impl<'a, T: ?Sized> CreateHandle<Lifetime<'a>> for &'a T {
+unsafe impl<'a, T: ?Sized> CreateHandle<Instant> for &'a T {
     type Handle = RefHandle<'a, T>;
 
     const ACCESS: AccessKind = AccessKind::Shared;
