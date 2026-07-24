@@ -14,6 +14,7 @@ mod adt_reflect;
 mod desugared;
 mod ensure_full_reexport;
 mod sealed;
+mod soa;
 mod summary;
 mod utils;
 
@@ -58,4 +59,9 @@ pub fn ensure_full_reexport(input: TokenStream) -> TokenStream {
 #[proc_macro_attribute]
 pub fn sealed(args: TokenStream, input: TokenStream) -> TokenStream {
     sealed::expand(parse_macro_input!(args), parse_macro_input!(input)).into()
+}
+
+#[proc_macro_derive(SoA)]
+pub fn derive_soa(input: TokenStream) -> TokenStream {
+    soa::expand(parse_macro_input!(input)).into()
 }
