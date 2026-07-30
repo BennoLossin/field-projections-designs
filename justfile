@@ -18,9 +18,9 @@ legacy-doc:
     done
     popd
 
-test:
-    cargo test --workspace --all-targets
-    cargo test --workspace --doc
+test *FLAGS:
+    cargo test --workspace --all-targets -- {{FLAGS}}
+    cargo test --workspace --doc -- {{FLAGS}}
 
 miri:
     cargo miri test --workspace --all-targets
