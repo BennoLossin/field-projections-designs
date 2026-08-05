@@ -1,10 +1,19 @@
 //! The owned reference type [`Own<'a, T>`] and its API.
+//!
+//! The primary uses for owned references are
+//!
+//! 1. Passing ownership of unsized values, like `dyn Trait` and slices.
+//! 2. Avoiding moves while passing ownership of values, without relying on
+//!    heap allocation.
 
 #![deny(missing_docs)]
 
 use std::{
     fmt::Debug,
-    marker::PhantomData,
+    marker::{
+        CoercePointee,
+        PhantomData,
+    },
     mem::ManuallyDrop,
     ops::{
         Deref,
@@ -38,6 +47,8 @@ use crate::{
 ///
 /// Ownership is transferred to an `Own<'a, T>` when it is created. When the
 /// reference is dropped, so is the pointee.
+#[derive(CoercePointee)]
+#[repr(transparent)]
 pub struct Own<'a, T: ?Sized>(NonNull<T>, PhantomData<&'a T>);
 
 pub use crate::own;
@@ -312,6 +323,35 @@ mod tests {
             out.0.0.0 = Checked::new();
             assert_eq!(LIVE.load(Relaxed), 1);
         }
+        assert_eq!(LIVE.load(Relaxed), 0);
+    }
+
+    #[test]
+    fn coerce_unsized() {
+        fn takes_unsized(x: Own<'_, dyn Debug>) {
+            dbg!(x);
+        }
+
+        let _guard = LOCK.lock().unwrap();
+
+        let own = own!(Checked::new());
+        takes_unsized(own);
+        assert_eq!(LIVE.load(Relaxed), 0);
+    }
+
+    trait Trait: Debug {
+        fn foo(self: Own<'_, Self>) {
+            dbg!(&self);
+        }
+    }
+    impl Trait for () {}
+    impl Trait for i32 {}
+    impl Trait for Checked {}
+
+    #[test]
+    fn receiver() {
+        let _guard = LOCK.lock().unwrap();
+        own!(Checked::new()).foo();
         assert_eq!(LIVE.load(Relaxed), 0);
     }
 }
