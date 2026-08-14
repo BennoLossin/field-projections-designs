@@ -18,8 +18,10 @@ use crate::{
         PlaceProxy,
         borrowck::{
             AccessKind,
+            AtLeastShared,
             Instant,
             Lifetime,
+            Shared,
         },
     },
     sync::arc_ref::ArcRef,
@@ -44,9 +46,11 @@ impl<T: ?Sized> PlaceProxy for Arc<T> {
     type Target = T;
 }
 
-unsafe impl<T: ?Sized> CreateHandle<Instant> for Arc<T> {
+unsafe impl<T> CreateHandle<Instant, Shared> for Arc<T>
+where
+    T: ?Sized,
+{
     type Handle = ArcHandle<T>;
-
     const ACCESS: AccessKind = AccessKind::Shared;
 
     unsafe fn handle_from_raw(this: *const Self) -> Self::Handle {

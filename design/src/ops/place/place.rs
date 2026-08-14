@@ -214,6 +214,7 @@
 //!
 //! TODO
 
+use crate::ops::place::borrowck::Access;
 #[macros::summary(skip)]
 use crate::{
     ops::place::borrowck::{
@@ -258,7 +259,11 @@ pub trait PlaceProxy {
 /// [`borrowck`]: crate::ops::place::borrowck
 /// [ACCESS]: Self::ACCESS
 /// [handle_from_raw]: Self::handle_from_raw
-pub unsafe trait CreateHandle<ProxyTiming: Timing>: PlaceProxy {
+pub unsafe trait CreateHandle<ProxyTiming: Timing, PointerAccess: Access>:
+    PlaceProxy
+{
+    const ACCESS: AccessKind;
+
     /// The *handle* that's used for operating on the represented place.
     ///
     /// This type controls which place operations are available on the
@@ -272,9 +277,6 @@ pub unsafe trait CreateHandle<ProxyTiming: Timing>: PlaceProxy {
     /// [ACCESS]: Self::ACCESS
     /// [handle_from_raw]: Self::handle_from_raw
     type Handle: PlaceHandle<Target = Self::Target>;
-
-    /// The access permissions required by [`Self::handle_from_raw`].
-    const ACCESS: AccessKind;
 
     /// Create a handle to the pointee of the raw pointer.
     ///
@@ -515,16 +517,13 @@ where
 pub unsafe trait DerefPlace<PointeeTiming, PointerTiming>:
     PlaceHandle
 where
-    Self::Target: CreateHandle<PointeeTiming>,
+    Self::Target: PlaceProxy,
     PointeeTiming: Timing,
     PointerTiming: Timing,
 {
     /// The access permissions to the contents of the place handled by `Self`
     /// required by [`Self::deref_place`].
     const POINTEE_ACCESS: AccessKind;
-    /// The access permissions to the place handled by `Self` required by
-    /// [`Self::deref_place`].
-    const POINTER_ACCESS: AccessKind;
     /// Whether [`Self::deref_place`] is safe when [`Self::POINTEE_ACCESS`] and
     /// [`Self::POINTER_ACCESS`] are honored for `PointeeTiming` and
     /// `PointerTiming` respectively.
@@ -533,9 +532,11 @@ where
     /// `unsafe` block around dereferencing a place that uses the this handle.
     const SAFE: bool;
 
-    unsafe fn deref_place(
-        self,
-    ) -> <Self::Target as CreateHandle<PointeeTiming>>::Handle;
+    type PointeeHandle: PlaceHandle<
+        Target = <Self::Target as PlaceProxy>::Target,
+    >;
+
+    unsafe fn deref_place(self) -> Self::PointeeHandle;
 }
 
 /// `place.field` -- Project a handle to a subplace.

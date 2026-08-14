@@ -21,3 +21,33 @@ pub enum AccessKind {
     Exclusive,
     Untracked,
 }
+
+#[sealed]
+pub trait Access {
+    const KIND: AccessKind;
+}
+
+pub struct Shared;
+pub struct Exclusive;
+pub struct Untracked;
+
+#[sealed]
+impl Access for Shared {
+    const KIND: AccessKind = AccessKind::Shared;
+}
+#[sealed]
+impl Access for Exclusive {
+    const KIND: AccessKind = AccessKind::Exclusive;
+}
+#[sealed]
+impl Access for Untracked {
+    const KIND: AccessKind = AccessKind::Untracked;
+}
+
+#[sealed]
+pub trait AtLeastShared: Access {}
+
+#[sealed]
+impl AtLeastShared for Shared {}
+#[sealed]
+impl AtLeastShared for Exclusive {}

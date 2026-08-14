@@ -10,9 +10,11 @@ use crate::{
         ReadPlace,
         WritePlace,
         borrowck::{
+            Access,
             AccessKind,
             Instant,
             Lifetime,
+            Untracked,
         },
     },
     place::Subplace,
@@ -22,9 +24,11 @@ impl<T: ?Sized> PlaceProxy for NonNull<T> {
     type Target = T;
 }
 
-unsafe impl<T: ?Sized> CreateHandle<Instant> for NonNull<T> {
+unsafe impl<T> CreateHandle<Instant, Untracked> for NonNull<T>
+where
+    T: ?Sized,
+{
     type Handle = Self;
-
     const ACCESS: AccessKind = AccessKind::Untracked;
 
     unsafe fn handle_from_raw(this: *const Self) -> Self::Handle {

@@ -18,6 +18,7 @@ use crate::{
         WrapPlace,
         borrowck::{
             AccessKind,
+            Exclusive,
             Instant,
             Lifetime,
         },
@@ -78,7 +79,7 @@ where
     }
 }
 
-pub struct CellMutHandle<'b, T> {
+pub struct RefCellMutHandle<'b, T> {
     phantom: PhantomData<&'b mut T>,
 }
 
@@ -86,21 +87,20 @@ impl<'b, T> PlaceProxy for RefMut<'b, T> {
     type Target = T;
 }
 
-unsafe impl<'b, T> CreateHandle<Instant> for RefMut<'b, T> {
-    type Handle = CellMutHandle<'b, T>;
-
-    const ACCESS: AccessKind = AccessKind::Shared;
+unsafe impl<'b, T> CreateHandle<Instant, Exclusive> for RefMut<'b, T> {
+    type Handle = RefCellMutHandle<'b, T>;
+    const ACCESS: AccessKind = AccessKind::Exclusive;
 
     unsafe fn handle_from_raw(_this: *const Self) -> Self::Handle {
-        CellMutHandle { phantom: PhantomData }
+        RefCellMutHandle { phantom: PhantomData }
     }
 }
 
-impl<T> PlaceHandle for CellMutHandle<'_, T> {
+impl<T> PlaceHandle for RefCellMutHandle<'_, T> {
     type Target = T;
 }
 
-unsafe impl<'a, 'b, T> BorrowPlace<&'a mut T> for CellMutHandle<'b, T>
+unsafe impl<'a, 'b, T> BorrowPlace<&'a mut T> for RefCellMutHandle<'b, T>
 where
     'b: 'a,
 {
@@ -113,7 +113,7 @@ where
     }
 }
 
-unsafe impl<'a, 'b, T> BorrowPlace<RefMut<'a, T>> for CellMutHandle<'b, T>
+unsafe impl<'a, 'b, T> BorrowPlace<RefMut<'a, T>> for RefCellMutHandle<'b, T>
 where
     'b: 'a,
 {
