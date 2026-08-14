@@ -35,9 +35,66 @@
 //!
 //! Place expressions have a direct representation in the form of a
 //! [`PlaceHandle`]. A handle points at a place and is responsible for
-//! performing all available place operations on the represented place. Any
-//! valid place expression is converted into a handle by the compiler. We give
-//! this desugaring as a pseudo[^1]-macro definition:
+//! performing all available place operations on the represented place.
+//! Any valid place expression is converted into a handle by the compiler. We
+//! represent this conversion with the `handle!` pseudo-macro, explained below.
+//!
+//! The information a handle encodes can be broken into three primary categories:
+//!
+//! - The type of the place the handle refers to.
+//! - Runtime information needed to access the place; usually, a pointer.
+//! - The capabilities of the pointer the handle was derived from.
+//!
+//! For example:
+//!
+//! ```ignore
+//! let a: &mut Struct;
+//! let b: MutHandle<'b, Field> = handle!((*a).field);
+//! ```
+//!
+//! Semantically, we can tell from the type of the handle that this place
+//! expression is derived from a mutable reference, that the place is of type
+//! `Field`, and that the handle has permission to access the place for the
+//! lifetime `'b`.
+//!
+//! The definition of [`MutHandle<'a, T>`](crate::place::MutHandle) itself is
+//! simple: It stores a pointer to the place (the field, in the example above).
+//! It also embeds a `PhantomData<&'a mut T>` to mark the type `T` as invariant.
+//!
+//! To see how a place handle represents capabilities, observe how we turn this
+//! expression back into a mutable reference of the field:
+//!
+//! ```no_run
+//! # use design::{place::*, ops::place::*};
+//! # struct Struct { field: Field }; struct Field;
+//! # let b: MutHandle<Field> = todo!();
+//! # unsafe {
+//! let c: &mut Field = <MutHandle<'_, Field> as BorrowPlace<&mut Field>>::borrow(b);
+//! # }
+//! ```
+//!
+//! If the handle had been derived from a shared reference (`a` was `&Struct`
+//! above), the handle type would instead be `RefHandle<'_, Field>` which does
+//! not implement `BorrowPlace<&mut Field>`. It does implement
+//! `BorrowPlace<&Field>`, so the following code compiles.
+//!
+//! ```no_run
+//! # use design::{place::*, ops::place::*};
+//! # struct Struct { field: Field }; struct Field;
+//! # #[cfg(false)]
+//! let a: &mut Struct;
+//! # #[cfg(false)]
+//! let b: RefHandle<'b, Field> = handle!((*a).field);
+//! # let b: RefHandle<Field> = todo!();
+//! # unsafe {
+//! let c: &Field = <RefHandle<'_, Field> as BorrowPlace<&Field>>::borrow(b);
+//! # }
+//! ```
+//!
+//! ### Converting place expressions into handles
+//!
+//! Any valid place expression is converted into a handle by the compiler. We
+//! give this desugaring as a pseudo[^1]-macro definition:
 //!
 //! [^1]: we use the non-existent macro fragment specifiers of `place` for place
 //!       expressions and `member` for struct field names and tuple indices.
@@ -93,8 +150,8 @@
 //! support subplaces of these place wrappers, the [`WrapPlace`] trait exists.
 //! It allows forwarding subplaces to the proxy and changing the subplace access
 //! information. With [`MaybeUninit<T>`], this allows accessing any subplace
-//! under the transformation that it's type is wrapped in `MaybeUninit`. So
-//! Given `&MaybeUninit<Struct>`, the `field` subplace can be borrowed using `&`
+//! under the transformation that its type is wrapped in `MaybeUninit`. So
+//! given `&MaybeUninit<Struct>`, the `field` subplace can be borrowed using `&`
 //! and it has type `&MaybeUninit<Field>`.
 //!
 //! [`MaybeUninit<T>`]: std::mem::MaybeUninit
