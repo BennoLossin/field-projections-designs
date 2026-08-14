@@ -44,6 +44,7 @@ use design::{
     place::{
         LocalHandle,
         MutHandle,
+        RefHandle,
     },
 };
 
@@ -89,6 +90,7 @@ include!("basic.rs");
 include!("nested_mut.rs");
 include!("pin.rs");
 include!("move_out.rs");
+include!("shared_mut.rs");
 
 #[doc(hidden)]
 fn main() {
