@@ -68,9 +68,8 @@
 // Needed for enum support (`&'static str` in const generics).
 #![feature(adt_const_params)]
 #![feature(unsized_const_params)]
-#![feature(box_vec_non_null)]
 #![feature(sync_unsafe_cell)]
-#![feature(layout_for_ptr)]
+#![feature(vec_as_non_null)]
 #![feature(proc_macro_hygiene)]
 #![feature(auto_traits)]
 #![feature(phantom_variance_markers)]
