@@ -135,3 +135,16 @@ where
         unsafe { &mut *self.ptr.as_ptr() }
     }
 }
+
+unsafe impl<'a, 'b, T> BorrowPlace<&'b T> for MutHandle<'a, T>
+where
+    'a: 'b,
+{
+    const ACCESS: AccessKind = AccessKind::Shared;
+    type Timing = Lifetime<'b>;
+    const SAFE: bool = true;
+
+    unsafe fn borrow(self) -> &'b T {
+        unsafe { &mut *self.ptr.as_ptr() }
+    }
+}

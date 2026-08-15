@@ -393,6 +393,35 @@ pub unsafe trait WritePlace: PlaceHandle {
 /// `BorrowPlace::<Output>::borrow(handle!($place))`. Where `handle!` is
 /// explained in the [section on place
 /// expressions](self#places-and-place-expressions)
+///
+/// ## Lifetimes and variance
+///
+/// When writing an impl of this trait for a handle with lifetimes, it's best
+/// practice to encode the variance directly in the impl. See the impl on
+/// RefHandle for example:
+///
+/// ```rust
+/// # use std::{ptr::NonNull, marker::PhantomData};
+/// # use design::ops::place::{*, borrowck::*};
+/// # pub struct RefHandle<'a, T: ?Sized> { ptr: NonNull<T>, _lt: PhantomData<&'a mut T> }
+/// # impl<'a, T: ?Sized> PlaceHandle for RefHandle<'a, T> { type Target = T; }
+/// unsafe impl<'a, 'b, T> BorrowPlace<&'b T> for RefHandle<'a, T>
+/// where
+///     'a: 'b,
+/// {
+///     const ACCESS: AccessKind = AccessKind::Shared;
+///     type Timing = Lifetime<'b>;
+///     const SAFE: bool = true;
+///
+///     unsafe fn borrow(self) -> &'b T {
+///         unsafe { &*self.ptr.as_ptr() }
+///     }
+/// }
+/// ```
+///
+/// The reason for this is that BorrowPlace impls will be substituted late in
+/// the compiler, after borrow check runs. Variance will not automatically be
+/// handled at that point.
 pub unsafe trait BorrowPlace<Output>: PlaceHandle {
     /// The access permissions to the place required by [`Self::borrow`].
     const ACCESS: AccessKind;

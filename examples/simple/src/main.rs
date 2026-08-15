@@ -32,6 +32,7 @@ use design::{
         DerefPlace,
         DropHusk,
         DropPlace,
+        IndexPlace,
         PlaceHandle,
         ProjectPlace,
         ReadPlace,
@@ -44,6 +45,7 @@ use design::{
     place::{
         LocalHandle,
         MutHandle,
+        RefHandle,
     },
 };
 
@@ -86,6 +88,7 @@ fn print(value: impl Display) {
 }
 
 include!("basic.rs");
+include!("index.rs");
 include!("nested_mut.rs");
 include!("pin.rs");
 include!("move_out.rs");

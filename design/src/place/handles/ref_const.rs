@@ -27,6 +27,22 @@ pub struct RefHandle<'a, T: ?Sized> {
     _lt: PhantomData<&'a mut T>,
 }
 
+impl<T: ?Sized> Clone for RefHandle<'_, T> {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl<T: ?Sized> Copy for RefHandle<'_, T> {}
+
+impl<'a, T: ?Sized> RefHandle<'a, T> {
+    pub unsafe fn from_raw(ptr: *const T) -> Self {
+        Self {
+            ptr: unsafe { NonNull::new_unchecked(ptr.cast_mut()) },
+            _lt: PhantomData,
+        }
+    }
+}
+
 impl<'a, T: ?Sized> PlaceProxy for &'a T {
     type Target = T;
 }
@@ -81,7 +97,7 @@ where
     }
 }
 
-unsafe impl<'a, 'b, T> BorrowPlace<&'b T> for RefHandle<'a, T>
+unsafe impl<'a, 'b, T: ?Sized> BorrowPlace<&'b T> for RefHandle<'a, T>
 where
     'a: 'b,
 {
