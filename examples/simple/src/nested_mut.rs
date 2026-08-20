@@ -73,7 +73,7 @@ fn nested_mut_sugared() {
 /// mutable reference doesn't invalidate any borrows to the inner one (as it
 /// continues to exist).
 ///
-/// ## Desugared code
+/// ## Desugared Code
 ///
 /// ```
 /// ==== DESUGARED ====

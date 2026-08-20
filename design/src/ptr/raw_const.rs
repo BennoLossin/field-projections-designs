@@ -11,9 +11,11 @@ use crate::{
         ReadMetadata,
         ReadPlace,
         borrowck::{
+            Access,
             AccessKind,
             Instant,
             Timing,
+            Untracked,
         },
     },
     place::Subplace,
@@ -24,9 +26,11 @@ impl<T: ?Sized> PlaceProxy for *const T {
     type Target = T;
 }
 
-unsafe impl<T: ?Sized> CreateHandle<Instant> for *const T {
+unsafe impl<T> CreateHandle<Instant, Untracked> for *const T
+where
+    T: ?Sized,
+{
     type Handle = Self;
-
     const ACCESS: AccessKind = AccessKind::Untracked;
 
     unsafe fn handle_from_raw(this: *const Self) -> Self::Handle {
@@ -69,17 +73,16 @@ unsafe impl<S: Subplace> ProjectPlace<S> for *const S::Source {
 
 unsafe impl<P, ProxyTiming> DerefPlace<ProxyTiming, Instant> for *const P
 where
-    P: ?Sized + CreateHandle<ProxyTiming>,
+    P: ?Sized + CreateHandle<ProxyTiming, Untracked>,
     ProxyTiming: Timing,
 {
     const POINTEE_ACCESS: AccessKind = P::ACCESS;
-    const POINTER_ACCESS: AccessKind = AccessKind::Untracked;
 
     const SAFE: bool = false;
+    type PointeeHandle =
+        <Self::Target as CreateHandle<ProxyTiming, Untracked>>::Handle;
 
-    unsafe fn deref_place(
-        self,
-    ) -> <Self::Target as CreateHandle<ProxyTiming>>::Handle {
+    unsafe fn deref_place(self) -> Self::PointeeHandle {
         unsafe { P::handle_from_raw(self) }
     }
 }

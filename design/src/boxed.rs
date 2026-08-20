@@ -21,6 +21,7 @@ use crate::{
         WritePlace,
         borrowck::{
             AccessKind,
+            Exclusive,
             Instant,
             Lifetime,
         },
@@ -37,9 +38,9 @@ impl<T: ?Sized> PlaceProxy for Box<T> {
     type Target = T;
 }
 
-unsafe impl<T: ?Sized> CreateHandle<Instant> for Box<T> {
+unsafe impl<T: ?Sized> CreateHandle<Instant, Exclusive> for Box<T> {
+    const ACCESS: AccessKind = AccessKind::Exclusive;
     type Handle = BoxHandle<T>;
-    const ACCESS: AccessKind = AccessKind::Shared;
 
     unsafe fn handle_from_raw(this: *const Self) -> Self::Handle {
         let this: *const NonNull<T> = this.cast();

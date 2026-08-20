@@ -73,6 +73,7 @@
 #![feature(proc_macro_hygiene)]
 #![feature(auto_traits)]
 #![feature(phantom_variance_markers)]
+#![feature(vec_as_non_null)]
 
 pub mod boxed;
 pub mod cell;

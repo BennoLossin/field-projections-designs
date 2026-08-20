@@ -17,9 +17,12 @@ use crate::{
         ProjectPlace,
         ReadPlace,
         borrowck::{
+            Access,
             AccessKind,
+            AtLeastShared,
             Instant,
             Lifetime,
+            Shared,
             Timing,
             UntilDrop,
         },
@@ -53,10 +56,12 @@ impl<T: ?Sized> PlaceProxy for ArcRef<T> {
     type Target = T;
 }
 
-unsafe impl<T: ?Sized> CreateHandle<Instant> for ArcRef<T> {
-    type Handle = ArcRefHandle<T>;
-
+unsafe impl<T> CreateHandle<Instant, Shared> for ArcRef<T>
+where
+    T: ?Sized,
+{
     const ACCESS: AccessKind = AccessKind::Shared;
+    type Handle = ArcRefHandle<T>;
 
     unsafe fn handle_from_raw(this: *const Self) -> Self::Handle {
         let head = unsafe { (*this).head };
@@ -147,16 +152,15 @@ unsafe impl<'a, T: ?Sized> BorrowPlace<&'a T> for ArcRefHandle<T> {
 unsafe impl<T, ProxyTiming> DerefPlace<ProxyTiming, UntilDrop>
     for ArcRefHandle<T>
 where
-    T: ?Sized + CreateHandle<ProxyTiming>,
+    T: ?Sized + CreateHandle<ProxyTiming, Shared>,
     ProxyTiming: Timing,
 {
     const POINTEE_ACCESS: AccessKind = T::ACCESS;
-    const POINTER_ACCESS: AccessKind = AccessKind::Shared;
     const SAFE: bool = true;
+    type PointeeHandle =
+        <Self::Target as CreateHandle<ProxyTiming, Shared>>::Handle;
 
-    unsafe fn deref_place(
-        self,
-    ) -> <Self::Target as CreateHandle<ProxyTiming>>::Handle {
+    unsafe fn deref_place(self) -> Self::PointeeHandle {
         let ptr = self.data.as_ptr();
         unsafe { T::handle_from_raw(ptr) }
     }

@@ -13,6 +13,7 @@ use crate::{
         WritePlace,
         borrowck::{
             AccessKind,
+            Exclusive,
             Instant,
             Lifetime,
             Timing,
@@ -53,17 +54,15 @@ impl<T: ?Sized> PlaceHandle for LocalHandle<T> {
 
 unsafe impl<P, ProxyTiming> DerefPlace<ProxyTiming, Instant> for LocalHandle<P>
 where
-    P: CreateHandle<ProxyTiming>,
+    P: CreateHandle<ProxyTiming, Exclusive>,
     ProxyTiming: Timing,
 {
     const POINTEE_ACCESS: AccessKind = P::ACCESS;
-    const POINTER_ACCESS: AccessKind = P::ACCESS;
 
     const SAFE: bool = true;
+    type PointeeHandle = P::Handle;
 
-    unsafe fn deref_place(
-        self,
-    ) -> <Self::Target as CreateHandle<ProxyTiming>>::Handle {
+    unsafe fn deref_place(self) -> Self::PointeeHandle {
         unsafe { P::handle_from_raw(self.as_ptr()) }
     }
 }

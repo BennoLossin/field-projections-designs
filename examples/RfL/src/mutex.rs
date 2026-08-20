@@ -14,6 +14,8 @@ use design::{
         WrapPlace,
         borrowck::{
             AccessKind,
+            AtLeastShared,
+            Exclusive,
             Instant,
         },
     },
@@ -81,10 +83,9 @@ impl<'a, T> PlaceProxy for MutexGuard<'a, T> {
     type Target = T;
 }
 
-unsafe impl<'a, T> CreateHandle<Instant> for MutexGuard<'a, T> {
+unsafe impl<'a, T> CreateHandle<Instant, Exclusive> for MutexGuard<'a, T> {
     type Handle = MutHandle<'a, T>;
-
-    const ACCESS: AccessKind = AccessKind::Shared;
+    const ACCESS: AccessKind = AccessKind::Exclusive;
 
     unsafe fn handle_from_raw(this: *const Self) -> Self::Handle {
         let ptr: *const &Mutex<T> = unsafe { &raw const (*this).0 };

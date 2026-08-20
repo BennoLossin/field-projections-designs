@@ -18,6 +18,7 @@ use design::{
         ReadPlace,
         WritePlace,
         borrowck::{
+            Access,
             AccessKind,
             Timing,
         },
@@ -85,13 +86,14 @@ where
     type Target = P::Target;
 }
 
-unsafe impl<P, ProxyTiming> CreateHandle<ProxyTiming> for Shield<P>
+unsafe impl<P, ProxyTiming, PointerAccess>
+    CreateHandle<ProxyTiming, PointerAccess> for Shield<P>
 where
-    P: CreateHandle<ProxyTiming>,
+    P: CreateHandle<ProxyTiming, PointerAccess>,
     ProxyTiming: Timing,
+    PointerAccess: Access,
 {
     type Handle = ShieldHandle<P::Handle>;
-
     const ACCESS: AccessKind = P::ACCESS;
 
     unsafe fn handle_from_raw(this: *const Self) -> Self::Handle {
@@ -242,18 +244,16 @@ where
 unsafe impl<H, PointeeTiming, PointerTiming>
     DerefPlace<PointeeTiming, PointerTiming> for ShieldHandle<H>
 where
-    Self::Target: CreateHandle<PointeeTiming>,
+    Self::Target: PlaceProxy,
     H: DerefPlace<PointeeTiming, PointerTiming>,
     PointeeTiming: Timing,
     PointerTiming: Timing,
 {
     const POINTEE_ACCESS: AccessKind = H::POINTEE_ACCESS;
-    const POINTER_ACCESS: AccessKind = H::POINTER_ACCESS;
     const SAFE: bool = H::SAFE;
+    type PointeeHandle = H::PointeeHandle;
 
-    unsafe fn deref_place(
-        self,
-    ) -> <Self::Target as CreateHandle<PointeeTiming>>::Handle {
+    unsafe fn deref_place(self) -> Self::PointeeHandle {
         let handle = unsafe { self.0.deref_place() };
         handle
     }

@@ -14,8 +14,10 @@ use crate::{
         ReadPlace,
         borrowck::{
             AccessKind,
+            Exclusive,
             Instant,
             Lifetime,
+            Shared,
             Timing,
         },
     },
@@ -23,17 +25,31 @@ use crate::{
 };
 
 pub struct RefHandle<'a, T: ?Sized> {
-    ptr: NonNull<T>,
-    _lt: PhantomData<&'a mut T>,
+    pub(super) ptr: NonNull<T>,
+    pub(super) _lt: PhantomData<&'a mut T>,
 }
 
 impl<'a, T: ?Sized> PlaceProxy for &'a T {
     type Target = T;
 }
 
-unsafe impl<'a, T: ?Sized> CreateHandle<Instant> for &'a T {
+unsafe impl<'a, T: ?Sized> CreateHandle<Instant, Shared> for &'a T {
     type Handle = RefHandle<'a, T>;
+    const ACCESS: AccessKind = AccessKind::Shared;
 
+    unsafe fn handle_from_raw(this: *const Self) -> Self::Handle {
+        let ptr: *const *const T = this.cast::<*const T>();
+        let handle = unsafe { *ptr };
+        let handle = handle.cast_mut();
+        RefHandle {
+            ptr: unsafe { NonNull::new_unchecked(handle) },
+            _lt: PhantomData,
+        }
+    }
+}
+
+unsafe impl<'a, T: ?Sized> CreateHandle<Instant, Exclusive> for &'a T {
+    type Handle = RefHandle<'a, T>;
     const ACCESS: AccessKind = AccessKind::Shared;
 
     unsafe fn handle_from_raw(this: *const Self) -> Self::Handle {
@@ -67,16 +83,15 @@ unsafe impl<'a, S: Subplace<Target: 'a>> ProjectPlace<S>
 unsafe impl<'a, ProxyTiming, P: ?Sized> DerefPlace<ProxyTiming, Instant>
     for RefHandle<'a, P>
 where
-    P: CreateHandle<ProxyTiming>,
+    P: CreateHandle<ProxyTiming, Shared>,
     ProxyTiming: Timing,
 {
-    const POINTEE_ACCESS: AccessKind = P::ACCESS;
-    const POINTER_ACCESS: AccessKind = AccessKind::Shared;
+    const POINTEE_ACCESS: AccessKind = AccessKind::Shared;
     const SAFE: bool = true;
+    type PointeeHandle =
+        <Self::Target as CreateHandle<ProxyTiming, Shared>>::Handle;
 
-    unsafe fn deref_place(
-        self,
-    ) -> <Self::Target as CreateHandle<ProxyTiming>>::Handle {
+    unsafe fn deref_place(self) -> Self::PointeeHandle {
         unsafe { P::handle_from_raw(self.ptr.as_ptr()) }
     }
 }

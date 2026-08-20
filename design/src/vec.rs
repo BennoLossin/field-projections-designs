@@ -7,6 +7,7 @@ use crate::ops::place::{
     PlaceProxy,
     borrowck::{
         AccessKind,
+        Exclusive,
         Instant,
         Lifetime,
     },
@@ -16,10 +17,9 @@ impl<T> PlaceProxy for Vec<T> {
     type Target = [T];
 }
 
-unsafe impl<T> CreateHandle<Instant> for Vec<T> {
+unsafe impl<T> CreateHandle<Instant, Exclusive> for Vec<T> {
     type Handle = VecHandle<T>;
-
-    const ACCESS: AccessKind = AccessKind::Shared;
+    const ACCESS: AccessKind = AccessKind::Exclusive;
 
     unsafe fn handle_from_raw(this: *const Self) -> Self::Handle {
         let this = this.cast_mut();
