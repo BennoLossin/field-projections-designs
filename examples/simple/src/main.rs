@@ -15,6 +15,8 @@
 //!
 //! Lastly, we showcase how pinning a mutable reference looks like in [`pin`].
 
+#![feature(super_let)]
+
 use std::{
     fmt::Display,
     mem::forget,
@@ -44,6 +46,7 @@ use design::{
     place::{
         LocalHandle,
         MutHandle,
+        RefHandle,
     },
 };
 

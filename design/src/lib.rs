@@ -73,12 +73,17 @@
 #![feature(proc_macro_hygiene)]
 #![feature(auto_traits)]
 #![feature(phantom_variance_markers)]
+#![feature(super_let)]
+#![feature(forget_unsized)]
+#![feature(arbitrary_self_types)]
+#![feature(derive_coerce_pointee)]
 
 pub mod boxed;
 pub mod cell;
 pub mod lang_limits;
 pub mod mem;
 pub mod ops;
+pub mod own;
 pub mod pin;
 pub mod place;
 pub mod ptr;
